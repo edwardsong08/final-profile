@@ -1,5 +1,7 @@
 // src/components/AboutMeModal.tsx
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 interface AboutMeModalProps {
   isOpen: boolean;
@@ -7,46 +9,87 @@ interface AboutMeModalProps {
 }
 
 export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
+  // Scroll Lock and ESC Key Close
+  useEffect(() => {
+    if (isOpen) {
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          onClose();
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [isOpen, onClose]);
+
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50"
+          className="fixed inset-0 backdrop-blur-lg backdrop-brightness-90 flex items-center justify-center z-50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          onClick={onClose}
         >
           <motion.div
-            className="bg-gray-800 text-gray-100 rounded-2xl shadow-lg max-w-3xl w-full mx-4 p-8 overflow-y-auto max-h-[90vh]"
+            className="aboutme-scroll relative bg-zinc-700 border border-zinc-600 text-zinc-100 rounded-2xl shadow-lg max-w-3xl w-full mx-4 p-8 overflow-y-auto max-h-[90vh]"
             initial={{ scale: 0.9, y: 50 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 50 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
+            onClick={(e) => e.stopPropagation()}
           >
+            {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-6 text-gray-400 hover:text-white text-2xl"
+              className="absolute top-4 right-6 text-zinc-400 hover:text-white text-2xl"
             >
               &times;
             </button>
 
             <h2 className="text-3xl font-semibold text-center mb-8">About Me</h2>
 
-            {/* First image placeholder */}
-            <div className="w-32 h-32 bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
-              <span className="text-gray-300">Photo</span>
+            {/* First Image */}
+            <div className="relative mx-auto mb-6 w-1/3 min-w-[240px] h-auto">
+              <Image
+                src="/about1.jpg"
+                alt="About Me 1"
+                layout="responsive"
+                width={300}
+                height={400}
+                className="rounded-lg"
+              />
             </div>
-            <p className="text-lg text-gray-300 leading-relaxed mb-8 text-center">
+
+            <p className="text-lg text-zinc-300 leading-relaxed mb-8 text-center">
               Before software development, I've had the opportunity to explore many of my interests,
               including an educational background in engineering and political science and a professional
               background in education, writing, and law.
             </p>
 
-            {/* Second image placeholder */}
-            <div className="w-32 h-32 bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
-              <span className="text-gray-300">Photo</span>
+            {/* Second Image */}
+            <div className="relative mx-auto mb-6 w-1/3 min-w-[240px] h-auto">
+              <Image
+                src="/about2.jpg"
+                alt="About Me 2"
+                layout="responsive"
+                width={300}
+                height={400}
+                className="rounded-lg"
+              />
             </div>
-            <p className="text-lg text-gray-300 leading-relaxed mb-8 text-center">
+
+            <p className="text-lg text-zinc-300 leading-relaxed mb-8 text-center">
               Teaching has always been a rewarding experience, and watching my students grow continues to inspire me.
               I will forever remain a teacher and a student—nurturing to others and unafraid to ask questions.
               The challenges I have faced in law have taught me that a methodical approach will always yield a solution,
@@ -56,15 +99,35 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
               Ultimately, these are the principles by which I live and approach software development.
             </p>
 
-            {/* Third image placeholder */}
-            <div className="w-32 h-32 bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
-              <span className="text-gray-300">Photo</span>
+            {/* Third Image */}
+            <div className="relative mx-auto mb-6 w-1/3 min-w-[240px] h-auto">
+              <Image
+                src="/about3.jpg"
+                alt="About Me 3"
+                layout="responsive"
+                width={300}
+                height={400}
+                className="rounded-lg"
+              />
             </div>
-            <p className="text-lg text-gray-300 leading-relaxed text-center">
+
+            <p className="text-lg text-zinc-300 leading-relaxed mb-8 text-center">
               I am passionate about political, educational, and judicial reforms.
               My free time is spent hiking with my dog, tampering as an amateur guitar luthier,
               reading, or exploring new foods in the area.
             </p>
+
+            {/* Fourth Image */}
+            <div className="relative mx-auto mb-4 w-1/3 min-w-[240px] h-auto">
+              <Image
+                src="/about4.jpg"
+                alt="About Me 4"
+                layout="responsive"
+                width={300}
+                height={400}
+                className="rounded-lg"
+              />
+            </div>
           </motion.div>
         </motion.div>
       )}

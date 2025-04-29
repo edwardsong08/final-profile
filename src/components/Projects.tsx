@@ -28,9 +28,9 @@ const projects = [
 
 export default function Projects() {
   return (
-    <section id="projects" className="bg-gray-800 text-gray-100 py-0">
+    <section id="projects" className="bg-zinc-800 text-zinc-100 py-0">
       {/* Top Bar */}
-      <div className="bg-gray-900 py-8">
+      <div className="bg-zinc-900 py-8">
         <h2 className="text-4xl font-bold text-center">Projects</h2>
       </div>
 
@@ -46,10 +46,10 @@ export default function Projects() {
           {projects.map(({ title, description, link }) => (
             <div
               key={title}
-              className="bg-gray-700 p-6 rounded-2xl shadow-md hover:shadow-xl transition-transform transform hover:scale-105 flex flex-col"
+              className="bg-zinc-700 p-6 rounded-2xl shadow-md hover:shadow-xl transition-transform transform hover:scale-105 flex flex-col"
             >
               <h3 className="text-xl font-semibold mb-4">{title}</h3>
-              <p className="text-gray-300 flex-grow">{description}</p>
+              <p className="text-zinc-300 flex-grow">{description}</p>
               {link && (
                 <a
                   href={link}

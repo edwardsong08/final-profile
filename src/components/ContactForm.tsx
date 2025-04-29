@@ -30,9 +30,9 @@ export default function ContactForm() {
   };
 
   return (
-    <section id="contact" className="bg-gray-800 text-gray-100">
+    <section id="contact" className="bg-zinc-800 text-zinc-100">
       {/* Top Bar */}
-      <div className="bg-gray-900 py-8">
+      <div className="bg-zinc-900 py-8">
         <h2 className="text-4xl font-bold text-center">Contact</h2>
       </div>
 
@@ -44,7 +44,7 @@ export default function ContactForm() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="bg-gray-700 p-8 rounded-2xl shadow-md hover:shadow-xl transition-all"
+          className="bg-zinc-700 p-8 rounded-2xl shadow-md hover:shadow-xl transition-all"
         >
           {/* Name Field */}
           <div className="mb-6">
@@ -54,7 +54,7 @@ export default function ContactForm() {
             <input
               id="name"
               {...register('name')}
-              className="w-full bg-gray-800 text-white border border-gray-600 px-4 py-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-zinc-800 text-white border border-zinc-600 px-4 py-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {errors.name && (
               <p className="text-red-400 text-sm mt-2">{errors.name.message}</p>
@@ -70,7 +70,7 @@ export default function ContactForm() {
               id="email"
               type="email"
               {...register('email')}
-              className="w-full bg-gray-800 text-white border border-gray-600 px-4 py-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-zinc-800 text-white border border-zinc-600 px-4 py-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {errors.email && (
               <p className="text-red-400 text-sm mt-2">{errors.email.message}</p>
@@ -85,7 +85,7 @@ export default function ContactForm() {
             <textarea
               id="message"
               {...register('message')}
-              className="w-full bg-gray-800 text-white border border-gray-600 px-4 py-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 h-40"
+              className="w-full bg-zinc-800 text-white border border-zinc-600 px-4 py-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 h-40"
             />
             {errors.message && (
               <p className="text-red-400 text-sm mt-2">{errors.message.message}</p>

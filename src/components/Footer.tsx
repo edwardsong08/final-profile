@@ -7,7 +7,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-gray-900 text-gray-400 text-sm">
+      <footer className="bg-zinc-900 text-zinc-400 text-sm">
         <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between">
           {/* Left side */}
           <div className="text-center sm:text-left mb-4 sm:mb-0">

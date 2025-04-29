@@ -102,7 +102,7 @@ export default function Hero({ onReady }: HeroProps) {
 
       {/* Moon */}
       <motion.div
-        className="absolute top-[-25%] left-[10%] w-24 h-24 bg-white rounded-full shadow-lg z-10"
+        className="absolute top-[-18%] left-[10%] w-24 h-24 bg-white rounded-full shadow-lg z-10"
         initial={{ y: 0, scaleX: 1, scaleY: 1 }}
         animate={{
           y: [0, 230, 190, 210],
