@@ -1,57 +1,17 @@
 // src/components/Skills.tsx
 import { motion } from 'framer-motion';
 import {
-  FaHtml5,
-  FaCss3Alt,
-  FaJsSquare,
-  FaPython,
-  FaJava,
-  FaDatabase,
-  FaReact,
-  FaDocker,
-  FaAws,
-  FaGithub,
-  FaLinux,
-  FaFigma,
-  FaUnity,
-  FaGamepad
+  FaHtml5, FaCss3Alt, FaJsSquare, FaPython, FaJava, FaDatabase, FaReact, FaDocker, FaAws,
+  FaGithub, FaLinux, FaFigma, FaUnity, FaGamepad
 } from 'react-icons/fa';
 import {
-  SiTypescript,
-  SiNextdotjs,
-  SiDjango,
-  SiSpringboot,
-  SiThymeleaf,
-  SiTailwindcss,
-  SiBootstrap,
-  SiSass,
-  SiFramer,
-  SiReacthookform,
-  SiPostgresql,
-  SiSqlite,
-  SiVercel,
-  SiGithubactions,
-  SiEslint,
-  SiPostman,
-  SiJunit5,
-  SiGradle,
-  SiWebpack,
-  SiGooglemaps,
-  SiTrello,
-  SiNotion,
-  SiGimp,
-  SiUnrealengine,
-  SiMarkdown
+  SiTypescript, SiNextdotjs, SiDjango, SiSpringboot, SiThymeleaf, SiTailwindcss, SiBootstrap,
+  SiSass, SiFramer, SiReacthookform, SiPostgresql, SiSqlite, SiVercel, SiGithubactions,
+  SiEslint, SiPostman, SiJunit5, SiGradle, SiWebpack, SiGooglemaps, SiTrello, SiNotion,
+  SiGimp, SiUnrealengine, SiMarkdown
 } from 'react-icons/si';
 import {
-  FiCode,
-  FiMonitor,
-  FiCheckCircle,
-  FiServer,
-  FiGlobe,
-  FiMail,
-  FiFileText,
-  FiBox
+  FiCode, FiMonitor, FiCheckCircle, FiServer, FiGlobe, FiMail, FiFileText, FiBox
 } from 'react-icons/fi';
 
 const skillCategories = [
@@ -159,44 +119,50 @@ const skillCategories = [
 
 export default function Skills() {
   return (
-    <motion.section
-      id="skills"
-      className="py-16 bg-gray-100 dark:bg-gray-900"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-    >
-      <div className="max-w-6xl mx-auto px-4">
-        <h2 className="text-3xl font-semibold text-center mb-8">Skills</h2>
-        {skillCategories.map(({ category, skills }) => (
-          <div key={category} className="mb-12">
-            <h3 className="text-2xl font-bold mb-4">{category}</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <section id="skills" className="bg-gray-800 text-gray-100 py-0">
+      {/* Top Bar */}
+      <div className="bg-gray-900 py-8">
+        <h2 className="text-4xl font-bold text-center">Skills</h2>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-4 py-16">
+        {skillCategories.map(({ category, skills }, idx) => (
+          <motion.div
+            key={category}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: idx * 0.2 }}
+            className="mb-16"
+          >
+            <h3 className="text-2xl font-semibold mb-8 border-b border-gray-700 pb-2">{category}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {skills.map(({ name, level, Icon }) => (
                 <div
                   key={name}
-                  className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all flex flex-col"
+                  className="bg-gray-700 p-6 rounded-2xl shadow-md hover:shadow-xl transition-transform transform hover:scale-105 flex flex-col"
                 >
                   <div className="flex items-center space-x-4 mb-6">
-                    <Icon className="text-4xl text-blue-600" />
-                    <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">{name}</span>
+                    <Icon className="text-4xl text-blue-400 group-hover:text-blue-500 transition" />
+                    <span className="text-lg font-semibold">{name}</span>
                   </div>
-                  <div className="mt-auto flex gap-2 h-3">
+                  <div className="mt-auto flex gap-2 h-2">
                     {Array.from({ length: 4 }, (_, i) => (
                       <div
                         key={i}
                         className={`flex-1 rounded-full ${
-                          i < level ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
-                        }`} />
+                          i < level ? 'bg-green-400' : 'bg-gray-500'
+                        }`}
+                      />
                     ))}
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
-    </motion.section>
+    </section>
   );
 }
