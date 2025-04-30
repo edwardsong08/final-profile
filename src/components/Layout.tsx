@@ -1,6 +1,5 @@
 // src/components/Layout.tsx
 import type { ReactNode } from 'react';
-import Footer from './Footer';
 
 type LayoutProps = { children: ReactNode };
 
@@ -14,7 +13,6 @@ export default function Layout({ children }: LayoutProps) {
         {children}
       </main>
 
-      <Footer />
     </div>
   );
 }

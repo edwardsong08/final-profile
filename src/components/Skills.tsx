@@ -140,13 +140,22 @@ export default function Skills() {
                 className="w-full text-left flex justify-between items-center text-2xl font-semibold mb-4 border-b border-zinc-700 pb-2 cursor-pointer"
               >
                 {category}
-                <motion.span
+                <motion.svg
                   animate={{ rotate: isOpen ? 90 : 0 }}
                   transition={{ duration: 0.3 }}
-                  className="text-zinc-400 text-xl"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4 h-4 text-white ml-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  ▶
-                </motion.span>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </motion.svg>
               </button>
 
               <AnimatePresence initial={false}>

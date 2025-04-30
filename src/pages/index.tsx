@@ -5,6 +5,8 @@ import Hero from '../components/Hero';
 import Skills from '../components/Skills';
 import Projects from '../components/Projects';
 import ContactForm from '../components/ContactForm';
+import Footer from '../components/Footer';
+
 
 export default function Home() {
   const [heroLoaded, setHeroLoaded] = useState(false);
@@ -12,7 +14,7 @@ export default function Home() {
   return (
     <>
       <NextSeo
-        title="Home – My Portfolio"
+        title="Edward Song- Portfolio"
         description="Full‑stack developer specializing in Next.js, animations, and more."
       />
 
@@ -34,6 +36,9 @@ export default function Home() {
             <section id="contact" >
               <ContactForm />
             </section>
+
+            <Footer />
+
           </>
         )}
       </div>

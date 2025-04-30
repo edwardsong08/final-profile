@@ -41,12 +41,12 @@ export default function Projects() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 px-4"
         >
           {projects.map(({ title, description, link }) => (
             <div
               key={title}
-              className="bg-zinc-700 p-6 rounded-2xl shadow-md hover:shadow-xl transition-transform transform hover:scale-105 flex flex-col"
+              className="bg-zinc-700 p-6 rounded-2xl shadow-md hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-103 flex flex-col"
             >
               <h3 className="text-xl font-semibold mb-4">{title}</h3>
               <p className="text-zinc-300 flex-grow">{description}</p>
