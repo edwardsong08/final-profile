@@ -46,7 +46,7 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
             initial={{ scale: 0.9, y: 50 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 50 }}
-            transition={{ duration: 0.6, ease: "easeInOut" }}
+            transition={{ duration: 0.6, ease: 'easeInOut' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
@@ -72,7 +72,7 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
             </div>
 
             <p className="text-lg text-zinc-300 leading-relaxed mb-8 text-center">
-              Before software development, I've had the opportunity to explore many of my interests,
+              Before software development, I&apos;ve had the opportunity to explore many of my interests,
               including an educational background in engineering and political science and a professional
               background in education, writing, and law.
             </p>

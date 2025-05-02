@@ -1,19 +1,16 @@
-// src/components/Skills.tsx
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FaHtml5, FaJsSquare, FaPython, FaJava, FaDatabase, FaReact, FaDocker, FaAws,
-  FaGithub, FaLinux, FaFigma, FaUnity, FaGamepad
+  FaGithub, FaLinux, FaUnity, FaGamepad
 } from 'react-icons/fa';
 import {
-  SiTypescript, SiNextdotjs, SiDjango, SiSpringboot, SiThymeleaf, SiTailwindcss, SiBootstrap,
-  SiSass, SiFramer, SiReacthookform, SiPostgresql, SiSqlite, SiVercel, SiGithubactions,
-  SiEslint, SiPostman, SiJunit5, SiGradle, SiWebpack, SiGooglemaps, SiTrello, SiNotion,
-  SiGimp, SiUnrealengine, SiMarkdown, SiNextdotjs as SiNextSEO
+  SiNextdotjs, SiDjango, SiSpringboot, SiTailwindcss, SiFramer, SiReacthookform,
+  SiPostgresql, SiSqlite, SiVercel, SiGithubactions, SiEslint, SiPostman, SiJunit5,
+  SiGooglemaps, SiTrello, SiGimp, SiUnrealengine, SiNextdotjs as SiNextSEO
 } from 'react-icons/si';
-import {
-  FiCode, FiMonitor, FiCheckCircle, FiServer, FiGlobe, FiMail, FiFileText, FiBox
-} from 'react-icons/fi';
+import { FiCode, FiGlobe, FiMail } from 'react-icons/fi';
+
 
 const skillCategories = [
   {
