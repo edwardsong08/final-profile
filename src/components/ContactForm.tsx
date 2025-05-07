@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 
 // Validation schema
 const schema = yup
@@ -20,13 +21,34 @@ export default function ContactForm() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    reset,
   } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
 
+  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
   const onSubmit = async (data: FormData) => {
-    console.log('Form data:', data);
-    // TODO: call your sendEmail helper here
+    setStatus('idle');
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (res.ok) {
+        setStatus('success');
+        reset(); // clear form
+      } else {
+        const errorData = await res.json();
+        console.error('Error from server:', errorData);
+        setStatus('error');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setStatus('error');
+    }
   };
 
   return (
@@ -43,7 +65,7 @@ export default function ContactForm() {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
           className="bg-zinc-700 p-8 rounded-2xl shadow-md hover:shadow-xl transition-all"
         >
           {/* Name Field */}
@@ -100,6 +122,18 @@ export default function ContactForm() {
           >
             {isSubmitting ? 'Sending…' : 'Send Message'}
           </button>
+
+          {/* Feedback Messages */}
+          {status === 'success' && (
+            <p className="text-green-400 text-center mt-4">
+              Message sent successfully!
+            </p>
+          )}
+          {status === 'error' && (
+            <p className="text-red-400 text-center mt-4">
+              Failed to send message. Please try again.
+            </p>
+          )}
         </motion.form>
       </div>
     </section>
