@@ -103,7 +103,10 @@ const skillCategories = [
 
 export default function Skills() {
   const [openSections, setOpenSections] = useState(
-    Object.fromEntries(skillCategories.map(({ category }) => [category, true]))
+    Object.fromEntries(skillCategories.map(({ category }) => [
+      category,
+      ['Core Programming Languages', 'Frontend Development', 'Backend & API Development'].includes(category)
+    ]))
   );
 
   const toggleSection = (category: string) => {
