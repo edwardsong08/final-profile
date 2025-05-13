@@ -73,7 +73,13 @@ export default function ContactForm() {
         <h2 className="text-4xl font-bold text-center">Contact</h2>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-12 flex flex-col lg:flex-row gap-8">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className="max-w-7xl mx-auto px-4 py-12 flex flex-col lg:flex-row gap-8"
+      >
         {/* Info Panel */}
         <div className={`${infoCardBg} p-8 rounded-2xl shadow-md lg:w-1/2`}>
           <h3 className="text-2xl font-semibold mb-4">Let’s Make Your Business Stand Out Online.</h3>
@@ -101,12 +107,8 @@ export default function ContactForm() {
         </div>
 
         {/* Contact Form */}
-        <motion.form
+        <form
           onSubmit={handleSubmit(onSubmit)}
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
           className={`${formBg} p-8 rounded-2xl shadow-md hover:shadow-xl transition-all lg:w-1/2`}
         >
           <div className="mb-6">
@@ -164,8 +166,8 @@ export default function ContactForm() {
               Failed to send message. Please try again.
             </p>
           )}
-        </motion.form>
-      </div>
+        </form>
+      </motion.div>
     </section>
   );
 }
