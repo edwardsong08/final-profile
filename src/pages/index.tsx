@@ -6,10 +6,11 @@ import Skills from '../components/Skills';
 import Projects from '../components/Projects';
 import ContactForm from '../components/ContactForm';
 import Footer from '../components/Footer';
-
+import AboutMeModal from '../components/AboutMeModal';
 
 export default function Home() {
   const [heroLoaded, setHeroLoaded] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false); // 🔹 Shared modal state
 
   return (
     <>
@@ -20,7 +21,7 @@ export default function Home() {
 
       <div className={`scroll-smooth ${!heroLoaded ? 'overflow-hidden' : 'overflow-visible'}`}>
         <header id="hero">
-          <Hero onReady={() => setHeroLoaded(true)} />
+          <Hero onReady={() => setHeroLoaded(true)} openAbout={() => setIsAboutOpen(true)} />
         </header>
 
         {heroLoaded && (
@@ -37,11 +38,12 @@ export default function Home() {
               <ContactForm />
             </section>
 
-            <Footer />
-
+            <Footer openAbout={() => setIsAboutOpen(true)} />
           </>
         )}
       </div>
+
+      <AboutMeModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
     </>
   );
 }

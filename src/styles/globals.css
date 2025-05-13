@@ -1,37 +1,88 @@
 /* src/styles/globals.css */
 @import "tailwindcss";
 
+/* ============================= */
+/* Font Base                     */
+/* ============================= */
 body {
-  @apply font-sans;
+  @apply font-sans bg-white text-black transition-colors duration-300;
 }
 
-/* any of your other global overrides below */
-/* Scrollbar styling only for AboutMeModal */
+html.dark body {
+  @apply bg-black text-white;
+}
+
+/* ============================= */
+/* Global Elegant Scrollbar     */
+/* ============================= */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #c0c0c0;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #999999;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background-color: #4b5563; /* Tailwind gray-600 */
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280; /* Tailwind gray-500 */
+}
+
+/* Firefox support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c0c0c0 transparent;
+}
+
+html.dark * {
+  scrollbar-color: #4b5563 transparent;
+}
+
+/* ============================= */
+/* Scrollbar styling for modal  */
+/* ============================= */
+
 .aboutme-scroll::-webkit-scrollbar {
   width: 8px;
 }
 
 .aboutme-scroll::-webkit-scrollbar-thumb {
-  background-color: #4B5563; /* Tailwind gray-600 */
-  border-radius: 9999px; /* fully rounded */
+  background-color: #4B5563;
+  border-radius: 9999px;
   transition: background-color 0.2s ease;
 }
 
 .aboutme-scroll::-webkit-scrollbar-thumb:hover {
-  background-color: #6B7280; /* Tailwind gray-500 on hover */
+  background-color: #6B7280;
 }
 
 .aboutme-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
 
-/* Firefox support */
 .aboutme-scroll {
   scrollbar-width: thin;
   scrollbar-color: #4B5563 transparent;
 }
 
-/* Autofill background + text override */
+/* ============================= */
+/* Autofill override styling     */
+/* ============================= */
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -39,6 +90,6 @@ textarea:-webkit-autofill,
 textarea:-webkit-autofill:hover,
 textarea:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0px 1000px #27272a inset !important; /* bg-zinc-800 */
-  -webkit-text-fill-color: #ffffff !important; /* white text */
+  -webkit-text-fill-color: #ffffff !important;
   transition: background-color 5000s ease-in-out 0s;
 }

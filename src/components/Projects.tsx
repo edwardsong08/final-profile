@@ -1,6 +1,8 @@
 // src/components/Projects.tsx
 import { motion } from 'framer-motion';
 import { FaExternalLinkAlt } from 'react-icons/fa';
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
 
 const projects = [
   {
@@ -27,10 +29,24 @@ const projects = [
 ];
 
 export default function Projects() {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  const bgSection = resolvedTheme === 'dark' ? 'bg-zinc-800 text-zinc-100' : 'bg-zinc-100 text-zinc-900';
+  const bgHeader = resolvedTheme === 'dark' ? 'bg-zinc-900' : 'bg-zinc-200';
+  const cardBg = resolvedTheme === 'dark' ? 'bg-zinc-700' : 'bg-zinc-200';
+  const descriptionText = resolvedTheme === 'dark' ? 'text-zinc-300' : 'text-zinc-700';
+
   return (
-    <section id="projects" className="bg-zinc-800 text-zinc-100 py-0">
+    <section id="projects" className={`${bgSection} transition-colors duration-300`}>
       {/* Top Bar */}
-      <div className="bg-zinc-900 py-8">
+      <div className={`${bgHeader} py-8 transition-colors duration-300`}>
         <h2 className="text-4xl font-bold text-center">Projects</h2>
       </div>
 
@@ -46,10 +62,10 @@ export default function Projects() {
           {projects.map(({ title, description, link }) => (
             <div
               key={title}
-              className="bg-zinc-700 p-6 rounded-2xl shadow-md hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-103 flex flex-col"
+              className={`${cardBg} p-6 rounded-2xl shadow-md hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-103 flex flex-col`}
             >
               <h3 className="text-xl font-semibold mb-4">{title}</h3>
-              <p className="text-zinc-300 flex-grow">{description}</p>
+              <p className={`${descriptionText} flex-grow`}>{description}</p>
               {link && (
                 <a
                   href={link}

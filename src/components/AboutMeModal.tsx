@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { useTheme } from 'next-themes';
 
 interface AboutMeModalProps {
   isOpen: boolean;
@@ -9,7 +10,10 @@ interface AboutMeModalProps {
 }
 
 export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
-  // Scroll Lock and ESC Key Close
+  const { resolvedTheme } = useTheme();
+  const bgColor = resolvedTheme === 'dark' ? 'bg-zinc-700 border-zinc-600 text-zinc-100' : 'bg-zinc-100 border-zinc-300 text-zinc-800';
+  const textColor = resolvedTheme === 'dark' ? 'text-zinc-300' : 'text-zinc-700';
+
   useEffect(() => {
     if (isOpen) {
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
@@ -42,14 +46,13 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
           onClick={onClose}
         >
           <motion.div
-            className="aboutme-scroll relative bg-zinc-700 border border-zinc-600 text-zinc-100 rounded-2xl shadow-lg max-w-3xl w-full mx-4 p-8 overflow-y-auto max-h-[90vh]"
+            className={`aboutme-scroll relative ${bgColor} rounded-2xl shadow-lg max-w-3xl w-full mx-4 p-8 overflow-y-auto max-h-[90vh] border`}
             initial={{ scale: 0.9, y: 50 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 50 }}
             transition={{ duration: 0.6, ease: 'easeInOut' }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close Button */}
             <button
               onClick={onClose}
               className="absolute top-4 right-6 text-zinc-400 hover:text-white text-2xl"
@@ -59,7 +62,6 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
 
             <h2 className="text-3xl font-semibold text-center mb-8">About Me</h2>
 
-            {/* First Image */}
             <div className="relative mx-auto mb-6 w-1/3 min-w-[240px] h-auto">
               <Image
                 src="/about1.jpg"
@@ -71,13 +73,12 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
               />
             </div>
 
-            <p className="text-lg text-zinc-300 leading-relaxed mb-8 text-center">
-              Before software development, I&apos;ve had the opportunity to explore many of my interests,
+            <p className={`text-lg leading-relaxed mb-8 text-center ${textColor}`}>
+              Before software development, I've had the opportunity to explore many of my interests,
               including an educational background in engineering and political science and a professional
               background in education, writing, and law.
             </p>
 
-            {/* Second Image */}
             <div className="relative mx-auto mb-6 w-1/3 min-w-[240px] h-auto">
               <Image
                 src="/about2.jpg"
@@ -89,7 +90,7 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
               />
             </div>
 
-            <p className="text-lg text-zinc-300 leading-relaxed mb-8 text-center">
+            <p className={`text-lg leading-relaxed mb-8 text-center ${textColor}`}>
               Teaching has always been a rewarding experience, and watching my students grow continues to inspire me.
               I will forever remain a teacher and a student—nurturing to others and unafraid to ask questions.
               The challenges I have faced in law have taught me that a methodical approach will always yield a solution,
@@ -99,7 +100,6 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
               Ultimately, these are the principles by which I live and approach software development.
             </p>
 
-            {/* Third Image */}
             <div className="relative mx-auto mb-6 w-1/3 min-w-[240px] h-auto">
               <Image
                 src="/about3.jpg"
@@ -111,13 +111,12 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
               />
             </div>
 
-            <p className="text-lg text-zinc-300 leading-relaxed mb-8 text-center">
+            <p className={`text-lg leading-relaxed mb-8 text-center ${textColor}`}>
               I am passionate about political, educational, and judicial reforms.
               My free time is spent hiking with my dog, tampering as an amateur guitar luthier,
               reading, or exploring new foods in the area.
             </p>
 
-            {/* Fourth Image */}
             <div className="relative mx-auto mb-4 w-1/3 min-w-[240px] h-auto">
               <Image
                 src="/about4.jpg"
