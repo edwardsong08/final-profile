@@ -74,7 +74,7 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
             </div>
 
             <p className={`text-lg leading-relaxed mb-8 text-center ${textColor}`}>
-              Before software development, I've had the opportunity to explore many of my interests,
+              Before software development, I&apos;ve had the opportunity to explore many of my interests,
               including an educational background in engineering and political science and a professional
               background in education, writing, and law.
             </p>
