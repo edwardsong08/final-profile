@@ -16,7 +16,22 @@ export default function Navbar() {
     { label: 'Contact', href: '#contact', id: 'contact' },
   ];
 
-  // Fallback: Scroll-based detection
+  // Subtle per-item entrance/exit animation
+  const menuVariants = {
+    hidden: { opacity: 0, x: 20 },
+    visible: (i: number) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        delay: i * 0.05,
+        duration: 0.25,
+        ease: 'easeOut',
+      },
+    }),
+    exit: { opacity: 0, x: 20, transition: { duration: 0.15 } },
+  };
+
+  // Scroll detection
   useEffect(() => {
     const handleScroll = () => {
       let closest = 'hero';
@@ -38,7 +53,7 @@ export default function Navbar() {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // initialize
+    handleScroll();
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -70,7 +85,15 @@ export default function Navbar() {
                 className="absolute top-20 right-6 flex flex-col space-y-5 text-right z-40"
               >
                 {menuItems.map((item, i) => (
-                  <motion.li key={item.href} className="relative">
+                  <motion.li
+                    key={item.href}
+                    className="relative"
+                    custom={i}
+                    variants={menuVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
                     <a
                       href={item.href}
                       className={`text-lg font-semibold transition-colors ${
@@ -92,7 +115,14 @@ export default function Navbar() {
                 ))}
 
                 {/* Theme Toggle */}
-                <motion.li className="pt-4">
+                <motion.li
+                  className="pt-4"
+                  custom={menuItems.length}
+                  variants={menuVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
                   <div
                     className="relative w-28 h-10 border border-white rounded-full flex items-center justify-between cursor-pointer overflow-hidden bg-white/10"
                     onClick={() => setTheme(isDark ? 'light' : 'dark')}
@@ -116,6 +146,7 @@ export default function Navbar() {
               </motion.ul>
             </LayoutGroup>
 
+            {/* Overlay to close menu */}
             <div
               className="fixed inset-0 z-30"
               onClick={() => setMenuOpen(false)}
