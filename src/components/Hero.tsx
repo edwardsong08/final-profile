@@ -102,7 +102,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
         transition={{ duration: 1.5, ease: "easeOut" }}
       />
 
-      {/* Moon/Sun Toggle with Icon Switch */}
+      {/* Moon/Sun Toggle with Rotation */}
       <motion.div
         className="absolute top-0 -translate-y-32 left-[10%] w-24 h-24 z-10 cursor-pointer group"
         initial={{ y: 0, scaleX: 1, scaleY: 1 }}
@@ -113,13 +113,11 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
         }}
         transition={{ delay: 1.5, duration: 1.6, ease: [0.25, 0.1, 0.25, 1] }}
         onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        
         whileHover={{
           scale: 1.05,
           boxShadow: "0px 0px 12px rgba(255, 255, 255, 0.12)",
         }}
       >
-
         <motion.div
           animate={{ rotateY: theme === "dark" ? 0 : 180 }}
           transition={{ duration: 1.2 }}
@@ -127,44 +125,10 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
           style={{ transformStyle: "preserve-3d" }}
         >
           {/* Front: Moon */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gray-300 to-gray-600 shadow-inner ring-2 ring-gray-300 backface-hidden flex items-center justify-center">
-            <div className="flex space-x-2 items-center">
-              <span
-                className={`text-lg transition-all ${
-                  theme === "dark" ? "opacity-100 scale-110" : "opacity-40 scale-90"
-                }`}
-              >
-                🌙
-              </span>
-              <span
-                className={`text-lg transition-all ${
-                  theme === "light" ? "opacity-100 scale-110" : "opacity-40 scale-90"
-                }`}
-              >
-                ☀
-              </span>
-            </div>
-          </div>
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gray-300 to-gray-600 shadow-inner ring-2 ring-gray-300 backface-hidden" />
 
           {/* Back: Sun */}
-          <div className="absolute inset-0 rotate-y-180 rounded-full bg-gradient-to-br from-yellow-300 to-orange-500 shadow-lg ring-4 ring-yellow-400 backface-hidden flex items-center justify-center">
-            <div className="flex space-x-2 items-center">
-              <span
-                className={`text-lg transition-all ${
-                  theme === "dark" ? "opacity-40 scale-90" : "opacity-100 scale-110"
-                }`}
-              >
-                🌙
-              </span>
-              <span
-                className={`text-lg transition-all ${
-                  theme === "dark" ? "opacity-40 scale-90" : "opacity-100 scale-110"
-                }`}
-              >
-                ☀
-              </span>
-            </div>
-          </div>
+          <div className="absolute inset-0 rotate-y-180 rounded-full bg-gradient-to-br from-yellow-300 to-orange-500 shadow-lg ring-4 ring-yellow-400 backface-hidden" />
         </motion.div>
       </motion.div>
 

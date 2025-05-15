@@ -1,6 +1,10 @@
 /* src/styles/globals.css */
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+}
+
 /* ============================= */
 /* Font Base                     */
 /* ============================= */
