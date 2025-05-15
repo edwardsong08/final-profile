@@ -6,6 +6,12 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [activeSection, setActiveSection] = useState('hero');
+  const [heroReady, setHeroReady] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setHeroReady(true), 1800); // sync with orb/mountain
+    return () => clearTimeout(timer);
+  }, []);
 
   const isDark = theme === 'dark';
 
@@ -16,7 +22,6 @@ export default function Navbar() {
     { label: 'Contact', href: '#contact', id: 'contact' },
   ];
 
-  // Subtle per-item entrance/exit animation
   const menuVariants = {
     hidden: { opacity: 0, x: 20 },
     visible: (i: number) => ({
@@ -31,7 +36,6 @@ export default function Navbar() {
     exit: { opacity: 0, x: 20, transition: { duration: 0.15 } },
   };
 
-  // Scroll detection
   useEffect(() => {
     const handleScroll = () => {
       let closest = 'hero';
@@ -61,17 +65,22 @@ export default function Navbar() {
   return (
     <div className="fixed top-6 right-6 z-50">
       {/* Hamburger Icon */}
-      <div
-        className={`relative w-12 h-12 cursor-pointer group ${menuOpen ? 'open' : ''}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          setMenuOpen((prev) => !prev);
-        }}
-      >
-        <span className="absolute top-2.5 right-1 w-10 h-1 rounded-full bg-white transition-all duration-500 transform group-[.open]:rotate-45 group-[.open]:translate-y-2.5" />
-        <span className="absolute top-5 right-1 w-10 h-1 rounded-full bg-white transition-all duration-500 group-[.open]:scale-0" />
-        <span className="absolute top-8 right-1 w-10 h-1 rounded-full bg-white transition-all duration-500 transform group-[.open]:-rotate-45 group-[.open]:-translate-y-2.5" />
-      </div>
+      {heroReady && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
+          className={`relative w-12 h-12 cursor-pointer group ${menuOpen ? 'open' : ''}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            setMenuOpen((prev) => !prev);
+          }}
+        >
+          <span className="absolute top-2.5 right-1 w-10 h-1 rounded-full bg-white transition-all duration-500 transform group-[.open]:rotate-45 group-[.open]:translate-y-2.5" />
+          <span className="absolute top-5 right-1 w-10 h-1 rounded-full bg-white transition-all duration-500 group-[.open]:scale-0" />
+          <span className="absolute top-8 right-1 w-10 h-1 rounded-full bg-white transition-all duration-500 transform group-[.open]:-rotate-45 group-[.open]:-translate-y-2.5" />
+        </motion.div>
+      )}
 
       {/* Animated Menu */}
       <AnimatePresence>
