@@ -81,7 +81,7 @@ export default function ContactForm() {
         className="max-w-7xl mx-auto px-4 py-12 flex flex-col lg:flex-row gap-8"
       >
         {/* Info Panel */}
-        <div className={`${infoCardBg} p-8 rounded-2xl shadow-md lg:w-1/2`}>
+        <div className={`${infoCardBg} p-8 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 transform hover:scale-103 transition-all lg:w-1/2`}>
           <h3 className="text-2xl font-semibold mb-4">Let’s Make Your Business Stand Out Online.</h3>
           <ul className="space-y-4 text-base">
             <li>
@@ -109,7 +109,7 @@ export default function ContactForm() {
         {/* Contact Form */}
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className={`${formBg} p-8 rounded-2xl shadow-md hover:shadow-xl transition-all lg:w-1/2`}
+          className={`${formBg} p-8 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 transform hover:scale-103 transition-all lg:w-1/2`}
         >
           <div className="mb-6">
             <label htmlFor="name" className="block mb-2 font-semibold">
@@ -151,7 +151,7 @@ export default function ContactForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-lg transition-all"
           >
             {isSubmitting ? 'Sending…' : 'Send Message'}
           </button>
