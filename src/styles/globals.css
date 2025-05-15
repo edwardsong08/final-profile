@@ -97,3 +97,10 @@ textarea:-webkit-autofill:focus {
   -webkit-text-fill-color: #ffffff !important;
   transition: background-color 5000s ease-in-out 0s;
 }
+
+.theme-toggle {
+  transition: all 0.4s ease-in-out;
+}
+.theme-toggle .toggle {
+  transition: transform 0.3s ease-in-out;
+}
