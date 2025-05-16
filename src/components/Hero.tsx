@@ -19,7 +19,6 @@ interface NavigatorWithUA extends Navigator {
 export default function Hero({ onReady, openAbout }: HeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [ready, setReady] = useState(false);
-  const [hasMounted, setHasMounted] = useState(false);
   const [isFirstLandscape, setIsFirstLandscape] = useState(true);
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
@@ -28,7 +27,6 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
   const mountainY = useTransform(scrollY, [0, 300], [0, 30]);
 
   useEffect(() => {
-    setHasMounted(true);
     const fallbackHeight = window.innerHeight;
     const getHeightFromModel = (model: string | undefined): number | null => {
       if (!model) return null;

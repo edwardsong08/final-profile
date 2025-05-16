@@ -32,43 +32,48 @@ export default function Navbar() {
     exit: { opacity: 0, x: 40, transition: { duration: 0.15 } },
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    const handleScroll = () => {
-      let closest = 'hero';
-      let minDist = Infinity;
+    if (!heroReady) return; // Wait until sections are mounted
 
-      for (const item of menuItems) {
-        const el = document.getElementById(item.id);
-        if (el) {
-          const offset = el.getBoundingClientRect().top;
-          const halfScreen = window.innerHeight / 2;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio); // most visible section wins
 
-          if (offset < halfScreen && offset > -halfScreen) {
-            const dist = Math.abs(offset);
-            if (dist < minDist) {
-              minDist = dist;
-              closest = item.id;
-            }
-          }
+        if (visible.length > 0) {
+          setActiveSection(visible[0].target.id);
         }
+      },
+      {
+        root: null,
+        threshold: 0.1,
       }
+    );
 
-      setActiveSection(closest);
-    };
+    const sectionElements: HTMLElement[] = [];
+
+    menuItems.forEach((item) => {
+      const el = document.getElementById(item.id);
+      if (el) {
+        observer.observe(el);
+        sectionElements.push(el);
+      }
+    });
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setMenuOpen(false);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('keydown', handleKeyDown);
-    handleScroll();
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      sectionElements.forEach((el) => observer.unobserve(el));
+      observer.disconnect();
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [heroReady]);
 
   const barColor = isDark ? 'bg-white' : 'bg-zinc-800';
 
