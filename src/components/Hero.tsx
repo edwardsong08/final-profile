@@ -1,6 +1,5 @@
-// src/components/Hero.tsx
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import { FaEnvelope, FaLinkedin, FaGithub } from "react-icons/fa";
 import { useTheme } from "next-themes";
@@ -20,6 +19,8 @@ interface NavigatorWithUA extends Navigator {
 export default function Hero({ onReady, openAbout }: HeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [ready, setReady] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
+  const [isFirstLandscape, setIsFirstLandscape] = useState(true);
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
 
@@ -27,6 +28,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
   const mountainY = useTransform(scrollY, [0, 300], [0, 30]);
 
   useEffect(() => {
+    setHasMounted(true);
     const fallbackHeight = window.innerHeight;
     const getHeightFromModel = (model: string | undefined): number | null => {
       if (!model) return null;
@@ -96,7 +98,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
         if (ready && onReady) onReady();
       }}
     >
-      {/* Backgrounds (Zoom & Blur Entry, Smooth Toggle, Flicker-Free) */}
+      {/* Backgrounds */}
       <motion.div
         key="dark-bg"
         className="absolute inset-0 bg-cover bg-center z-0"
@@ -149,23 +151,42 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
         </motion.div>
       </motion.div>
 
-      {/* Mountains Image */}
-      <motion.div
-        className="absolute bottom-0 left-0 w-full h-full z-[5]"
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        transition={{ delay: 1.5, duration: 1.6, ease: [0.25, 0.1, 0.25, 1] }}
+      {/* Landscape */}
+      <AnimatePresence
+        mode="sync"
+        onExitComplete={() => setIsFirstLandscape(false)}
       >
-        <motion.div style={{ y: mountainY }} className="relative w-full h-full">
-          <Image
-            src="/heromountain.png"
-            alt="Hero Mountain"
-            fill
-            priority
-            className="object-bottom object-cover"
-          />
-        </motion.div>
-      </motion.div>
+        {ready && (
+          <motion.div
+            key={isDark ? "mountain-dark" : "spring-light"}
+            className="absolute bottom-0 left-0 w-full h-full z-[5]"
+            initial={{ y: "100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{
+              y: {
+                duration: isFirstLandscape ? 1.6 : 0.9,
+                delay: isFirstLandscape ? 1.5 : 0.4,
+                ease: [0.25, 0.1, 0.25, 1],
+              },
+              opacity: {
+                duration: isFirstLandscape ? 1.6 : 0.9,
+                delay: isFirstLandscape ? 1.5 : 0.4,
+              },
+            }}
+          >
+            <motion.div style={{ y: mountainY }} className="relative w-full h-full">
+              <Image
+                src={isDark ? "/heromountain.png" : "/springland.png"}
+                alt={isDark ? "Hero Mountain" : "Spring Landscape"}
+                fill
+                priority
+                className="object-bottom object-cover"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Content */}
       <motion.div
