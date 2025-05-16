@@ -1,4 +1,3 @@
-// src/components/ContactForm.tsx
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -37,11 +36,13 @@ export default function ContactForm() {
 
   if (!mounted) return null;
 
-  const bgSection = resolvedTheme === 'dark' ? 'bg-zinc-800 text-zinc-100' : 'bg-zinc-100 text-zinc-900';
-  const bgHeader = resolvedTheme === 'dark' ? 'bg-zinc-900' : 'bg-zinc-200';
-  const formBg = resolvedTheme === 'dark' ? 'bg-zinc-700' : 'bg-zinc-200';
-  const inputBg = resolvedTheme === 'dark' ? 'bg-zinc-800 text-white border-zinc-600' : 'bg-zinc-100 text-black border-zinc-300';
-  const infoCardBg = resolvedTheme === 'dark' ? 'bg-zinc-700' : 'bg-zinc-200';
+  const isDark = resolvedTheme === 'dark';
+
+  const bgSection = isDark ? 'bg-zinc-800 text-zinc-100' : 'bg-zinc-100 text-zinc-900';
+  const bgHeader = isDark ? 'bg-zinc-900' : 'bg-zinc-200';
+  const formBg = isDark ? 'bg-zinc-700' : 'bg-zinc-200';
+  const inputBg = isDark ? 'bg-zinc-800 text-white border-zinc-600' : 'bg-zinc-100 text-black border-zinc-300';
+  const infoCardBg = isDark ? 'bg-zinc-700' : 'bg-zinc-200';
   const errorText = 'text-red-400 text-sm mt-2';
 
   const onSubmit = async (data: FormData) => {
@@ -73,15 +74,9 @@ export default function ContactForm() {
         <h2 className="text-4xl font-bold text-center">Contact</h2>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="max-w-7xl mx-auto px-4 py-12 flex flex-col lg:flex-row gap-8"
-      >
+      <div className="max-w-7xl mx-auto px-4 py-12 flex flex-col lg:flex-row gap-8">
         {/* Info Panel */}
-        <div className={`${infoCardBg} p-8 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 transition-all lg:w-1/2`}>
+        <div className={`${infoCardBg} p-8 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 lg:w-1/2`}>
           <h3 className="text-2xl font-semibold mb-4">Let’s Make Your Business Stand Out Online.</h3>
           <ul className="space-y-4 text-base">
             <li>
@@ -109,7 +104,7 @@ export default function ContactForm() {
         {/* Contact Form */}
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className={`${formBg} p-8 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 transition-all lg:w-1/2`}
+          className={`${formBg} p-8 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 lg:w-1/2`}
         >
           <div className="mb-6">
             <label htmlFor="name" className="block mb-2 font-semibold">
@@ -151,7 +146,7 @@ export default function ContactForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-lg transition-all"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-lg"
           >
             {isSubmitting ? 'Sending…' : 'Send Message'}
           </button>
@@ -167,7 +162,7 @@ export default function ContactForm() {
             </p>
           )}
         </form>
-      </motion.div>
+      </div>
     </section>
   );
 }

@@ -123,7 +123,12 @@ export default function Skills() {
     )
   );
 
-  useEffect(() => setMounted(true), []);
+  const isDark = resolvedTheme === 'dark';
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   if (!mounted) return null;
 
   const toggleSection = (category: string) => {
@@ -134,12 +139,11 @@ export default function Skills() {
   };
 
   const barColors = ['bg-green-400', 'bg-teal-400', 'bg-blue-400', 'bg-purple-400'];
-  const isDark = resolvedTheme === 'dark';
 
   return (
     <section
       id="skills"
-      className={`transition-colors duration-300 ${
+      className={`transition-colors duration-300 transform-gpu ${
         isDark ? 'bg-zinc-800 text-zinc-100' : 'bg-zinc-100 text-zinc-900'
       }`}
     >
@@ -161,11 +165,11 @@ export default function Skills() {
             >
               <button
                 onClick={() => toggleSection(category)}
-                className={`w-full text-left flex justify-between items-center text-2xl font-semibold mb-4 border-b pb-2 cursor-pointer transition-colors duration-300 ${
+                className={`w-full text-left flex justify-between items-center text-2xl font-semibold mb-4 border-b pb-2 cursor-pointer ${
                   isDark ? 'border-zinc-700' : 'border-zinc-300'
                 }`}
               >
-                {category}
+                <span>{category}</span>
                 <motion.svg
                   animate={{ rotate: isOpen ? 90 : 0 }}
                   transition={{ duration: 0.3 }}
@@ -198,7 +202,7 @@ export default function Skills() {
                           }`}
                         >
                           <div className="flex items-center space-x-4 mb-6">
-                            <Icon className={`text-4xl transition-colors ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
+                            <Icon className={`text-4xl ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
                             <span className="text-lg font-semibold">{name}</span>
                           </div>
                           <div className="mt-auto flex gap-2 h-[2px]">
@@ -215,11 +219,7 @@ export default function Skills() {
                       ))}
                     </div>
                     {additional && (
-                      <p
-                        className={`text-base mt-6 font-medium transition-colors duration-300 ${
-                          isDark ? 'text-zinc-300' : 'text-zinc-700'
-                        }`}
-                      >
+                      <p className={`text-base mt-6 font-medium ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
                         Additional: {additional}
                       </p>
                     )}

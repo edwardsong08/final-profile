@@ -3,7 +3,7 @@ import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
   return (
-    <Html lang="en" className="transition-colors duration-300" suppressHydrationWarning>
+    <Html lang="en" suppressHydrationWarning>
       <Head>
         {/* Google Font */}
         <link
@@ -11,17 +11,15 @@ export default function Document() {
           rel="stylesheet"
         />
 
-        {/* Optional: Prevents Flash of Incorrect Theme */}
+        {/* ✅ Critical: Prevents dark mode flicker on initial load */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 try {
                   const theme = localStorage.getItem("theme");
-                  if (theme === "dark" || (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+                  if (theme === "dark" || (!theme && !("theme" in localStorage))) {
                     document.documentElement.classList.add("dark");
-                  } else {
-                    document.documentElement.classList.remove("dark");
                   }
                 } catch (_) {}
               })();
@@ -29,7 +27,7 @@ export default function Document() {
           }}
         />
       </Head>
-      <body className="antialiased">
+      <body className="antialiased transition-colors duration-300">
         <Main />
         <NextScript />
       </body>

@@ -1,4 +1,3 @@
-// src/components/Projects.tsx
 import { motion } from 'framer-motion';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import { useTheme } from 'next-themes';
@@ -38,10 +37,11 @@ export default function Projects() {
 
   if (!mounted) return null;
 
-  const bgSection = resolvedTheme === 'dark' ? 'bg-zinc-800 text-zinc-100' : 'bg-zinc-100 text-zinc-900';
-  const bgHeader = resolvedTheme === 'dark' ? 'bg-zinc-900' : 'bg-zinc-200';
-  const cardBg = resolvedTheme === 'dark' ? 'bg-zinc-700' : 'bg-zinc-200';
-  const descriptionText = resolvedTheme === 'dark' ? 'text-zinc-300' : 'text-zinc-700';
+  const isDark = resolvedTheme === 'dark';
+  const bgSection = isDark ? 'bg-zinc-800 text-zinc-100' : 'bg-zinc-100 text-zinc-900';
+  const bgHeader = isDark ? 'bg-zinc-900' : 'bg-zinc-200';
+  const cardBg = isDark ? 'bg-zinc-700' : 'bg-zinc-200';
+  const descriptionText = isDark ? 'text-zinc-300' : 'text-zinc-700';
 
   return (
     <section id="projects" className={`${bgSection} transition-colors duration-300`}>
@@ -56,13 +56,13 @@ export default function Projects() {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 px-4"
         >
           {projects.map(({ title, description, link }) => (
             <div
               key={title}
-              className={`${cardBg} p-6 rounded-2xl shadow-md hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-103 flex flex-col`}
+              className={`transition-colors duration-300 ${cardBg} p-6 rounded-2xl shadow-md hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-103 flex flex-col`}
             >
               <h3 className="text-xl font-semibold mb-4">{title}</h3>
               <p className={`${descriptionText} flex-grow`}>{description}</p>
@@ -71,7 +71,7 @@ export default function Projects() {
                   href={link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center text-blue-400 hover:text-blue-500 transition"
+                  className="mt-4 inline-flex items-center text-blue-400 hover:text-blue-500"
                 >
                   Visit site <FaExternalLinkAlt className="ml-2" />
                 </a>

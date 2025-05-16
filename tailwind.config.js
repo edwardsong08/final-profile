@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: 'class', // ✅ Add this line
+  darkMode: 'class',
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx}',
     './src/components/**/*.{js,ts,jsx,tsx}',
@@ -11,7 +11,10 @@ module.exports = {
       fontFamily: {
         sans: ['"Instrument Sans"', 'ui-sans-serif', 'system-ui'],
       },
-    }
+      transitionProperty: {
+        background: 'background-color',
+      },
+    },
   },
-  plugins: []
+  plugins: [],
 };

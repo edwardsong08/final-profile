@@ -1,5 +1,10 @@
-/* src/styles/globals.css */
 @import "tailwindcss";
+
+/* Base transitions for background only (prevents text flicker) */
+html,
+body {
+  transition: background-color 0.3s ease;
+}
 
 html {
   scroll-behavior: smooth;
@@ -9,7 +14,7 @@ html {
 /* Font Base                     */
 /* ============================= */
 body {
-  @apply font-sans bg-white text-black transition-colors duration-300;
+  @apply font-sans bg-white text-black transition-[background-color] duration-300;
 }
 
 html.dark body {
@@ -97,6 +102,10 @@ textarea:-webkit-autofill:focus {
   -webkit-text-fill-color: #ffffff !important;
   transition: background-color 5000s ease-in-out 0s;
 }
+
+/* ============================= */
+/* Theme toggle transitions      */
+/* ============================= */
 
 .theme-toggle {
   transition: all 0.4s ease-in-out;
