@@ -23,7 +23,7 @@ export default function Footer({ openAbout }: { openAbout: () => void }) {
             Email
           </a>
           <a
-            href="https://linkedin.com/in/edwardsong08"
+            href="https://www.linkedin.com/in/edward-y-song"
             target="_blank"
             rel="noopener noreferrer"
             className={hoverText}

@@ -265,7 +265,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
             <FaEnvelope />
           </a>
           <a
-            href="https://www.linkedin.com/in/edward-y-song/"
+            href="https://www.linkedin.com/in/edward-y-song"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="LinkedIn"
