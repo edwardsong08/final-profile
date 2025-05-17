@@ -16,14 +16,14 @@ export default function Footer({ openAbout }: { openAbout: () => void }) {
         </div>
         <div className="flex space-x-6">
           <a
-            href="mailto:you@example.com"
+            href="mailto:edwardsong08@gmail.com"
             className={hoverText}
             aria-label="Email"
           >
             Email
           </a>
           <a
-            href="https://linkedin.com/in/yourprofile"
+            href="https://linkedin.com/in/edwardsong08"
             target="_blank"
             rel="noopener noreferrer"
             className={hoverText}
@@ -32,7 +32,7 @@ export default function Footer({ openAbout }: { openAbout: () => void }) {
             LinkedIn
           </a>
           <a
-            href="https://github.com/yourusername"
+            href="https://github.com/edwardsong08"
             target="_blank"
             rel="noopener noreferrer"
             className={hoverText}
