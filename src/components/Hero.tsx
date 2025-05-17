@@ -1,3 +1,4 @@
+// src/components/Hero.tsx
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
@@ -87,7 +88,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
     <motion.section
       ref={sectionRef}
       className={`relative w-full overflow-hidden px-4 flex flex-col justify-center transition-colors duration-300 ${
-        isDark ? "text-white" : "text-black"
+        isDark ? "text-white" : "text-slate-800"
       }`}
       initial={{ opacity: 0 }}
       animate={{ opacity: ready ? 1 : 0 }}
@@ -124,7 +125,9 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
 
       {/* Moon/Sun Toggle */}
       <motion.div
-        className="absolute top-0 -translate-y-32 left-[10%] w-24 h-24 z-10 cursor-pointer group"
+        className="absolute top-0 left-[10%] z-10 cursor-pointer group
+                   w-40 h-40 -translate-y-40
+                   max-[719px]:w-24 max-[719px]:h-24 max-[719px]:-translate-y-46"
         initial={{ y: 0, scaleX: 1, scaleY: 1 }}
         animate={{
           y: [0, 230, 190, 210],
@@ -144,16 +147,27 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
           className="relative w-full h-full rounded-full"
           style={{ transformStyle: "preserve-3d" }}
         >
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gray-300 to-gray-600 shadow-inner ring-2 ring-gray-300 backface-hidden" />
-          <div className="absolute inset-0 rotate-y-180 rounded-full bg-gradient-to-br from-yellow-300 to-orange-500 shadow-lg ring-4 ring-yellow-400 backface-hidden" />
+          <div className="absolute inset-0 backface-hidden">
+            <Image
+              src="/moon.png"
+              alt="Moon"
+              fill
+              className="object-contain rounded-full"
+            />
+          </div>
+          <div className="absolute inset-0 rotate-y-180 backface-hidden">
+            <Image
+              src="/sun.png"
+              alt="Sun"
+              fill
+              className="object-contain rounded-full"
+            />
+          </div>
         </motion.div>
       </motion.div>
 
       {/* Landscape */}
-      <AnimatePresence
-        mode="sync"
-        onExitComplete={() => setIsFirstLandscape(false)}
-      >
+      <AnimatePresence mode="sync" onExitComplete={() => setIsFirstLandscape(false)}>
         {ready && (
           <motion.div
             key={isDark ? "mountain-dark" : "spring-light"}
@@ -203,7 +217,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
             width={128}
             height={128}
             className={`rounded-full border-4 shadow-lg object-cover w-full h-full transition group-hover:brightness-75 ${
-              isDark ? "border-white" : "border-black"
+              isDark ? "border-white" : "border-slate-600"
             }`}
           />
           <svg
@@ -214,12 +228,15 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
               <path id="aboutArc" d="M120,20 A70,70 0 0,1 170,80" fill="none" />
             </defs>
             <text
-              fill={isDark ? "white" : "black"}
               fontSize="12"
               fontWeight="bold"
-              className="transition-transform group-hover:scale-105 origin-center"
+              className={`transition-all duration-300 origin-center group-hover:scale-105 ${
+                isDark ? "fill-white group-hover:fill-blue-300" : "fill-slate-800 group-hover:fill-blue-600"
+              }`}
               style={{
-                textShadow: "0 0 2px rgba(255, 255, 255, 0.15)",
+                textShadow: isDark
+                  ? "0 0 2px rgba(255, 255, 255, 0.15)"
+                  : "0 0 2px rgba(0, 0, 0, 0.08)",
               }}
             >
               <textPath
@@ -238,13 +255,35 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
         </p>
 
         <div className="flex space-x-6 text-2xl mb-4">
-          <a href="mailto:you@example.com" aria-label="Email" className="hover:opacity-80 transition">
+          <a
+            href="mailto:edwardsong08@gmail.com"
+            aria-label="Email"
+            className={`transition transform hover:scale-110 ${
+              isDark ? "hover:text-blue-300" : "hover:text-blue-600"
+            }`}
+          >
             <FaEnvelope />
           </a>
-          <a href="https://linkedin.com/in/yourprofile" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="hover:opacity-80 transition">
+          <a
+            href="https://www.linkedin.com/in/edward-y-song/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn"
+            className={`transition transform hover:scale-110 ${
+              isDark ? "hover:text-blue-300" : "hover:text-blue-600"
+            }`}
+          >
             <FaLinkedin />
           </a>
-          <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="hover:opacity-80 transition">
+          <a
+            href="https://github.com/edwardsong08"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+            className={`transition transform hover:scale-110 ${
+              isDark ? "hover:text-blue-300" : "hover:text-blue-600"
+            }`}
+          >
             <FaGithub />
           </a>
         </div>
