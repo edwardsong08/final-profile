@@ -7,29 +7,37 @@ import ProjectModal from './ProjectModal';
 const projects = [
   {
     title: 'Full-Stack Developer Portfolio',
-    description:
+    shortDescription:
+      'A personal site built from scratch to showcase my work, skills, and background. Built with Next.js, Tailwind, and Framer Motion, with responsive design and animated transitions.',
+    fullDescription:
       'A personal site built from scratch to showcase my work, skills, and background. Built with Next.js, Tailwind, and Framer Motion, with responsive design and animated transitions.',
     link: 'https://github.com/edwardsong08/final-profile',
     status: 'live',
   },
   {
     title: 'Ryu-Legal.com – Law Firm Website',
-    description:
+    shortDescription:
+      'A single-page professional law firm website built with Next.js, Tailwind, Framer Motion, and Resend. Features responsive design, animated UI, and SEO optimization for legal services in NJ & NY.',
+    fullDescription:
       'A single-page professional law firm website built with Next.js, Tailwind, Framer Motion, and Resend. Features responsive design, animated UI, and SEO optimization for legal services in NJ & NY.',
     link: 'https://www.ryu-legal.com',
     status: 'live',
   },
   {
     title: 'Blockchain Ledger Proof-of-Concept (Java + AWS)',
-    description:
-      'Simulated blockchain ledger built with Spring Boot, PostgreSQL, and Docker. Completed in one week as a proof-of-concept for full-stack Java development and rapid learning. See More.',
+    shortDescription:
+      'Simulated blockchain ledger built with Spring Boot, PostgreSQL, and Docker. Completed in one week as a proof-of-concept for full-stack Java development and rapid learning.',
+    fullDescription:
+      'Simulated blockchain ledger built with Spring Boot, PostgreSQL, and Docker. Completed in one week as a proof-of-concept for full-stack Java development and rapid learning.\n\nThis project simulates a blockchain-based transaction ledger and was completed in about one week without prior knowledge of Java, Spring Boot, or blockchain. It demonstrates my ability to rapidly learn and integrate multiple enterprise-grade technologies.\n\nThe app was built with Spring Boot (REST + Thymeleaf UI), PostgreSQL, and Docker. Data access combines Spring Data JPA with MyBatis for both standard and complex queries. It includes an immutable audit trail that logs transaction creation, updates, and deletions — simulating blockchain behavior.\n\nThe system supports English and Korean, has robust input validation and error handling, and features a full CI/CD pipeline via GitHub Actions. For deployment, the backend runs in Docker containers on AWS EC2 with an AWS RDS database.\n\nTo reduce resource usage, the AWS instance is turned off, but a live demo is available on request.',
     link: 'https://github.com/edwardsong08/vzw-transaction-ledger',
     status: 'demo',
   },
   {
     title: 'Real Estate Bidding Platform Prototype (React + Django)',
-    description:
-      'A partially implemented real estate bidding platform with a complete frontend and working sign-in system using Django. Demonstrates professional UI/UX with modern React and Tailwind design, integrated with Django for membership, authentication, and user data storage. See More.',
+    shortDescription:
+      'A partially implemented real estate bidding platform with a complete frontend and working sign-in system using Django. Demonstrates professional UI/UX with modern React and Tailwind design, integrated with Django for membership, authentication, and user data storage.',
+    fullDescription:
+      'A partially implemented real estate bidding platform with a complete frontend and working sign-in system using Django. Demonstrates professional UI/UX with modern React and Tailwind design, integrated with Django for membership, authentication, and user data storage.\n\nThe frontend is built with modern React (Hooks, functional components, Tailwind UI) and includes polished user flows for login, signup, and password reset. State is handled cleanly using React’s built-in tools, and form validation ensures robust user input.\n\nThe backend is powered by Django with Django REST Framework. It handles authentication, user data management, and secure API communication. Though the project is not fully implemented, it shows a clear structure and approach for expanding to features like bidding logic, admin controls, and dynamic listings.',
     link: 'https://github.com/edwardsong08/realestatebidding',
     status: 'progress',
   },
@@ -76,10 +84,9 @@ export default function Projects() {
           transition={{ duration: 0.8, ease: 'easeOut' }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 px-4"
         >
-          {projects.map(({ title, description, link, status }) => {
+          {projects.map(({ title, shortDescription, fullDescription, link, status }) => {
             const statusData = statusMap[status];
-            const isExpandable = description.includes('See More.');
-            const cleanedDescription = description.replace(' See More.', '');
+            const isExpandable = fullDescription !== shortDescription;
 
             return (
               <div
@@ -95,12 +102,14 @@ export default function Projects() {
 
                 <h3 className="text-xl font-semibold mb-4">{title}</h3>
                 <p className={`${descriptionText} flex-grow`}>
-                  {cleanedDescription}
+                  {shortDescription}
                   {isExpandable && (
                     <>
                       {' '}
                       <button
-                        onClick={() => setSelectedProject({ title, description, link })}
+                        onClick={() =>
+                          setSelectedProject({ title, description: fullDescription, link })
+                        }
                         className="text-blue-400 text-sm underline hover:text-blue-500 inline"
                       >
                         See More
