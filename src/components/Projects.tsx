@@ -1,35 +1,48 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
+import ProjectModal from './ProjectModal';
 
 const projects = [
   {
-    title: 'Developer Profile Page (In Progress)',
+    title: 'Full-Stack Developer Portfolio',
     description:
       'A personal site built from scratch to showcase my work, skills, and background. Built with Next.js, Tailwind, and Framer Motion, with responsive design and animated transitions.',
+    link: 'https://github.com/edwardsong08/final-profile',
+    status: 'live',
   },
   {
     title: 'Ryu-Legal.com – Law Firm Website',
     description:
-      'A live website for a real estate law firm built using Next.js, Tailwind, Framer Motion, and Resend API. Optimized for SEO and responsive across devices.',
+      'A single-page professional law firm website built with Next.js, Tailwind, Framer Motion, and Resend. Features responsive design, animated UI, and SEO optimization for legal services in NJ & NY.',
     link: 'https://www.ryu-legal.com',
+    status: 'live',
   },
   {
-    title: 'Blockchain Ledger Simulator',
+    title: 'Blockchain Ledger Proof-of-Concept (Java + AWS)',
     description:
-      'A Java and Thymeleaf project that simulates a blockchain ledger with hashed transactions and visual block tracking.',
+      'Simulated blockchain ledger built with Spring Boot, PostgreSQL, and Docker. Completed in one week as a proof-of-concept for full-stack Java development and rapid learning. See More.',
+    link: 'https://github.com/edwardsong08/vzw-transaction-ledger',
+    status: 'demo',
   },
   {
-    title: 'React + Django Sign-In Prototype',
+    title: 'Real Estate Bidding Platform Prototype (React + Django)',
     description:
-      'A static React app with login functionality wired to a Django backend. Illustrates frontend/back-end communication and state handling.',
+      'A partially implemented real estate bidding platform with a complete frontend and working sign-in system using Django. Demonstrates professional UI/UX with modern React and Tailwind design, integrated with Django for membership, authentication, and user data storage. See More.',
+    link: 'https://github.com/edwardsong08/realestatebidding',
+    status: 'progress',
   },
 ];
 
 export default function Projects() {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<{
+    title: string;
+    description: string;
+    link?: string;
+  } | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -43,14 +56,18 @@ export default function Projects() {
   const cardBg = isDark ? 'bg-zinc-700' : 'bg-zinc-200';
   const descriptionText = isDark ? 'text-zinc-300' : 'text-zinc-700';
 
+  const statusMap: Record<string, { label: string; color: string }> = {
+    live: { label: 'LIVE', color: 'bg-green-500' },
+    demo: { label: 'Request Demo', color: 'bg-yellow-400' },
+    progress: { label: 'In Progress', color: 'bg-red-500' },
+  };
+
   return (
     <section id="projects" className={`${bgSection} transition-colors duration-300`}>
-      {/* Top Bar */}
       <div className={`${bgHeader} py-8 transition-colors duration-300`}>
         <h2 className="text-4xl font-bold text-center">Projects</h2>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -59,27 +76,69 @@ export default function Projects() {
           transition={{ duration: 0.8, ease: 'easeOut' }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 px-4"
         >
-          {projects.map(({ title, description, link }) => (
-            <div
-              key={title}
-              className={`transition-colors duration-300 ${cardBg} p-6 rounded-2xl shadow-md hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-103 flex flex-col`}
-            >
-              <h3 className="text-xl font-semibold mb-4">{title}</h3>
-              <p className={`${descriptionText} flex-grow`}>{description}</p>
-              {link && (
-                <a
-                  href={link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center text-blue-400 hover:text-blue-500"
-                >
-                  Visit site <FaExternalLinkAlt className="ml-2" />
-                </a>
-              )}
-            </div>
-          ))}
+          {projects.map(({ title, description, link, status }) => {
+            const statusData = statusMap[status];
+            const isExpandable = description.includes('See More.');
+            const cleanedDescription = description.replace(' See More.', '');
+
+            return (
+              <div
+                key={title}
+                className={`transition-colors duration-300 ${cardBg} p-6 rounded-2xl shadow-md hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-103 flex flex-col`}
+              >
+                {statusData && (
+                  <div className="mb-3 flex items-center gap-2">
+                    <span className={`w-3 h-3 rounded-full ${statusData.color}`} />
+                    <span className="text-sm font-medium opacity-80">{statusData.label}</span>
+                  </div>
+                )}
+
+                <h3 className="text-xl font-semibold mb-4">{title}</h3>
+                <p className={`${descriptionText} flex-grow`}>
+                  {cleanedDescription}
+                  {isExpandable && (
+                    <>
+                      {' '}
+                      <button
+                        onClick={() => setSelectedProject({ title, description, link })}
+                        className="text-blue-400 text-sm underline hover:text-blue-500 inline"
+                      >
+                        See More
+                      </button>
+                    </>
+                  )}
+                </p>
+
+                <div className="mt-4 flex justify-end">
+                  {link && (
+                    <a
+                      href={link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-blue-400 hover:text-blue-500 text-sm"
+                    >
+                      {title === 'Ryu-Legal.com – Law Firm Website'
+                        ? 'Visit Site'
+                        : 'View GitHub Repository'}{' '}
+                      <FaExternalLinkAlt className="ml-2" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </motion.div>
       </div>
+
+      {selectedProject && (
+        <ProjectModal
+          isOpen={!!selectedProject}
+          onClose={() => setSelectedProject(null)}
+          title={selectedProject.title}
+          paragraphs={selectedProject.description.split('\n\n')}
+          link={selectedProject.link}
+        />
+      )}
     </section>
   );
 }
