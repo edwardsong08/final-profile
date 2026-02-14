@@ -30,7 +30,8 @@ const projects = [
     fullDescription:
       'Simulated blockchain ledger built with Spring Boot, PostgreSQL, and Docker. Completed in one week as a proof-of-concept for full-stack Java development and rapid learning.\n\nThis project simulates a blockchain-based transaction ledger and was completed in about one week without prior knowledge of Java, Spring Boot, or blockchain. It demonstrates my ability to rapidly learn and integrate multiple enterprise-grade technologies.\n\nThe app was built with Spring Boot (REST + Thymeleaf UI), PostgreSQL, and Docker. Data access combines Spring Data JPA with MyBatis for both standard and complex queries. It includes an immutable audit trail that logs transaction creation, updates, and deletions — simulating blockchain behavior.\n\nThe system supports English and Korean, has robust input validation and error handling, and features a full CI/CD pipeline via GitHub Actions. For deployment, the backend runs in Docker containers on AWS EC2 with an AWS RDS database.\n\nTo reduce resource usage, the AWS instance is turned off, but a live demo is available on request.',
     link: 'https://github.com/edwardsong08/vzw-transaction-ledger',
-    status: 'demo',
+    status: 'livedemo',
+    liveDemoLink: 'http://18.117.137.143/dashboard',
   },
   {
     title: 'Real Estate Bidding Platform Prototype (React + Django)',
@@ -50,6 +51,7 @@ export default function Projects() {
     title: string;
     description: string;
     link?: string;
+    liveDemoLink?: string;
   } | null>(null);
 
   useEffect(() => {
@@ -66,6 +68,7 @@ export default function Projects() {
 
   const statusMap: Record<string, { label: string; color: string }> = {
     live: { label: 'LIVE', color: 'bg-green-500' },
+    livedemo: { label: 'Live Demo', color: 'bg-green-500' },
     demo: { label: 'Request Demo', color: 'bg-yellow-400' },
     progress: { label: 'In Progress', color: 'bg-red-500' },
   };
@@ -84,7 +87,7 @@ export default function Projects() {
           transition={{ duration: 0.8, ease: 'easeOut' }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 px-4"
         >
-          {projects.map(({ title, shortDescription, fullDescription, link, status }) => {
+          {projects.map(({ title, shortDescription, fullDescription, link, status, liveDemoLink }) => {
             const statusData = statusMap[status];
             const isExpandable = fullDescription !== shortDescription;
 
@@ -108,7 +111,12 @@ export default function Projects() {
                       {' '}
                       <button
                         onClick={() =>
-                          setSelectedProject({ title, description: fullDescription, link })
+                          setSelectedProject({
+                            title,
+                            description: fullDescription,
+                            link,
+                            liveDemoLink,
+                          })
                         }
                         className="text-blue-400 text-sm underline hover:text-blue-500 inline"
                       >
@@ -118,7 +126,18 @@ export default function Projects() {
                   )}
                 </p>
 
-                <div className="mt-4 flex justify-end">
+                <div className="mt-4 flex flex-col items-end gap-2">
+                  {title === 'Blockchain Ledger Proof-of-Concept (Java + AWS)' && liveDemoLink && (
+                    <a
+                      href={liveDemoLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-blue-400 hover:text-blue-500 text-sm"
+                    >
+                      Visit Site <FaExternalLinkAlt className="ml-2" />
+                    </a>
+                  )}
+
                   {link && (
                     <a
                       href={link}
@@ -146,6 +165,7 @@ export default function Projects() {
           title={selectedProject.title}
           paragraphs={selectedProject.description.split('\n\n')}
           link={selectedProject.link}
+          liveDemoLink={selectedProject.liveDemoLink}
         />
       )}
     </section>

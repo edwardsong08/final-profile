@@ -10,6 +10,7 @@ interface ProjectModalProps {
   title: string;
   paragraphs: string[];
   link?: string;
+  liveDemoLink?: string;
 }
 
 export default function ProjectModal({
@@ -18,6 +19,7 @@ export default function ProjectModal({
   title,
   paragraphs,
   link,
+  liveDemoLink,
 }: ProjectModalProps) {
   const { resolvedTheme } = useTheme();
   const bgColor =
@@ -80,19 +82,32 @@ export default function ProjectModal({
               ))}
             </div>
 
-            {link && (
-              <div className="text-center">
-                <a
-                  href={link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center text-blue-400 hover:text-blue-500 text-sm underline"
-                >
-                  {title === 'Ryu-Legal.com – Law Firm Website'
-                    ? 'Visit Site'
-                    : 'View GitHub Repository'}{' '}
-                  <FaExternalLinkAlt className="ml-2" />
-                </a>
+            {(liveDemoLink || link) && (
+              <div className="text-center flex flex-col gap-2">
+                {title === 'Blockchain Ledger Proof-of-Concept (Java + AWS)' && liveDemoLink && (
+                  <a
+                    href={liveDemoLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center text-blue-400 hover:text-blue-500 text-sm underline"
+                  >
+                    Visit Site <FaExternalLinkAlt className="ml-2" />
+                  </a>
+                )}
+
+                {link && (
+                  <a
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center text-blue-400 hover:text-blue-500 text-sm underline"
+                  >
+                    {title === 'Ryu-Legal.com – Law Firm Website'
+                      ? 'Visit Site'
+                      : 'View GitHub Repository'}{' '}
+                    <FaExternalLinkAlt className="ml-2" />
+                  </a>
+                )}
               </div>
             )}
           </motion.div>
