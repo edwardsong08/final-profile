@@ -71,7 +71,7 @@ export default function Projects() {
     live: { label: 'LIVE', color: 'bg-green-500' },
     livedemo: { label: 'Live Demo', color: 'bg-green-500' },
     demo: { label: 'Request Demo', color: 'bg-yellow-400' },
-    progress: { label: 'In Progress', color: 'bg-yellow-400' },
+    progress: { label: 'In Progress (Live Demo)', color: 'bg-yellow-400' },
   };
 
   return (
