@@ -251,7 +251,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
         </div>
 
         <p className="text-xl mb-4">
-          Software developer based in the New York Metropolitan Area.
+          Software engineer based in the New York Metropolitan Area.
         </p>
 
         <div className="flex space-x-6 text-2xl mb-4">
