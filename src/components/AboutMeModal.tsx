@@ -114,7 +114,7 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
             <p className={`text-lg leading-relaxed mb-8 text-center ${textColor}`}>
               I am passionate about political, educational, and judicial reforms.
               My free time is spent hiking with my dog, tampering as an amateur guitar luthier,
-              reading, or playing golf.
+              reading, or golfing.
             </p>
 
             <div className="relative mx-auto mb-4 w-1/3 min-w-[240px] h-auto">
