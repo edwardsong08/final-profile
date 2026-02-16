@@ -28,7 +28,7 @@ const projects = [
     shortDescription:
       'Simulated blockchain ledger built with Spring Boot, PostgreSQL, and Docker. Completed in one week as a proof-of-concept for full-stack Java development and rapid learning.',
     fullDescription:
-      'Simulated blockchain ledger built with Spring Boot, PostgreSQL, and Docker. Completed in one week as a proof-of-concept for full-stack Java development and rapid learning.\n\nThis project simulates a blockchain-based transaction ledger and was completed in about one week without prior knowledge of Java, Spring Boot, or blockchain. It demonstrates my ability to rapidly learn and integrate multiple enterprise-grade technologies.\n\nThe app was built with Spring Boot (REST + Thymeleaf UI), PostgreSQL, and Docker. Data access combines Spring Data JPA with MyBatis for both standard and complex queries. It includes an immutable audit trail that logs transaction creation, updates, and deletions — simulating blockchain behavior.\n\nThe system supports English and Korean, has robust input validation and error handling, and features a full CI/CD pipeline via GitHub Actions. For deployment, the backend runs in Docker containers on AWS EC2 with an AWS RDS database.\n\nTo reduce resource usage, the AWS instance is turned off, but a live demo is available on request.',
+      'Simulated blockchain ledger built with Spring Boot, PostgreSQL, and Docker. Completed in one week as a proof-of-concept for full-stack Java development and rapid learning.\n\nThis project simulates a blockchain-based transaction ledger and was completed in about one week without prior knowledge of Java, Spring Boot, or blockchain. It demonstrates my ability to rapidly learn and integrate multiple enterprise-grade technologies.\n\nThe app was built with Spring Boot (REST + Thymeleaf UI), PostgreSQL, and Docker. Data access combines Spring Data JPA with MyBatis for both standard and complex queries. It includes an immutable audit trail that logs transaction creation, updates, and deletions — simulating blockchain behavior.\n\nThe system supports English and Korean, has robust input validation and error handling, and features a full CI/CD pipeline via GitHub Actions. For deployment, the backend runs in Docker containers on AWS EC2 with an AWS RDS database.',
     link: 'https://github.com/edwardsong08/vzw-transaction-ledger',
     status: 'livedemo',
     liveDemoLink: 'http://18.117.137.143/dashboard',
@@ -36,11 +36,12 @@ const projects = [
   {
     title: 'Real Estate Bidding Platform Prototype (React + Django)',
     shortDescription:
-      'A partially implemented real estate bidding platform with a complete frontend and working sign-in system using Django. Demonstrates professional UI/UX with modern React and Tailwind design, integrated with Django for membership, authentication, and user data storage.',
+      'A real estate bidding platform prototype with a polished React frontend, Django REST backend, and live authentication flows. Deployed with Vercel (frontend), Render (backend), and Supabase Postgres.',
     fullDescription:
-      'A partially implemented real estate bidding platform with a complete frontend and working sign-in system using Django. Demonstrates professional UI/UX with modern React and Tailwind design, integrated with Django for membership, authentication, and user data storage.\n\nThe frontend is built with modern React (Hooks, functional components, Tailwind UI) and includes polished user flows for login, signup, and password reset. State is handled cleanly using React’s built-in tools, and form validation ensures robust user input.\n\nThe backend is powered by Django with Django REST Framework. It handles authentication, user data management, and secure API communication. Though the project is not fully implemented, it shows a clear structure and approach for expanding to features like bidding logic, admin controls, and dynamic listings.',
+      'A real estate bidding platform prototype with a polished React frontend, Django REST backend, and live authentication flows.\n\nThe frontend is built with modern React (Hooks, functional components, Tailwind UI) and includes polished user flows for login, signup, and password reset. Form validation and UX details are implemented to feel production-ready.\n\nThe backend is powered by Django + Django REST Framework and provides secure API endpoints for authentication and user management.\n\nDeployment: the frontend is hosted on Vercel, the backend API is hosted on Render, and the database was migrated from SQLite to PostgreSQL on Supabase to support a real production-style environment.\n\nWhile core bidding features are not fully implemented yet, the codebase demonstrates a clean structure for scaling into listings, bids, admin controls, and more.',
     link: 'https://github.com/edwardsong08/realestatebidding',
     status: 'progress',
+    liveDemoLink: 'https://realestatebidding.vercel.app',
   },
 ];
 
@@ -70,7 +71,7 @@ export default function Projects() {
     live: { label: 'LIVE', color: 'bg-green-500' },
     livedemo: { label: 'Live Demo', color: 'bg-green-500' },
     demo: { label: 'Request Demo', color: 'bg-yellow-400' },
-    progress: { label: 'In Progress', color: 'bg-red-500' },
+    progress: { label: 'In Progress', color: 'bg-yellow-400' },
   };
 
   return (
@@ -127,7 +128,7 @@ export default function Projects() {
                 </p>
 
                 <div className="mt-4 flex flex-col items-end gap-2">
-                  {title === 'Blockchain Ledger Proof-of-Concept (Java + AWS)' && liveDemoLink && (
+                  {liveDemoLink && (
                     <a
                       href={liveDemoLink}
                       target="_blank"

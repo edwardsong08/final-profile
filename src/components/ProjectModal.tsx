@@ -84,7 +84,7 @@ export default function ProjectModal({
 
             {(liveDemoLink || link) && (
               <div className="text-center flex flex-col gap-2">
-                {title === 'Blockchain Ledger Proof-of-Concept (Java + AWS)' && liveDemoLink && (
+                {liveDemoLink && (
                   <a
                     href={liveDemoLink}
                     target="_blank"
