@@ -11,6 +11,7 @@ interface ProjectModalProps {
   paragraphs: string[];
   link?: string;
   liveDemoLink?: string;
+  roadmapLink?: string; // ✅ new
 }
 
 export default function ProjectModal({
@@ -20,6 +21,7 @@ export default function ProjectModal({
   paragraphs,
   link,
   liveDemoLink,
+  roadmapLink,
 }: ProjectModalProps) {
   const { resolvedTheme } = useTheme();
   const bgColor =
@@ -82,7 +84,7 @@ export default function ProjectModal({
               ))}
             </div>
 
-            {(liveDemoLink || link) && (
+            {(liveDemoLink || roadmapLink || link) && (
               <div className="text-center flex flex-col gap-2">
                 {liveDemoLink && (
                   <a
@@ -92,6 +94,17 @@ export default function ProjectModal({
                     className="inline-flex items-center justify-center text-blue-400 hover:text-blue-500 text-sm underline"
                   >
                     Visit Site <FaExternalLinkAlt className="ml-2" />
+                  </a>
+                )}
+
+                {roadmapLink && (
+                  <a
+                    href={roadmapLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center text-blue-400 hover:text-blue-500 text-sm underline"
+                  >
+                    Roadmap <FaExternalLinkAlt className="ml-2" />
                   </a>
                 )}
 

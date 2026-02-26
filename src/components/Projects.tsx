@@ -34,7 +34,7 @@ const projects = [
     liveDemoLink: 'http://18.117.137.143/dashboard',
   },
   {
-    title: 'Real Estate Bidding Platform Prototype (React + Django)',
+    title: 'OpenBid — Full-Stack Prototype (React + Django)',
     shortDescription:
       'A real estate bidding platform prototype with a polished React frontend, Django REST backend, and live authentication flows. Deployed with Vercel (frontend), Render (backend), and Supabase Postgres.',
     fullDescription:
@@ -42,6 +42,19 @@ const projects = [
     link: 'https://github.com/edwardsong08/realestatebidding',
     status: 'progress',
     liveDemoLink: 'https://realestatebidding.vercel.app',
+  },
+
+  // ✅ NEW PROJECT
+  {
+    title: 'ClaimChain — Full-Stack Claims Exchange Platform',
+    shortDescription:
+      'Production-grade claims exchange platform with multi-role dashboards (Provider/Buyer/Admin), evidence uploads, document ingestion with parsing/OCR, explainable risk scoring, and anonymized portfolio packaging for marketplace purchase.',
+    fullDescription:
+      'ClaimChain is a full-stack, production-grade claims exchange platform that enables service providers to submit unpaid work claims with supporting documentation, undergo verification and review, receive explainable risk scoring, and package claims into anonymized portfolios that vetted collection agencies or debt buyers can purchase through a secure marketplace.\n\nThe platform delivers an end-to-end workflow system: role-based identity and access (Provider / Buyer / Admin), secure evidence upload and storage (S3-compatible), document ingestion with parsing + OCR and robust job status tracking, an admin review queue with controlled lifecycle state transitions and feedback notes, and auditable event trails across key actions (submissions, review decisions, purchases, and exports).\n\nRisk scoring combines deterministic rules with explainability (reasons + weighted factors) and an ML augmentation layer for improved prediction and portfolio ranking, including model versioning and safe fallback behavior. Claims are grouped into anonymized packages with portfolio analytics and buyer filtering, followed by a secure checkout and purchase flow (Stripe) and post-purchase export/download with access-controlled deliverables.\n\nWeb dashboards are available for each role (Provider / Buyer / Admin), and a mobile companion app supports provider claim submission, camera capture + document uploads, status tracking, and notifications, with Android distribution via APK and iOS distribution via TestFlight.\n\nTech stack: Java 17 + Spring Boot (Security, Data JPA, Validation), PostgreSQL (Docker locally; AWS-ready deployment), JWT auth + RBAC, Apache Tika + OCR support, S3-compatible storage, background job processing for ingestion/scoring, a TypeScript + Next.js web client, CI/CD via GitHub Actions, and production-style observability hooks (structured logging, metrics, and job monitoring).',
+    link: 'https://github.com/edwardsong08/ClaimChain',
+    roadmapLink:
+      'https://www.notion.so/1c1f23bf2a918007b076e6ba6f67b891?v=312f23bf2a9180e690b0000c9d34a6a9&p=312f23bf2a9180279afec4e4225ad016&pm=s',
+    status: 'inprogress',
   },
 ];
 
@@ -53,6 +66,7 @@ export default function Projects() {
     description: string;
     link?: string;
     liveDemoLink?: string;
+    roadmapLink?: string;
   } | null>(null);
 
   useEffect(() => {
@@ -72,6 +86,7 @@ export default function Projects() {
     livedemo: { label: 'Live Demo', color: 'bg-green-500' },
     demo: { label: 'Request Demo', color: 'bg-yellow-400' },
     progress: { label: 'In Progress (Live Demo)', color: 'bg-yellow-400' },
+    inprogress: { label: 'In Progress', color: 'bg-yellow-400' }, // ✅ new
   };
 
   return (
@@ -88,74 +103,88 @@ export default function Projects() {
           transition={{ duration: 0.8, ease: 'easeOut' }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 px-4"
         >
-          {projects.map(({ title, shortDescription, fullDescription, link, status, liveDemoLink }) => {
-            const statusData = statusMap[status];
-            const isExpandable = fullDescription !== shortDescription;
+          {projects.map(
+            ({ title, shortDescription, fullDescription, link, status, liveDemoLink, roadmapLink }) => {
+              const statusData = statusMap[status];
+              const isExpandable = fullDescription !== shortDescription;
 
-            return (
-              <div
-                key={title}
-                className={`transition-colors duration-300 ${cardBg} p-6 rounded-2xl shadow-md hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-103 flex flex-col`}
-              >
-                {statusData && (
-                  <div className="mb-3 flex items-center gap-2">
-                    <span className={`w-3 h-3 rounded-full ${statusData.color}`} />
-                    <span className="text-sm font-medium opacity-80">{statusData.label}</span>
-                  </div>
-                )}
+              return (
+                <div
+                  key={title}
+                  className={`transition-colors duration-300 ${cardBg} p-6 rounded-2xl shadow-md hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-103 flex flex-col`}
+                >
+                  {statusData && (
+                    <div className="mb-3 flex items-center gap-2">
+                      <span className={`w-3 h-3 rounded-full ${statusData.color}`} />
+                      <span className="text-sm font-medium opacity-80">{statusData.label}</span>
+                    </div>
+                  )}
 
-                <h3 className="text-xl font-semibold mb-4">{title}</h3>
-                <p className={`${descriptionText} flex-grow`}>
-                  {shortDescription}
-                  {isExpandable && (
-                    <>
-                      {' '}
-                      <button
-                        onClick={() =>
-                          setSelectedProject({
-                            title,
-                            description: fullDescription,
-                            link,
-                            liveDemoLink,
-                          })
-                        }
-                        className="text-blue-400 text-sm underline hover:text-blue-500 inline"
+                  <h3 className="text-xl font-semibold mb-4">{title}</h3>
+                  <p className={`${descriptionText} flex-grow`}>
+                    {shortDescription}
+                    {isExpandable && (
+                      <>
+                        {' '}
+                        <button
+                          onClick={() =>
+                            setSelectedProject({
+                              title,
+                              description: fullDescription,
+                              link,
+                              liveDemoLink,
+                              roadmapLink,
+                            })
+                          }
+                          className="text-blue-400 text-sm underline hover:text-blue-500 inline"
+                        >
+                          See More
+                        </button>
+                      </>
+                    )}
+                  </p>
+
+                  <div className="mt-4 flex flex-col items-end gap-2">
+                    {liveDemoLink && (
+                      <a
+                        href={liveDemoLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-blue-400 hover:text-blue-500 text-sm"
                       >
-                        See More
-                      </button>
-                    </>
-                  )}
-                </p>
+                        Visit Site <FaExternalLinkAlt className="ml-2" />
+                      </a>
+                    )}
 
-                <div className="mt-4 flex flex-col items-end gap-2">
-                  {liveDemoLink && (
-                    <a
-                      href={liveDemoLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center text-blue-400 hover:text-blue-500 text-sm"
-                    >
-                      Visit Site <FaExternalLinkAlt className="ml-2" />
-                    </a>
-                  )}
+                    {roadmapLink && (
+                      <a
+                        href={roadmapLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-blue-400 hover:text-blue-500 text-sm"
+                      >
+                        Roadmap <FaExternalLinkAlt className="ml-2" />
+                      </a>
+                    )}
 
-                  {link && (
-                    <a
-                      href={link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center text-blue-400 hover:text-blue-500 text-sm"
-                    >
-                      {title === 'Ryu-Legal.com – Law Firm Website'
-                        ? 'Visit Site'
-                        : 'View GitHub Repository'}{' '}
-                      <FaExternalLinkAlt className="ml-2" />
-                    </a>
-                  )}
+                    {link && (
+                      <a
+                        href={link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-blue-400 hover:text-blue-500 text-sm"
+                      >
+                        {title === 'Ryu-Legal.com – Law Firm Website'
+                          ? 'Visit Site'
+                          : 'View GitHub Repository'}{' '}
+                        <FaExternalLinkAlt className="ml-2" />
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            }
+          )}
         </motion.div>
       </div>
 
@@ -167,6 +196,7 @@ export default function Projects() {
           paragraphs={selectedProject.description.split('\n\n')}
           link={selectedProject.link}
           liveDemoLink={selectedProject.liveDemoLink}
+          roadmapLink={selectedProject.roadmapLink}
         />
       )}
     </section>
