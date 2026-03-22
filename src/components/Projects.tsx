@@ -48,13 +48,20 @@ const projects = [
   {
     title: 'ClaimChain — Full-Stack Claims Exchange Platform',
     shortDescription:
-      'Production-grade claims exchange platform with multi-role dashboards (Provider/Buyer/Admin), evidence uploads, document ingestion with parsing/OCR, explainable risk scoring, and anonymized portfolio packaging for marketplace purchase.',
-    fullDescription:
-      'ClaimChain is a full-stack, production-grade claims exchange platform that enables service providers to submit unpaid work claims with supporting documentation, undergo verification and review, receive explainable risk scoring, and package claims into anonymized portfolios that vetted collection agencies or debt buyers can purchase through a secure marketplace.\n\nThe platform delivers an end-to-end workflow system: role-based identity and access (Provider / Buyer / Admin), secure evidence upload and storage (S3-compatible), document ingestion with parsing + OCR and robust job status tracking, an admin review queue with controlled lifecycle state transitions and feedback notes, and auditable event trails across key actions (submissions, review decisions, purchases, and exports).\n\nRisk scoring combines deterministic rules with explainability (reasons + weighted factors) and an ML augmentation layer for improved prediction and portfolio ranking, including model versioning and safe fallback behavior. Claims are grouped into anonymized packages with portfolio analytics and buyer filtering, followed by a secure checkout and purchase flow (Stripe) and post-purchase export/download with access-controlled deliverables.\n\nWeb dashboards are available for each role (Provider / Buyer / Admin), and a mobile companion app supports provider claim submission, camera capture + document uploads, status tracking, and notifications, with Android distribution via APK and iOS distribution via TestFlight.\n\nTech stack: Java 17 + Spring Boot (Security, Data JPA, Validation), PostgreSQL (Docker locally; AWS-ready deployment), JWT auth + RBAC, Apache Tika + OCR support, S3-compatible storage, background job processing for ingestion/scoring, a TypeScript + Next.js web client, CI/CD via GitHub Actions, and production-style observability hooks (structured logging, metrics, and job monitoring).',
-    link: 'https://github.com/edwardsong08/ClaimChain',
+      'Live staging build of a multi-role claims exchange platform with Provider/Buyer/Admin flows, onboarding, claim submission, explainable rules-based scoring, package curation, buyer entitlement views, and PDF export.',
+    fullDescription: `ClaimChain is my flagship full-stack fintech / legal-tech project: a claims exchange platform for unpaid debt and service claims. It is designed to let service providers submit claims with supporting evidence, move those claims through structured review and scoring workflows, package eligible claims into buyer-safe portfolios, and give vetted buyers controlled access to the assets they are entitled to view and export.
+
+The current live staging build already includes substantial business-pipeline functionality across all three roles. On the provider side, there are authenticated account flows, onboarding, profile management, and a guided claim-submission experience. On the admin side, there are approval workflows, package eligibility controls, manual draft package curation, listing / unlisting controls, and override paths with audit metadata. On the buyer side, there are onboarding flows, marketplace browsing for listed packages, entitlement-aware post-purchase detail views, and purchased-package PDF export.
+
+From a business-logic perspective, the scoring engine has already advanced beyond simple placeholders: ClaimChain now includes explainable, rules-based scoring with provenance and frozen outputs so package contents can be traced back to the scoring rules that produced them. Packaging workflows have also been built out so the system can generate anonymized buyer-safe package views rather than exposing raw provider claim data.
+
+The next major phases are secure payments, ML augmentation, and mobile distribution. Stripe-based purchase flows, a Python-based ML layer (initialized with uv for its own workspace and governance), and provider-focused mobile delivery are planned as the next steps so the platform can evolve from a strong staging portfolio build into a more complete production-style marketplace.
+
+Tech stack: Java 17 + Spring Boot, PostgreSQL, JWT auth + RBAC, Docker, Next.js + TypeScript, Tailwind CSS, GitHub Actions, PDF export workflows, and AWS-ready infrastructure patterns.`,
+    liveDemoLink: 'https://claimchain-tan.vercel.app',
     roadmapLink:
       'https://www.notion.so/1c1f23bf2a918007b076e6ba6f67b891?v=312f23bf2a9180e690b0000c9d34a6a9&p=312f23bf2a9180279afec4e4225ad016&pm=s',
-    status: 'inprogress',
+    status: 'live',
   },
 ];
 

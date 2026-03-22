@@ -3,14 +3,15 @@ import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FaHtml5, FaJsSquare, FaPython, FaJava, FaDatabase, FaReact, FaDocker, FaAws,
-  FaGithub, FaLinux, FaUnity, FaGamepad
+  FaGithub, FaLinux, FaUnity, FaGamepad, FaNodeJs, FaBrain
 } from 'react-icons/fa';
 import {
   SiNextdotjs, SiDjango, SiSpringboot, SiTailwindcss, SiFramer, SiReacthookform,
   SiPostgresql, SiSqlite, SiVercel, SiGithubactions, SiEslint, SiPostman, SiJunit5,
-  SiGooglemaps, SiTrello, SiGimp, SiUnrealengine, SiNextdotjs as SiNextSEO
+  SiGooglemaps, SiTrello, SiGimp, SiUnrealengine, SiNextdotjs as SiNextSEO,
+  SiSupabase, SiCloudflare, SiSwagger, SiUv
 } from 'react-icons/si';
-import { FiCode, FiGlobe, FiMail } from 'react-icons/fi';
+import { FiCode, FiGlobe, FiMail, FiServer } from 'react-icons/fi';
 
 interface Skill {
   name: string;
@@ -31,6 +32,7 @@ const skillCategories: SkillCategory[] = [
       { name: 'HTML / CSS', level: 4, Icon: FaHtml5 },
       { name: 'JavaScript / TypeScript', level: 4, Icon: FaJsSquare },
       { name: 'Python', level: 3, Icon: FaPython },
+      { name: 'Machine Learning', level: 4, Icon: FaBrain },
       { name: 'Java', level: 3, Icon: FaJava },
       { name: 'SQL', level: 3, Icon: FaDatabase },
       { name: 'C++', level: 1, Icon: FiCode }
@@ -54,7 +56,9 @@ const skillCategories: SkillCategory[] = [
     skills: [
       { name: 'Spring Boot', level: 3, Icon: SiSpringboot },
       { name: 'Django', level: 2, Icon: SiDjango },
+      { name: 'Node.js', level: 4, Icon: FaNodeJs },
       { name: 'RESTful APIs', level: 3, Icon: FiGlobe },
+      { name: 'Swagger / OpenAPI', level: 4, Icon: SiSwagger },
       { name: 'Email APIs (Resend)', level: 4, Icon: FiMail },
       { name: '3rd-Party APIs (Google Maps)', level: 4, Icon: SiGooglemaps }
     ],
@@ -64,6 +68,7 @@ const skillCategories: SkillCategory[] = [
     category: 'Databases & Data Access',
     skills: [
       { name: 'PostgreSQL', level: 2, Icon: SiPostgresql },
+      { name: 'Supabase', level: 4, Icon: SiSupabase },
       { name: 'SQLite', level: 3, Icon: SiSqlite },
       { name: 'Hibernate', level: 2, Icon: FaDatabase },
       { name: 'Spring Data JPA', level: 2, Icon: FaDatabase },
@@ -76,6 +81,8 @@ const skillCategories: SkillCategory[] = [
     skills: [
       { name: 'Docker', level: 4, Icon: FaDocker },
       { name: 'AWS (EC2, RDS, S3)', level: 3, Icon: FaAws },
+      { name: 'Cloudflare', level: 4, Icon: SiCloudflare },
+      { name: 'Coolify', level: 4, Icon: FiServer },
       { name: 'GitHub Actions (CI/CD)', level: 4, Icon: SiGithubactions },
       { name: 'Linux', level: 3, Icon: FaLinux },
       { name: 'Deployment (Vercel)', level: 4, Icon: SiVercel }
@@ -96,6 +103,7 @@ const skillCategories: SkillCategory[] = [
     category: 'Tooling, Workflow & SEO',
     skills: [
       { name: 'Git / GitHub', level: 4, Icon: FaGithub },
+      { name: 'uv', level: 4, Icon: SiUv },
       { name: 'SEO Optimization (Next SEO)', level: 4, Icon: SiNextSEO },
       { name: 'Project Tools: Trello / Notion', level: 4, Icon: SiTrello }
     ]
