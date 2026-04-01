@@ -4,7 +4,17 @@ import { FaExternalLinkAlt } from 'react-icons/fa';
 import { useTheme } from 'next-themes';
 import ProjectModal from './ProjectModal';
 
-const projects = [
+type Project = {
+  title: string;
+  shortDescription: string;
+  fullDescription: string;
+  link?: string;
+  liveDemoLink?: string;
+  roadmapLink?: string;
+  status: 'live' | 'livedemo' | 'demo' | 'progress' | 'inprogress';
+};
+
+const projects: Project[] = [
   {
     title: 'Full-Stack Developer Portfolio',
     shortDescription:
@@ -46,21 +56,19 @@ const projects = [
 
   // ✅ NEW PROJECT
   {
-    title: 'ClaimChain — Full-Stack Claims Exchange Platform',
+    title: 'ClaimChain — Claims Exchange Platform + Advisory ML',
     shortDescription:
-      'Live staging build of a multi-role claims exchange platform with Provider/Buyer/Admin flows, onboarding, claim submission, explainable rules-based scoring, package curation, buyer entitlement views, and PDF export.',
-    fullDescription: `ClaimChain is my flagship full-stack fintech / legal-tech project: a claims exchange platform for unpaid debt and service claims. It is designed to let service providers submit claims with supporting evidence, move those claims through structured review and scoring workflows, package eligible claims into buyer-safe portfolios, and give vetted buyers controlled access to the assets they are entitled to view and export.
+      'Production-style claims exchange platform with Provider/Buyer/Admin workflows, approval gates, claim intake, document upload, explainable rules-based scoring, package curation, anonymized buyer views, purchase entitlements, PDF export, and advisory ML integration.',
+    fullDescription: `ClaimChain is a production-style claims exchange platform for unpaid service and debt claims. Service providers submit claims and supporting documents, admins review and approve them through controlled workflows, and buyers browse anonymized packages that can be purchased and exported through entitlement-aware flows.
 
-The current live staging build already includes substantial business-pipeline functionality across all three roles. On the provider side, there are authenticated account flows, onboarding, profile management, and a guided claim-submission experience. On the admin side, there are approval workflows, package eligibility controls, manual draft package curation, listing / unlisting controls, and override paths with audit metadata. On the buyer side, there are onboarding flows, marketplace browsing for listed packages, entitlement-aware post-purchase detail views, and purchased-package PDF export.
+The current build already covers the full core pipeline across all three roles. Providers have onboarding, profile management, claim submission, and status tracking. Admins have approval queues, claim review, ruleset-driven scoring, package curation, listing controls, override paths, and audit visibility. Buyers have onboarding, marketplace browsing for listed packages, post-purchase detail views, and PDF export for purchased packages.
 
-From a business-logic perspective, the scoring engine has already advanced beyond simple placeholders: ClaimChain now includes explainable, rules-based scoring with provenance and frozen outputs so package contents can be traced back to the scoring rules that produced them. Packaging workflows have also been built out so the system can generate anonymized buyer-safe package views rather than exposing raw provider claim data.
+What makes the project stronger from an engineering perspective is that the backend remains authoritative. Scoring is explainable and rules-based, packaging eligibility is enforced server-side, buyer-facing package views are anonymized, and sensitive actions are captured through audit trails. The result is a system built around workflow integrity and business-rule enforcement rather than simple CRUD screens.
 
-The next major phases are secure payments, ML augmentation, and mobile distribution. Stripe-based purchase flows, a Python-based ML layer (initialized with uv for its own workspace and governance), and provider-focused mobile delivery are planned as the next steps so the platform can evolve from a strong staging portfolio build into a more complete production-style marketplace.
+ClaimChain also includes an advisory ML layer designed with safe boundaries. The ML service can help suggest package compositions, but it does not override approval decisions, scoring rules, or packaging constraints. That separation was intentional so the platform can incorporate machine learning without sacrificing explainability, control, or operational safety.
 
-Tech stack: Java 17 + Spring Boot, PostgreSQL, JWT auth + RBAC, Docker, Next.js + TypeScript, Tailwind CSS, GitHub Actions, PDF export workflows, and AWS-ready infrastructure patterns.`,
+Tech stack: Java 17, Spring Boot, PostgreSQL, Flyway, JWT auth with RBAC, Docker, Next.js, TypeScript, Tailwind CSS, FastAPI, Python 3.12, GitHub Actions, AWS deployment patterns, and PDF export workflows.`,
     liveDemoLink: 'https://claimchain-tan.vercel.app',
-    roadmapLink:
-      'https://www.notion.so/1c1f23bf2a918007b076e6ba6f67b891?v=312f23bf2a9180e690b0000c9d34a6a9&p=312f23bf2a9180279afec4e4225ad016&pm=s',
     status: 'live',
   },
 ];
