@@ -106,13 +106,13 @@ export default function ContactForm() {
                     </p>
                   </div>
 
-                  <div className="mt-7">
-                    <p className={`text-xs font-semibold tracking-wide ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>
+                  <div className="mt-8">
+                    <h4 className={`text-base sm:text-lg font-semibold ${isDark ? 'text-zinc-100' : 'text-zinc-800'}`}>
                       Quick Links
-                    </p>
+                    </h4>
                   </div>
 
-                  <div className="mt-2 grid grid-cols-2 gap-3">
+                  <div className="mt-3 grid grid-cols-2 gap-3">
                     <button
                       type="button"
                       onClick={() => void copyEmail()}
