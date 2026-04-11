@@ -1,133 +1,83 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  FaHtml5, FaJsSquare, FaPython, FaJava, FaDatabase, FaReact, FaDocker, FaAws,
-  FaGithub, FaLinux, FaUnity, FaGamepad, FaNodeJs, FaBrain
-} from 'react-icons/fa';
-import {
-  SiNextdotjs, SiDjango, SiSpringboot, SiTailwindcss, SiFramer, SiReacthookform,
-  SiPostgresql, SiSqlite, SiVercel, SiGithubactions, SiEslint, SiPostman, SiJunit5,
-  SiGooglemaps, SiTrello, SiGimp, SiUnrealengine, SiNextdotjs as SiNextSEO,
-  SiSupabase, SiCloudflare, SiSwagger, SiUv
-} from 'react-icons/si';
-import { FiCode, FiGlobe, FiMail, FiServer } from 'react-icons/fi';
-
-interface Skill {
-  name: string;
-  level: number;
-  Icon: React.ElementType;
-}
 
 interface SkillCategory {
   category: string;
-  skills: Skill[];
-  additional?: string;
+  skills: string[];
+  context?: string;
 }
 
 const skillCategories: SkillCategory[] = [
   {
-    category: 'Core Programming Languages',
+    category: 'Frontend & UI Engineering',
     skills: [
-      { name: 'HTML / CSS', level: 4, Icon: FaHtml5 },
-      { name: 'JavaScript / TypeScript', level: 4, Icon: FaJsSquare },
-      { name: 'Python', level: 3, Icon: FaPython },
-      { name: 'Machine Learning', level: 4, Icon: FaBrain },
-      { name: 'Java', level: 3, Icon: FaJava },
-      { name: 'SQL', level: 3, Icon: FaDatabase },
-      { name: 'C++', level: 1, Icon: FiCode }
+      'React',
+      'Next.js',
+      'TypeScript',
+      'Tailwind CSS',
+      'Framer Motion',
+      'React Hook Form',
+      'Responsive UI',
+      'Technical SEO',
     ],
-    additional: 'Markdown · YAML'
+    context: 'Used in TROA public site, ClaimChain frontend, and Ryu Legal.',
   },
   {
-    category: 'Frontend Development',
+    category: 'Backend & Platform Engineering',
     skills: [
-      { name: 'React', level: 3, Icon: FaReact },
-      { name: 'Next.js', level: 4, Icon: SiNextdotjs },
-      { name: 'Tailwind CSS', level: 4, Icon: SiTailwindcss },
-      { name: 'Framer Motion', level: 4, Icon: SiFramer },
-      { name: 'React Hook Form / Yup', level: 4, Icon: SiReacthookform },
-      { name: 'GIMP', level: 3, Icon: SiGimp }
+      'Java',
+      'Spring Boot',
+      'Go',
+      'Python',
+      'Node.js',
+      'REST APIs',
+      'Swagger / OpenAPI',
+      'C++',
+      'Auth / Workflow Logic',
     ],
-    additional: 'Bootstrap · SASS / SCSS · Figma · ComfyUI · Thymeleaf (server-side rendering)'
+    context:
+      'Used in ClaimChain, TROA platform work, chatbot/backend flows, and supporting backend systems.',
   },
   {
-    category: 'Backend & API Development',
-    skills: [
-      { name: 'Spring Boot', level: 3, Icon: SiSpringboot },
-      { name: 'Django', level: 2, Icon: SiDjango },
-      { name: 'Node.js', level: 4, Icon: FaNodeJs },
-      { name: 'RESTful APIs', level: 3, Icon: FiGlobe },
-      { name: 'Swagger / OpenAPI', level: 4, Icon: SiSwagger },
-      { name: 'Email APIs (Resend)', level: 4, Icon: FiMail },
-      { name: '3rd-Party APIs (Google Maps)', level: 4, Icon: SiGooglemaps }
-    ],
-    additional: 'i18n'
+    category: 'Data & Persistence',
+    skills: ['PostgreSQL', 'Supabase', 'SQL', 'Hibernate / JPA', 'Spring Data JPA', 'SQLite', 'MyBatis'],
+    context: 'Used in ClaimChain, TROA, and VZW Ledger.',
   },
   {
-    category: 'Databases & Data Access',
-    skills: [
-      { name: 'PostgreSQL', level: 2, Icon: SiPostgresql },
-      { name: 'Supabase', level: 4, Icon: SiSupabase },
-      { name: 'SQLite', level: 3, Icon: SiSqlite },
-      { name: 'Hibernate', level: 2, Icon: FaDatabase },
-      { name: 'Spring Data JPA', level: 2, Icon: FaDatabase },
-      { name: 'Django ORM', level: 2, Icon: SiDjango },
-      { name: 'MyBatis', level: 2, Icon: FaDatabase }
-    ]
+    category: 'Cloud, DevOps & Delivery',
+    skills: ['AWS (EC2 / RDS / S3)', 'Docker', 'GitHub Actions', 'Cloudflare', 'Coolify', 'Vercel', 'Linux'],
+    context: 'Used in TROA deployments/stability work, ClaimChain, and VZW Ledger.',
   },
   {
-    category: 'DevOps & Infrastructure',
-    skills: [
-      { name: 'Docker', level: 4, Icon: FaDocker },
-      { name: 'AWS (EC2, RDS, S3)', level: 3, Icon: FaAws },
-      { name: 'Cloudflare', level: 4, Icon: SiCloudflare },
-      { name: 'Coolify', level: 4, Icon: FiServer },
-      { name: 'GitHub Actions (CI/CD)', level: 4, Icon: SiGithubactions },
-      { name: 'Linux', level: 3, Icon: FaLinux },
-      { name: 'Deployment (Vercel)', level: 4, Icon: SiVercel }
-    ],
-    additional: 'Gradle · Webpack · Networking Fundamentals'
+    category: 'AI / ML & Automation',
+    skills: ['FastAPI', 'Gemini Integration', 'Advisory ML Workflows', 'uv', 'Machine Learning', 'Automation Scripting'],
+    context: 'Used in TROA Gemini chatbot work and ClaimChain advisory ML flows.',
   },
   {
-    category: 'Testing & Code Quality',
-    skills: [
-      { name: 'Postman', level: 4, Icon: SiPostman },
-      { name: 'JUnit 5', level: 3, Icon: SiJunit5 },
-      { name: 'Spring Boot Test Suite', level: 3, Icon: SiSpringboot },
-      { name: 'ESLint', level: 3, Icon: SiEslint }
-    ],
-    additional: 'AssertJ'
+    category: 'Tooling, Quality & Workflow',
+    skills: ['Git / GitHub', 'Postman', 'JUnit 5', 'Spring Boot Test', 'ESLint', 'Resend', 'Google Maps API', 'Trello / Notion'],
+    context: 'Used across client work, TROA, ClaimChain, and Ryu Legal.',
   },
   {
-    category: 'Tooling, Workflow & SEO',
-    skills: [
-      { name: 'Git / GitHub', level: 4, Icon: FaGithub },
-      { name: 'uv', level: 4, Icon: SiUv },
-      { name: 'SEO Optimization (Next SEO)', level: 4, Icon: SiNextSEO },
-      { name: 'Project Tools: Trello / Notion', level: 4, Icon: SiTrello }
-    ]
+    category: 'Design & Creative Tools',
+    skills: ['GIMP', 'Figma', 'ComfyUI'],
+    context: 'Used for UI iteration, visual asset work, and creative workflow support.',
   },
-  {
-    category: 'Creative & Game Tech',
-    skills: [
-      { name: 'Unity', level: 1, Icon: FaUnity },
-      { name: 'Unreal Engine', level: 2, Icon: SiUnrealengine },
-      { name: 'GameMaker Studio', level: 2, Icon: FaGamepad }
-    ],
-    additional: 'MATLAB (academic use)'
-  }
 ];
+
+const DEFAULT_OPEN_CATEGORIES = new Set([
+  'Frontend & UI Engineering',
+  'Backend & Platform Engineering',
+  'Cloud, DevOps & Delivery',
+]);
 
 export default function Skills() {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(
     Object.fromEntries(
-      skillCategories.map(({ category }) => [
-        category,
-        ['Core Programming Languages', 'Frontend Development', 'Backend & API Development'].includes(category)
-      ])
+      skillCategories.map(({ category }) => [category, DEFAULT_OPEN_CATEGORIES.has(category)])
     )
   );
 
@@ -142,11 +92,14 @@ export default function Skills() {
   const toggleSection = (category: string) => {
     setOpenSections((prev) => ({
       ...prev,
-      [category]: !prev[category]
+      [category]: !prev[category],
     }));
   };
 
-  const barColors = ['bg-green-400', 'bg-teal-400', 'bg-blue-400', 'bg-purple-400'];
+  const chipClass = isDark
+    ? 'bg-zinc-700/80 border-zinc-600 text-zinc-100'
+    : 'bg-white/80 border-zinc-300 text-zinc-800';
+  const contextClass = isDark ? 'text-zinc-300' : 'text-zinc-600';
 
   return (
     <section
@@ -160,27 +113,27 @@ export default function Skills() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-16">
-        {skillCategories.map(({ category, skills, additional }) => {
+        {skillCategories.map(({ category, skills, context }) => {
           const isOpen = openSections[category];
           return (
             <motion.div
               key={category}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-100px 0px -100px 0px' }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
-              className="mb-16"
+              transition={{ duration: 0.35, ease: 'easeOut' }}
+              className="mb-8"
             >
               <button
                 onClick={() => toggleSection(category)}
-                className={`w-full text-left flex justify-between items-center text-2xl font-semibold mb-4 border-b pb-2 cursor-pointer ${
+                className={`w-full text-left flex justify-between items-center text-xl sm:text-2xl font-semibold pb-3 border-b ${
                   isDark ? 'border-zinc-700' : 'border-zinc-300'
                 }`}
               >
                 <span>{category}</span>
                 <motion.svg
                   animate={{ rotate: isOpen ? 90 : 0 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.25 }}
                   xmlns="http://www.w3.org/2000/svg"
                   className="w-4 h-4 ml-2"
                   fill="none"
@@ -194,43 +147,30 @@ export default function Skills() {
               <AnimatePresence initial={false}>
                 {isOpen && (
                   <motion.div
-                    key="content"
+                    key={`${category}-content`}
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.4, ease: 'easeInOut' }}
-                    className="overflow-visible"
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    className="overflow-hidden"
                   >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
-                      {skills.map(({ name, level, Icon }) => (
-                        <div
-                          key={name}
-                          className={`p-6 rounded-2xl shadow-md hover:shadow-lg hover:shadow-blue-400/40 transform hover:scale-103 transition-all flex flex-col ${
-                            isDark ? 'bg-zinc-700' : 'bg-zinc-200'
-                          }`}
-                        >
-                          <div className="flex items-center space-x-4 mb-6">
-                            <Icon className={`text-4xl ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
-                            <span className="text-lg font-semibold">{name}</span>
-                          </div>
-                          <div className="mt-auto flex gap-2 h-[2px]">
-                            {Array.from({ length: 4 }, (_, i) => (
-                              <div
-                                key={i}
-                                className={`flex-1 rounded-full ${
-                                  i < level ? barColors[i] : isDark ? 'bg-zinc-500' : 'bg-zinc-400'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      ))}
+                    <div
+                      className={`mt-4 rounded-xl border px-4 py-4 sm:px-5 sm:py-5 ${
+                        isDark ? 'bg-zinc-800/70 border-zinc-700' : 'bg-white/70 border-zinc-200'
+                      }`}
+                    >
+                      {context && <p className={`text-sm mb-4 ${contextClass}`}>{context}</p>}
+                      <div className="flex flex-wrap gap-2.5">
+                        {skills.map((skill) => (
+                          <span
+                            key={skill}
+                            className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium border ${chipClass}`}
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    {additional && (
-                      <p className={`text-base mt-6 font-medium ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
-                        Additional: {additional}
-                      </p>
-                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
