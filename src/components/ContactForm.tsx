@@ -76,27 +76,26 @@ export default function ContactForm() {
       <div className="max-w-7xl mx-auto px-4 py-12 flex flex-col lg:flex-row gap-8">
         {/* Info Panel */}
         <div className={`${infoCardBg} p-8 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 lg:w-1/2`}>
-          <h3 className="text-2xl font-semibold mb-4">Let’s Make Your Business Stand Out Online.</h3>
+          <h3 className="text-2xl font-semibold mb-4">Open to Software Engineering Opportunities</h3>
+          <p className="text-base mb-4">
+            I build production systems across React/Next.js, Java/Spring Boot, Go, AWS, and applied AI, and I am actively exploring new engineering opportunities.
+          </p>
           <ul className="space-y-4 text-base">
             <li>
-              <strong>Pixel-perfect, mobile-friendly design</strong><br />
-              Your site will look flawless on every device — no cut corners, no broken layouts, even on tricky phones like Samsung Galaxy.
+              Interested in full-stack, frontend-heavy full-stack, platform, and systems-focused software engineering roles.
             </li>
             <li>
-              <strong>SEO-optimized to attract more customers</strong><br />
-              I build with SEO best practices so your site ranks higher and brings in real leads.
+              Open to conversations with recruiters, hiring managers, and employers looking for strong product-minded engineering ownership.
             </li>
             <li>
-              <strong>Fast, secure, and scalable</strong><br />
-              Lightweight code, modern tools, and API integrations like Google Maps and email mean your site works smoothly now and in the future.
+              Comfortable driving work end to end across frontend, backend, cloud infrastructure, and applied AI integrations.
             </li>
             <li>
-              <strong>Custom solutions for your business</strong><br />
-              Unlike generic site builders, I tailor every detail to match your brand, goals, and customers.
+              Resume, GitHub, and LinkedIn are available elsewhere on this site for quick review.
             </li>
           </ul>
           <p className="mt-6 font-medium">
-            Ready to upgrade your online presence? <strong>Contact me today</strong> and let’s discuss how we can make your business shine.
+            If you are hiring, feel free to reach out for opportunities, interviews, or technical conversations.
           </p>
         </div>
 
