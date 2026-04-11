@@ -22,6 +22,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [ready, setReady] = useState(false);
   const [isFirstLandscape, setIsFirstLandscape] = useState(true);
+  const [isHintOpen, setIsHintOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const { copyEmail } = useEmailCopy();
   const isDark = theme === "dark";
@@ -167,6 +168,36 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
           </div>
         </motion.div>
       </motion.div>
+
+      <div className="absolute left-0 top-1/2 -translate-y-1/2 z-30 group">
+        <button
+          type="button"
+          aria-label="Theme hint"
+          aria-expanded={isHintOpen}
+          onClick={() => setIsHintOpen((prev) => !prev)}
+          className={`px-2.5 py-1.5 rounded-r-lg border border-l-0 text-[11px] font-semibold tracking-wide transition-colors ${
+            isDark
+              ? "bg-black/45 border-white/15 text-white/85 hover:text-white"
+              : "bg-white/70 border-white/80 text-slate-700 hover:text-slate-900"
+          } backdrop-blur-sm shadow-sm`}
+        >
+          Hint
+        </button>
+
+        <div
+          className={`absolute left-full top-1/2 -translate-y-1/2 ml-2 px-3 py-2 rounded-lg border text-xs whitespace-nowrap backdrop-blur-sm shadow-sm transition-all duration-200 ${
+            isDark
+              ? "bg-black/60 border-white/15 text-white/90"
+              : "bg-white/80 border-white/80 text-slate-700"
+          } ${
+            isHintOpen
+              ? "opacity-100 translate-x-0 pointer-events-auto"
+              : "opacity-0 -translate-x-1 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0"
+          }`}
+        >
+          Click the sun/moon to switch theme
+        </div>
+      </div>
 
       {/* Landscape */}
       <AnimatePresence mode="sync" onExitComplete={() => setIsFirstLandscape(false)}>
