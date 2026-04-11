@@ -38,7 +38,7 @@ const skillCategories: SkillCategory[] = [
       'REST APIs',
       'Swagger / OpenAPI',
       'C++',
-      'Auth / Workflow Logic',
+      'Business Workflow Logic',
       'JWT / Auth / RBAC',
       'Stripe / Webhooks',
       'Discord.js / Bot Integrations',
