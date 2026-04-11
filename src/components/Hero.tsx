@@ -23,6 +23,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
   const [ready, setReady] = useState(false);
   const [isFirstLandscape, setIsFirstLandscape] = useState(true);
   const [isHintOpen, setIsHintOpen] = useState(false);
+  const [isCoarsePointer, setIsCoarsePointer] = useState(false);
   const { theme, setTheme } = useTheme();
   const { copyEmail } = useEmailCopy();
   const isDark = theme === "dark";
@@ -87,6 +88,36 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
     }
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+
+    const mediaQuery = window.matchMedia("(hover: none), (pointer: coarse)");
+    const updatePointerMode = () => setIsCoarsePointer(mediaQuery.matches);
+
+    updatePointerMode();
+    mediaQuery.addEventListener("change", updatePointerMode);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updatePointerMode);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isCoarsePointer) setIsHintOpen(false);
+  }, [isCoarsePointer]);
+
+  const handleHintClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (isCoarsePointer) {
+      setIsHintOpen((prev) => !prev);
+      return;
+    }
+
+    // Desktop hover/focus reveals the hint; mouse click should not pin it open.
+    if (event.detail !== 0) {
+      event.currentTarget.blur();
+    }
+  };
+
   return (
     <motion.section
       ref={sectionRef}
@@ -104,7 +135,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
       <motion.div
         key="dark-bg"
         className="absolute inset-0 bg-cover bg-center z-0"
-        style={{ backgroundImage: "url('/darkhero.jpg')" }}
+        style={{ backgroundImage: "url('/darkhero.webp')" }}
         initial={{ opacity: isDark ? 0 : 0, scale: 1.05, filter: "blur(10px)" }}
         animate={{
           opacity: isDark ? 1 : 0,
@@ -116,7 +147,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
       <motion.div
         key="light-bg"
         className="absolute inset-0 bg-cover bg-center z-0"
-        style={{ backgroundImage: "url('/lighthero.png')" }}
+        style={{ backgroundImage: "url('/lighthero.webp')" }}
         initial={{ opacity: !isDark ? 0 : 0, scale: 1.05, filter: "blur(10px)" }}
         animate={{
           opacity: !isDark ? 1 : 0,
@@ -152,7 +183,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
         >
           <div className="absolute inset-0 backface-hidden">
             <Image
-              src="/moon.png"
+              src="/moon.webp"
               alt="Moon"
               fill
               className="object-contain rounded-full"
@@ -160,7 +191,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
           </div>
           <div className="absolute inset-0 rotate-y-180 backface-hidden">
             <Image
-              src="/sun.png"
+              src="/sun.webp"
               alt="Sun"
               fill
               className="object-contain rounded-full"
@@ -169,12 +200,12 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
         </motion.div>
       </motion.div>
 
-      <div className="absolute left-0 top-1/2 -translate-y-1/2 z-30 group">
+      <div className="absolute left-0 top-[36%] -translate-y-1/2 z-30 group max-[719px]:top-[41%]">
         <button
           type="button"
           aria-label="Theme hint"
           aria-expanded={isHintOpen}
-          onClick={() => setIsHintOpen((prev) => !prev)}
+          onClick={handleHintClick}
           className={`px-2.5 py-1.5 rounded-r-lg border border-l-0 text-[11px] font-semibold tracking-wide transition-colors ${
             isDark
               ? "bg-black/45 border-white/15 text-white/85 hover:text-white"
@@ -185,7 +216,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
         </button>
 
         <div
-          className={`absolute left-full top-1/2 -translate-y-1/2 ml-2 px-3 py-2 rounded-lg border text-xs whitespace-nowrap backdrop-blur-sm shadow-sm transition-all duration-200 ${
+          className={`absolute left-full top-1/2 -translate-y-1/2 ml-2 max-w-[9.25rem] px-3 py-2 rounded-lg border text-xs leading-snug backdrop-blur-sm shadow-sm transition-all duration-200 ${
             isDark
               ? "bg-black/60 border-white/15 text-white/90"
               : "bg-white/80 border-white/80 text-slate-700"
@@ -195,7 +226,8 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
               : "opacity-0 -translate-x-1 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0"
           }`}
         >
-          Click the sun/moon to switch theme
+          <p>Click the sun/moon</p>
+          <p>to switch theme</p>
         </div>
       </div>
 
@@ -222,7 +254,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
           >
             <motion.div style={{ y: mountainY }} className="relative w-full h-full">
               <Image
-                src={isDark ? "/heromountain.png" : "/springland.png"}
+                src={isDark ? "/heromountain.webp" : "/springland.webp"}
                 alt={isDark ? "Hero Mountain" : "Spring Landscape"}
                 fill
                 priority
@@ -245,7 +277,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
           onClick={openAbout}
         >
           <Image
-            src="/profile_pic.png"
+            src="/profile_pic.webp"
             alt="Profile Picture"
             width={128}
             height={128}

@@ -64,7 +64,7 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
 
             <div className="relative mx-auto mb-6 w-1/3 min-w-[240px] h-auto">
               <Image
-                src="/about1.jpg"
+                src="/about1.webp"
                 alt="About Me 1"
                 layout="responsive"
                 width={300}
@@ -81,7 +81,7 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
 
             <div className="relative mx-auto mb-6 w-1/3 min-w-[240px] h-auto">
               <Image
-                src="/about2.jpg"
+                src="/about2.webp"
                 alt="About Me 2"
                 layout="responsive"
                 width={300}
@@ -102,7 +102,7 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
 
             <div className="relative mx-auto mb-6 w-1/3 min-w-[240px] h-auto">
               <Image
-                src="/about3.jpg"
+                src="/about3.webp"
                 alt="About Me 3"
                 layout="responsive"
                 width={300}
@@ -119,7 +119,7 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
 
             <div className="relative mx-auto mb-4 w-1/3 min-w-[240px] h-auto">
               <Image
-                src="/about4.jpg"
+                src="/about4.webp"
                 alt="About Me 4"
                 layout="responsive"
                 width={300}
