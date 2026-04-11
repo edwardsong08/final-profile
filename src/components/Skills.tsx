@@ -99,7 +99,6 @@ export default function Skills() {
 
   return (
     <section
-      id="skills"
       className={`transition-colors duration-300 transform-gpu ${
         isDark ? 'bg-zinc-800 text-zinc-100' : 'bg-zinc-100 text-zinc-900'
       }`}

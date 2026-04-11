@@ -71,7 +71,7 @@ export default function ContactForm() {
   };
 
   return (
-    <section id="contact" className={`${bgSection} transition-colors duration-300`}>
+    <section className={`${bgSection} transition-colors duration-300`}>
       <div className={`${bgHeader} py-8 transition-colors duration-300`}>
         <h2 className="text-4xl font-bold text-center">Contact</h2>
       </div>

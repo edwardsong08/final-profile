@@ -259,9 +259,9 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
               : "bg-white/58 border-white/65 shadow-[0_8px_24px_rgba(15,23,42,0.08)]"
           }`}
         >
-          <p className="text-xl mb-4">
+          <h1 className="text-xl mb-4">
             Full-Stack Engineer | Product Systems, Cloud & Applied AI
-          </p>
+          </h1>
 
           <div className="flex justify-center space-x-6 text-2xl mb-4">
             <button
