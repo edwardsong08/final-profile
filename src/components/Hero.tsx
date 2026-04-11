@@ -251,7 +251,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
         </div>
 
         <p className="text-xl mb-4">
-          Software engineer based in the New York Metropolitan Area.
+          Full-Stack Engineer | Product Systems, Cloud & Applied AI
         </p>
 
         <div className="flex space-x-6 text-2xl mb-4">
@@ -288,7 +288,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
           </a>
         </div>
 
-        <p className="italic">Striving for a habit of excellence.</p>
+        <p className="italic">Building production systems across React/Next.js, Java/Spring Boot, Go, Python, AWS, and applied AI.</p>
       </motion.div>
     </motion.section>
   );
