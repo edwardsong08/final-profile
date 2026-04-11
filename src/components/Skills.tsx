@@ -64,7 +64,7 @@ const skillCategories: SkillCategory[] = [
   {
     category: 'Tooling, Quality & Workflow',
     Icon: FiTool,
-    skills: ['Git / GitHub', 'Postman', 'JUnit 5', 'Spring Boot Test', 'ESLint', 'Resend', 'Google Maps API', 'Trello / Notion'],
+    skills: ['Git / GitHub', 'Postman', 'JUnit 5', 'Spring Boot Test', 'ESLint', 'Resend', 'Google Maps API', 'Linear / Monday / Trello / Notion'],
     context: 'Used across client work, TROA, ClaimChain, and Ryu Legal.',
   },
   {
