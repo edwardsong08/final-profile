@@ -22,7 +22,7 @@ const skillCategories: SkillCategory[] = [
       'Framer Motion',
       'React Hook Form',
       'Responsive UI',
-      'Technical SEO',
+      'Technical SEO / Lighthouse',
     ],
     context: 'Used in TROA public site, ClaimChain frontend, and Ryu Legal.',
   },
@@ -39,6 +39,9 @@ const skillCategories: SkillCategory[] = [
       'Swagger / OpenAPI',
       'C++',
       'Auth / Workflow Logic',
+      'JWT / Auth / RBAC',
+      'Stripe / Webhooks',
+      'Discord.js / Bot Integrations',
     ],
     context:
       'Used in ClaimChain, TROA platform work, chatbot/backend flows, and supporting backend systems.',
@@ -46,7 +49,7 @@ const skillCategories: SkillCategory[] = [
   {
     category: 'Data & Persistence',
     Icon: FiDatabase,
-    skills: ['PostgreSQL', 'Supabase', 'SQL', 'Hibernate / JPA', 'Spring Data JPA', 'SQLite', 'MyBatis'],
+    skills: ['PostgreSQL', 'Supabase', 'SQL', 'Hibernate / JPA', 'Spring Data JPA', 'SQLite', 'MyBatis', 'Supabase Security / RLS', 'Flyway'],
     context: 'Used in ClaimChain, TROA, and VZW Ledger.',
   },
   {
@@ -64,7 +67,7 @@ const skillCategories: SkillCategory[] = [
   {
     category: 'Tooling, Quality & Workflow',
     Icon: FiTool,
-    skills: ['Git / GitHub', 'Postman', 'JUnit 5', 'Spring Boot Test', 'ESLint', 'Resend', 'Google Maps API', 'Linear / Monday / Trello / Notion'],
+    skills: ['Git / GitHub', 'Postman', 'JUnit 5', 'Spring Boot Test', 'ESLint', 'Resend', 'Google Maps API', 'Google Calendar API', 'Google Analytics / GA4', 'Linear / Monday / Trello / Notion'],
     context: 'Used across client work, TROA, ClaimChain, and Ryu Legal.',
   },
   {
