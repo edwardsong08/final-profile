@@ -3,6 +3,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
+import { useEmailCopy } from './EmailCopyProvider';
 
 // Validation schema
 const schema = yup
@@ -28,6 +29,7 @@ export default function ContactForm() {
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [activeSlide, setActiveSlide] = useState<0 | 1>(0);
   const { resolvedTheme } = useTheme();
+  const { copyEmail } = useEmailCopy();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -105,12 +107,13 @@ export default function ContactForm() {
                   </div>
 
                   <div className="mt-6 grid grid-cols-2 gap-3">
-                    <a
-                      href="mailto:edwardsong08@gmail.com"
+                    <button
+                      type="button"
+                      onClick={() => void copyEmail()}
                       className="inline-flex w-full items-center justify-center rounded-lg px-3 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm sm:text-base font-semibold transition-colors"
                     >
                       Email Me
-                    </a>
+                    </button>
                     <a
                       href="/Resume-Edward_Song.pdf"
                       target="_blank"
