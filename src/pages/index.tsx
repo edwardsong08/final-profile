@@ -15,8 +15,8 @@ export default function Home() {
   return (
     <>
       <NextSeo
-        title="Edward Song- Portfolio"
-        description="Full‑stack developer specializing in Next.js, animations, and more."
+        title="Edward Song | Full-Stack Engineer"
+        description="Full-stack engineer building production systems across React/Next.js, Java/Spring Boot, Go, AWS, and applied AI. Portfolio featuring ClaimChain, TROA platform work, and production-focused engineering projects."
       />
 
       <div className={`scroll-smooth ${!heroLoaded ? 'overflow-hidden' : 'overflow-visible'}`}>

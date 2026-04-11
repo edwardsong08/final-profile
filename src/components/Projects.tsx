@@ -190,7 +190,7 @@ export default function Projects() {
   );
 
   return (
-    <section id="projects" className={`${bgSection} transition-colors duration-300`}>
+    <section className={`${bgSection} transition-colors duration-300`}>
       <div className={`${bgHeader} py-8 transition-colors duration-300`}>
         <h2 className="text-4xl font-bold text-center">Featured Work</h2>
         <p className={`text-center mt-2 text-sm ${subtitleText}`}>
