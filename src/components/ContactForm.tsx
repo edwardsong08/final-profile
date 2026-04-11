@@ -77,26 +77,43 @@ export default function ContactForm() {
         {/* Info Panel */}
         <div className={`${infoCardBg} p-8 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 lg:w-1/2`}>
           <h3 className="text-2xl font-semibold mb-4">Open to Software Engineering Opportunities</h3>
-          <p className="text-base mb-4">
-            I build production systems across React/Next.js, Java/Spring Boot, Go, AWS, and applied AI, and I am actively exploring new engineering opportunities.
-          </p>
-          <ul className="space-y-4 text-base">
-            <li>
-              Interested in full-stack, frontend-heavy full-stack, platform, and systems-focused software engineering roles.
-            </li>
-            <li>
-              Open to conversations with recruiters, hiring managers, and employers looking for strong product-minded engineering ownership.
-            </li>
-            <li>
-              Comfortable driving work end to end across frontend, backend, cloud infrastructure, and applied AI integrations.
-            </li>
-            <li>
-              Resume, GitHub, and LinkedIn are available elsewhere on this site for quick review.
-            </li>
-          </ul>
-          <p className="mt-6 font-medium">
-            If you are hiring, feel free to reach out for opportunities, interviews, or technical conversations.
-          </p>
+          <div className="space-y-4 text-base">
+            <p>I’m currently seeking software engineering roles where I can contribute across product, platform, and systems work.</p>
+            <p>Most interested in full-stack, platform, and systems-focused roles where strong engineering ownership and product sense matter.</p>
+            <p>Open to conversations with recruiters, hiring managers, and teams about opportunities, interviews, and technical discussions.</p>
+          </div>
+          <div className="mt-6 flex flex-wrap gap-4 text-sm font-medium">
+            <a
+              href="/Resume-Edward_Song.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${isDark ? 'text-zinc-200 hover:text-blue-300' : 'text-zinc-700 hover:text-blue-600'} transition-colors`}
+            >
+              Resume
+            </a>
+            <a
+              href="https://github.com/edwardsong08"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${isDark ? 'text-zinc-200 hover:text-blue-300' : 'text-zinc-700 hover:text-blue-600'} transition-colors`}
+            >
+              GitHub
+            </a>
+            <a
+              href="https://www.linkedin.com/in/edward-y-song"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${isDark ? 'text-zinc-200 hover:text-blue-300' : 'text-zinc-700 hover:text-blue-600'} transition-colors`}
+            >
+              LinkedIn
+            </a>
+            <a
+              href="mailto:edwardsong08@gmail.com"
+              className={`${isDark ? 'text-zinc-200 hover:text-blue-300' : 'text-zinc-700 hover:text-blue-600'} transition-colors`}
+            >
+              Email
+            </a>
+          </div>
         </div>
 
         {/* Contact Form */}
