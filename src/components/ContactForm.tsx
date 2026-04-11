@@ -81,34 +81,22 @@ export default function ContactForm() {
           <div className="space-y-3 text-base">
             <p>I’m currently seeking software engineering roles where I can contribute across product, platform, and systems work.</p>
             <p>Recent work has included full-stack product development, internal platform tooling, production debugging, infrastructure coordination, and applied AI integrations.</p>
-            <p>Most interested in full-stack, platform, and systems-focused roles where strong engineering ownership and product sense matter.</p>
+            <p>I’m especially drawn to technology that improves real workflows and creates practical, positive impact for users, teams, and communities.</p>
+            <p>Most interested in full-stack, platform, and systems-focused roles where strong engineering ownership, product sense, and thoughtful execution matter.</p>
             <p>Open to conversations with recruiters, hiring managers, and teams about opportunities, interviews, and technical discussions.</p>
           </div>
-          <p className={`mt-6 mb-3 text-xs font-semibold uppercase tracking-wide ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>
+          <p className={`mt-6 mb-3 text-xs font-semibold tracking-wide ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>
             Quick Links
           </p>
-          <div className="flex items-center gap-5 text-xl">
+          <div className="flex items-center gap-5 text-2xl">
             <a
-              href="/Resume-Edward_Song.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Resume"
+              href="mailto:edwardsong08@gmail.com"
+              aria-label="Email"
               className={`transition transform hover:scale-110 ${
                 isDark ? 'hover:text-blue-300' : 'hover:text-blue-600'
               }`}
             >
-              <FaFilePdf />
-            </a>
-            <a
-              href="https://github.com/edwardsong08"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub"
-              className={`transition transform hover:scale-110 ${
-                isDark ? 'hover:text-blue-300' : 'hover:text-blue-600'
-              }`}
-            >
-              <FaGithub />
+              <FaEnvelope />
             </a>
             <a
               href="https://www.linkedin.com/in/edward-y-song"
@@ -122,13 +110,26 @@ export default function ContactForm() {
               <FaLinkedin />
             </a>
             <a
-              href="mailto:edwardsong08@gmail.com"
-              aria-label="Email"
+              href="https://github.com/edwardsong08"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
               className={`transition transform hover:scale-110 ${
                 isDark ? 'hover:text-blue-300' : 'hover:text-blue-600'
               }`}
             >
-              <FaEnvelope />
+              <FaGithub />
+            </a>
+            <a
+              href="/Resume-Edward_Song.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Resume"
+              className={`transition transform hover:scale-110 ${
+                isDark ? 'hover:text-blue-300' : 'hover:text-blue-600'
+              }`}
+            >
+              <FaFilePdf />
             </a>
           </div>
         </div>
