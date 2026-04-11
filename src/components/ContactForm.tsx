@@ -74,9 +74,9 @@ export default function ContactForm() {
         <h2 className="text-4xl font-bold text-center">Contact</h2>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-12 flex flex-col lg:flex-row gap-8">
+      <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col lg:flex-row gap-8">
         {/* Info Panel */}
-        <div className={`${infoCardBg} p-8 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 lg:w-1/2`}>
+        <div className={`${infoCardBg} p-7 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 lg:w-1/2 lg:min-h-[520px]`}>
           <h3 className="text-2xl font-semibold mb-4">Open to Software Engineering Opportunities</h3>
           <div className="space-y-3 text-base">
             <p>I’m currently seeking software engineering roles where I can contribute across product, platform, and systems work.</p>
@@ -88,7 +88,7 @@ export default function ContactForm() {
         </div>
 
         {/* Contact Panel */}
-        <div className={`${formBg} p-8 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 lg:w-1/2 flex flex-col min-h-[560px] sm:min-h-[590px]`}>
+        <div className={`${formBg} p-7 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 lg:w-1/2 lg:min-h-[520px] flex flex-col`}>
           <div className="overflow-hidden flex-1">
             <div
               className={`flex w-[200%] transform-gpu transition-transform duration-300 ease-out ${
@@ -104,7 +104,7 @@ export default function ContactForm() {
                     </p>
                   </div>
 
-                  <div className="mt-8 grid grid-cols-2 gap-3">
+                  <div className="mt-6 grid grid-cols-2 gap-3">
                     <a
                       href="mailto:edwardsong08@gmail.com"
                       className="inline-flex w-full items-center justify-center rounded-lg px-3 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm sm:text-base font-semibold transition-colors"
@@ -209,16 +209,8 @@ export default function ContactForm() {
             </div>
           </div>
 
-          <div className="pt-4">
-            <p
-              className={`text-center text-xs leading-relaxed min-h-[2.5rem] transition-opacity duration-200 ${
-                isDark ? 'text-zinc-300' : 'text-zinc-600'
-              } ${activeSlide === 0 ? 'opacity-100' : 'opacity-0'}`}
-            >
-              NYC Metro Area · Open to Remote / Hybrid · Full-Stack / Platform / Systems Roles
-            </p>
-
-            <div className="mt-1.5 flex items-center justify-center gap-2">
+          <div className={`mt-4 pt-3 border-t ${isDark ? 'border-zinc-600/50' : 'border-zinc-300/70'}`}>
+            <div className="flex items-center justify-center gap-2">
             <button
               type="button"
               aria-label="Show quick contact options"
