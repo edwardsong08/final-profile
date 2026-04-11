@@ -3,6 +3,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
+import { FaEnvelope, FaLinkedin, FaGithub, FaFilePdf } from 'react-icons/fa';
 
 // Validation schema
 const schema = yup
@@ -77,41 +78,57 @@ export default function ContactForm() {
         {/* Info Panel */}
         <div className={`${infoCardBg} p-8 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 lg:w-1/2`}>
           <h3 className="text-2xl font-semibold mb-4">Open to Software Engineering Opportunities</h3>
-          <div className="space-y-4 text-base">
+          <div className="space-y-3 text-base">
             <p>I’m currently seeking software engineering roles where I can contribute across product, platform, and systems work.</p>
+            <p>Recent work has included full-stack product development, internal platform tooling, production debugging, infrastructure coordination, and applied AI integrations.</p>
             <p>Most interested in full-stack, platform, and systems-focused roles where strong engineering ownership and product sense matter.</p>
             <p>Open to conversations with recruiters, hiring managers, and teams about opportunities, interviews, and technical discussions.</p>
           </div>
-          <div className="mt-6 flex flex-wrap gap-4 text-sm font-medium">
+          <p className={`mt-6 mb-3 text-xs font-semibold uppercase tracking-wide ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>
+            Quick Links
+          </p>
+          <div className="flex items-center gap-5 text-xl">
             <a
               href="/Resume-Edward_Song.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className={`${isDark ? 'text-zinc-200 hover:text-blue-300' : 'text-zinc-700 hover:text-blue-600'} transition-colors`}
+              aria-label="Resume"
+              className={`transition transform hover:scale-110 ${
+                isDark ? 'hover:text-blue-300' : 'hover:text-blue-600'
+              }`}
             >
-              Resume
+              <FaFilePdf />
             </a>
             <a
               href="https://github.com/edwardsong08"
               target="_blank"
               rel="noopener noreferrer"
-              className={`${isDark ? 'text-zinc-200 hover:text-blue-300' : 'text-zinc-700 hover:text-blue-600'} transition-colors`}
+              aria-label="GitHub"
+              className={`transition transform hover:scale-110 ${
+                isDark ? 'hover:text-blue-300' : 'hover:text-blue-600'
+              }`}
             >
-              GitHub
+              <FaGithub />
             </a>
             <a
               href="https://www.linkedin.com/in/edward-y-song"
               target="_blank"
               rel="noopener noreferrer"
-              className={`${isDark ? 'text-zinc-200 hover:text-blue-300' : 'text-zinc-700 hover:text-blue-600'} transition-colors`}
+              aria-label="LinkedIn"
+              className={`transition transform hover:scale-110 ${
+                isDark ? 'hover:text-blue-300' : 'hover:text-blue-600'
+              }`}
             >
-              LinkedIn
+              <FaLinkedin />
             </a>
             <a
               href="mailto:edwardsong08@gmail.com"
-              className={`${isDark ? 'text-zinc-200 hover:text-blue-300' : 'text-zinc-700 hover:text-blue-600'} transition-colors`}
+              aria-label="Email"
+              className={`transition transform hover:scale-110 ${
+                isDark ? 'hover:text-blue-300' : 'hover:text-blue-600'
+              }`}
             >
-              Email
+              <FaEnvelope />
             </a>
           </div>
         </div>
