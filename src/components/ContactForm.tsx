@@ -88,24 +88,26 @@ export default function ContactForm() {
         </div>
 
         {/* Contact Panel */}
-        <div className={`${formBg} p-8 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 lg:w-1/2 flex flex-col`}>
+        <div className={`${formBg} p-8 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 lg:w-1/2 flex flex-col min-h-[560px] sm:min-h-[590px]`}>
           <div className="overflow-hidden flex-1">
             <div
               className={`flex w-[200%] transform-gpu transition-transform duration-300 ease-out ${
                 activeSlide === 0 ? 'translate-x-0' : '-translate-x-1/2'
               }`}
             >
-              <div className="w-1/2 flex-shrink-0 pr-2">
+              <div className="w-1/2 flex-shrink-0 px-1">
                 <div className="h-full flex flex-col">
-                  <h3 className="text-2xl font-semibold mb-4">Best Ways to Reach Me</h3>
-                  <p className={`text-base ${isDark ? 'text-zinc-200' : 'text-zinc-700'}`}>
-                    For opportunities, interviews, and technical conversations, these are the fastest ways to connect.
-                  </p>
+                  <div>
+                    <h3 className="text-2xl font-semibold mb-4">Best Ways to Reach Me</h3>
+                    <p className={`text-base ${isDark ? 'text-zinc-200' : 'text-zinc-700'}`}>
+                      For opportunities, interviews, and technical conversations, these are the fastest ways to connect.
+                    </p>
+                  </div>
 
-                  <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="mt-8 grid grid-cols-2 gap-3">
                     <a
                       href="mailto:edwardsong08@gmail.com"
-                      className="inline-flex items-center justify-center rounded-lg px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors"
+                      className="inline-flex w-full items-center justify-center rounded-lg px-3 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm sm:text-base font-semibold transition-colors"
                     >
                       Email Me
                     </a>
@@ -113,18 +115,15 @@ export default function ContactForm() {
                       href="/Resume-Edward_Song.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center rounded-lg px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
+                      className="inline-flex w-full items-center justify-center rounded-lg px-3 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm sm:text-base font-semibold transition-colors"
                     >
                       View Resume
                     </a>
-                  </div>
-
-                  <div className="mt-4 flex flex-wrap gap-3">
                     <a
                       href="https://www.linkedin.com/in/edward-y-song"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium border transition-colors ${
+                      className={`inline-flex w-full items-center justify-center rounded-lg px-3 py-3 text-sm sm:text-base font-medium border transition-colors ${
                         isDark
                           ? 'border-zinc-500 text-zinc-200 hover:text-white hover:border-zinc-300'
                           : 'border-zinc-400 text-zinc-700 hover:text-zinc-900 hover:border-zinc-600'
@@ -136,7 +135,7 @@ export default function ContactForm() {
                       href="https://github.com/edwardsong08"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium border transition-colors ${
+                      className={`inline-flex w-full items-center justify-center rounded-lg px-3 py-3 text-sm sm:text-base font-medium border transition-colors ${
                         isDark
                           ? 'border-zinc-500 text-zinc-200 hover:text-white hover:border-zinc-300'
                           : 'border-zinc-400 text-zinc-700 hover:text-zinc-900 hover:border-zinc-600'
@@ -145,15 +144,11 @@ export default function ContactForm() {
                       GitHub
                     </a>
                   </div>
-
-                  <p className={`mt-auto pt-6 text-xs ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>
-                    NYC Metro Area · Open to Remote / Hybrid · Full-Stack / Platform / Systems Roles
-                  </p>
                 </div>
               </div>
 
-              <div className="w-1/2 flex-shrink-0 pl-2">
-                <form onSubmit={handleSubmit(onSubmit)} className="h-full">
+              <div className="w-1/2 flex-shrink-0 px-1">
+                <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
                   <div className="mb-6">
                     <label htmlFor="name" className="block mb-2 font-semibold">
                       Name
@@ -214,7 +209,16 @@ export default function ContactForm() {
             </div>
           </div>
 
-          <div className="mt-6 flex items-center justify-center gap-2">
+          <div className="pt-4">
+            <p
+              className={`text-center text-xs leading-relaxed min-h-[2.5rem] transition-opacity duration-200 ${
+                isDark ? 'text-zinc-300' : 'text-zinc-600'
+              } ${activeSlide === 0 ? 'opacity-100' : 'opacity-0'}`}
+            >
+              NYC Metro Area · Open to Remote / Hybrid · Full-Stack / Platform / Systems Roles
+            </p>
+
+            <div className="mt-1.5 flex items-center justify-center gap-2">
             <button
               type="button"
               aria-label="Show quick contact options"
@@ -243,6 +247,7 @@ export default function ContactForm() {
                     : 'bg-transparent border-zinc-400 hover:border-zinc-700'
               }`}
             />
+            </div>
           </div>
         </div>
       </div>
