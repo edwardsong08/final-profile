@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import Image from "next/image";
 import { FaEnvelope, FaLinkedin, FaGithub, FaFilePdf } from "react-icons/fa";
 import { useTheme } from "next-themes";
+import { useEmailCopy } from "./EmailCopyProvider";
 
 interface HeroProps {
   onReady?: () => void;
@@ -22,6 +23,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
   const [ready, setReady] = useState(false);
   const [isFirstLandscape, setIsFirstLandscape] = useState(true);
   const { theme, setTheme } = useTheme();
+  const { copyEmail } = useEmailCopy();
   const isDark = theme === "dark";
 
   const { scrollY } = useScroll();
@@ -262,15 +264,16 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
           </p>
 
           <div className="flex justify-center space-x-6 text-2xl mb-4">
-            <a
-              href="mailto:edwardsong08@gmail.com"
+            <button
+              type="button"
+              onClick={() => void copyEmail()}
               aria-label="Email"
               className={`transition transform hover:scale-110 ${
                 isDark ? "hover:text-blue-300" : "hover:text-blue-600"
               }`}
             >
               <FaEnvelope />
-            </a>
+            </button>
             <a
               href="https://www.linkedin.com/in/edward-y-song"
               target="_blank"
