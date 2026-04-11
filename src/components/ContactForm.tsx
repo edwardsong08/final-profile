@@ -3,7 +3,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
-import { FaEnvelope, FaLinkedin, FaGithub, FaFilePdf } from 'react-icons/fa';
 
 // Validation schema
 const schema = yup
@@ -27,6 +26,7 @@ export default function ContactForm() {
   });
 
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [activeSlide, setActiveSlide] = useState<0 | 1>(0);
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -85,116 +85,166 @@ export default function ContactForm() {
             <p>Most interested in full-stack, platform, and systems-focused roles where strong engineering ownership, product sense, and thoughtful execution matter.</p>
             <p>Open to conversations with recruiters, hiring managers, and teams about opportunities, interviews, and technical discussions.</p>
           </div>
-          <p className={`mt-6 mb-3 text-xs font-semibold tracking-wide ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>
-            Quick Links
-          </p>
-          <div className="flex items-center gap-5 text-2xl">
-            <a
-              href="mailto:edwardsong08@gmail.com"
-              aria-label="Email"
-              className={`transition transform hover:scale-110 ${
-                isDark ? 'hover:text-blue-300' : 'hover:text-blue-600'
-              }`}
-            >
-              <FaEnvelope />
-            </a>
-            <a
-              href="https://www.linkedin.com/in/edward-y-song"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn"
-              className={`transition transform hover:scale-110 ${
-                isDark ? 'hover:text-blue-300' : 'hover:text-blue-600'
-              }`}
-            >
-              <FaLinkedin />
-            </a>
-            <a
-              href="https://github.com/edwardsong08"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub"
-              className={`transition transform hover:scale-110 ${
-                isDark ? 'hover:text-blue-300' : 'hover:text-blue-600'
-              }`}
-            >
-              <FaGithub />
-            </a>
-            <a
-              href="/Resume-Edward_Song.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Resume"
-              className={`transition transform hover:scale-110 ${
-                isDark ? 'hover:text-blue-300' : 'hover:text-blue-600'
-              }`}
-            >
-              <FaFilePdf />
-            </a>
-          </div>
         </div>
 
-        {/* Contact Form */}
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className={`${formBg} p-8 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 lg:w-1/2`}
-        >
-          <div className="mb-6">
-            <label htmlFor="name" className="block mb-2 font-semibold">
-              Name
-            </label>
-            <input
-              id="name"
-              {...register('name')}
-              className={`w-full px-4 py-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 border ${inputBg}`}
-            />
-            {errors.name && <p className={errorText}>{errors.name.message}</p>}
+        {/* Contact Panel */}
+        <div className={`${formBg} p-8 rounded-2xl shadow-md hover:shadow-lg hover:shadow-emerald-400/40 lg:w-1/2 flex flex-col`}>
+          <div className="overflow-hidden flex-1">
+            <div
+              className={`flex w-[200%] transform-gpu transition-transform duration-300 ease-out ${
+                activeSlide === 0 ? 'translate-x-0' : '-translate-x-1/2'
+              }`}
+            >
+              <div className="w-1/2 flex-shrink-0 pr-2">
+                <div className="h-full flex flex-col">
+                  <h3 className="text-2xl font-semibold mb-4">Best Ways to Reach Me</h3>
+                  <p className={`text-base ${isDark ? 'text-zinc-200' : 'text-zinc-700'}`}>
+                    For opportunities, interviews, and technical conversations, these are the fastest ways to connect.
+                  </p>
+
+                  <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <a
+                      href="mailto:edwardsong08@gmail.com"
+                      className="inline-flex items-center justify-center rounded-lg px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors"
+                    >
+                      Email Me
+                    </a>
+                    <a
+                      href="/Resume-Edward_Song.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center rounded-lg px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
+                    >
+                      View Resume
+                    </a>
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <a
+                      href="https://www.linkedin.com/in/edward-y-song"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium border transition-colors ${
+                        isDark
+                          ? 'border-zinc-500 text-zinc-200 hover:text-white hover:border-zinc-300'
+                          : 'border-zinc-400 text-zinc-700 hover:text-zinc-900 hover:border-zinc-600'
+                      }`}
+                    >
+                      LinkedIn
+                    </a>
+                    <a
+                      href="https://github.com/edwardsong08"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium border transition-colors ${
+                        isDark
+                          ? 'border-zinc-500 text-zinc-200 hover:text-white hover:border-zinc-300'
+                          : 'border-zinc-400 text-zinc-700 hover:text-zinc-900 hover:border-zinc-600'
+                      }`}
+                    >
+                      GitHub
+                    </a>
+                  </div>
+
+                  <p className={`mt-auto pt-6 text-xs ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>
+                    NYC Metro Area · Open to Remote / Hybrid · Full-Stack / Platform / Systems Roles
+                  </p>
+                </div>
+              </div>
+
+              <div className="w-1/2 flex-shrink-0 pl-2">
+                <form onSubmit={handleSubmit(onSubmit)} className="h-full">
+                  <div className="mb-6">
+                    <label htmlFor="name" className="block mb-2 font-semibold">
+                      Name
+                    </label>
+                    <input
+                      id="name"
+                      {...register('name')}
+                      className={`w-full px-4 py-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 border ${inputBg}`}
+                    />
+                    {errors.name && <p className={errorText}>{errors.name.message}</p>}
+                  </div>
+
+                  <div className="mb-6">
+                    <label htmlFor="email" className="block mb-2 font-semibold">
+                      Email
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      {...register('email')}
+                      className={`w-full px-4 py-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 border ${inputBg}`}
+                    />
+                    {errors.email && <p className={errorText}>{errors.email.message}</p>}
+                  </div>
+
+                  <div className="mb-8">
+                    <label htmlFor="message" className="block mb-2 font-semibold">
+                      Message
+                    </label>
+                    <textarea
+                      id="message"
+                      {...register('message')}
+                      className={`w-full px-4 py-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 border h-40 ${inputBg}`}
+                    />
+                    {errors.message && <p className={errorText}>{errors.message.message}</p>}
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-lg"
+                  >
+                    {isSubmitting ? 'Sending…' : 'Send Message'}
+                  </button>
+
+                  {status === 'success' && (
+                    <p className="text-green-400 text-center mt-4">
+                      Message sent successfully!
+                    </p>
+                  )}
+                  {status === 'error' && (
+                    <p className="text-red-400 text-center mt-4">
+                      Failed to send message. Please try again.
+                    </p>
+                  )}
+                </form>
+              </div>
+            </div>
           </div>
 
-          <div className="mb-6">
-            <label htmlFor="email" className="block mb-2 font-semibold">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              {...register('email')}
-              className={`w-full px-4 py-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 border ${inputBg}`}
+          <div className="mt-6 flex items-center justify-center gap-2">
+            <button
+              type="button"
+              aria-label="Show quick contact options"
+              onClick={() => setActiveSlide(0)}
+              className={`h-2.5 w-2.5 rounded-full border transition-colors ${
+                activeSlide === 0
+                  ? isDark
+                    ? 'bg-white border-white'
+                    : 'bg-zinc-800 border-zinc-800'
+                  : isDark
+                    ? 'bg-transparent border-zinc-400 hover:border-zinc-200'
+                    : 'bg-transparent border-zinc-400 hover:border-zinc-700'
+              }`}
             />
-            {errors.email && <p className={errorText}>{errors.email.message}</p>}
-          </div>
-
-          <div className="mb-8">
-            <label htmlFor="message" className="block mb-2 font-semibold">
-              Message
-            </label>
-            <textarea
-              id="message"
-              {...register('message')}
-              className={`w-full px-4 py-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 border h-40 ${inputBg}`}
+            <button
+              type="button"
+              aria-label="Show contact form"
+              onClick={() => setActiveSlide(1)}
+              className={`h-2.5 w-2.5 rounded-full border transition-colors ${
+                activeSlide === 1
+                  ? isDark
+                    ? 'bg-white border-white'
+                    : 'bg-zinc-800 border-zinc-800'
+                  : isDark
+                    ? 'bg-transparent border-zinc-400 hover:border-zinc-200'
+                    : 'bg-transparent border-zinc-400 hover:border-zinc-700'
+              }`}
             />
-            {errors.message && <p className={errorText}>{errors.message.message}</p>}
           </div>
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-lg"
-          >
-            {isSubmitting ? 'Sending…' : 'Send Message'}
-          </button>
-
-          {status === 'success' && (
-            <p className="text-green-400 text-center mt-4">
-              Message sent successfully!
-            </p>
-          )}
-          {status === 'error' && (
-            <p className="text-red-400 text-center mt-4">
-              Failed to send message. Please try again.
-            </p>
-          )}
-        </form>
+        </div>
       </div>
     </section>
   );
