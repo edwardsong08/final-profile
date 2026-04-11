@@ -2,6 +2,13 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 
+const MENU_ITEMS = [
+  { label: 'Profile', href: '#hero', id: 'hero' },
+  { label: 'Featured Work', href: '#projects', id: 'projects' },
+  { label: 'Skills', href: '#skills', id: 'skills' },
+  { label: 'Contact', href: '#contact', id: 'contact' },
+];
+
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -9,13 +16,6 @@ export default function Navbar() {
   const [heroReady, setHeroReady] = useState(false);
 
   const isDark = theme === 'dark';
-
-  const menuItems = [
-    { label: 'Profile', href: '#hero', id: 'hero' },
-    { label: 'Skills', href: '#skills', id: 'skills' },
-    { label: 'Projects', href: '#projects', id: 'projects' },
-    { label: 'Contact', href: '#contact', id: 'contact' },
-  ];
 
   useEffect(() => {
     const timer = setTimeout(() => setHeroReady(true), 1800);
@@ -32,45 +32,55 @@ export default function Navbar() {
     exit: { opacity: 0, x: 40, transition: { duration: 0.15 } },
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (!heroReady) return; // Wait until sections are mounted
+    if (!heroReady) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio); // most visible section wins
+    const getActiveSectionFromFocusLine = () => {
+      const focusY = window.scrollY + window.innerHeight * 0.35;
+      let nextActive = MENU_ITEMS[0].id;
 
-        if (visible.length > 0) {
-          setActiveSection(visible[0].target.id);
+      MENU_ITEMS.forEach((item) => {
+        const section = document.getElementById(item.id);
+        if (!section) return;
+
+        const top = section.offsetTop;
+        const bottom = top + section.offsetHeight;
+
+        if (focusY >= top && focusY < bottom) {
+          nextActive = item.id;
+          return;
         }
-      },
-      {
-        root: null,
-        threshold: 0.1,
-      }
-    );
 
-    const sectionElements: HTMLElement[] = [];
+        if (focusY >= top) {
+          nextActive = item.id;
+        }
+      });
 
-    menuItems.forEach((item) => {
-      const el = document.getElementById(item.id);
-      if (el) {
-        observer.observe(el);
-        sectionElements.push(el);
-      }
-    });
+      setActiveSection((current) => (current === nextActive ? current : nextActive));
+    };
+
+    let ticking = false;
+    const updateActiveSection = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        getActiveSectionFromFocusLine();
+        ticking = false;
+      });
+    };
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setMenuOpen(false);
     };
 
+    updateActiveSection();
+    window.addEventListener('scroll', updateActiveSection, { passive: true });
+    window.addEventListener('resize', updateActiveSection);
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      sectionElements.forEach((el) => observer.unobserve(el));
-      observer.disconnect();
+      window.removeEventListener('scroll', updateActiveSection);
+      window.removeEventListener('resize', updateActiveSection);
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [heroReady]);
@@ -110,7 +120,7 @@ export default function Navbar() {
                 className={`fixed top-2 right-2 w-46 z-40 pt-24 pr-6 pb-6 pl-4 rounded-lg shadow-lg
                   ${isDark ? 'bg-zinc-900/90' : 'bg-white/90'} text-right space-y-6`}
               >
-                {menuItems.map((item) => (
+                {MENU_ITEMS.map((item) => (
                   <motion.li key={item.href} className="relative">
                     <a
                       href={item.href}
@@ -137,6 +147,31 @@ export default function Navbar() {
                     )}
                   </motion.li>
                 ))}
+
+                <li
+                  aria-hidden="true"
+                  className={`border-t ${isDark ? 'border-white/15' : 'border-black/15'}`}
+                />
+
+                <motion.li className="relative">
+                  <a
+                    href="/Resume-Edward_Song.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`text-lg font-semibold transition-colors ${
+                      isDark
+                        ? 'text-white/70 hover:text-white'
+                        : 'text-black/70 hover:text-black'
+                    }`}
+                  >
+                    Resume
+                  </a>
+                </motion.li>
+
+                <li
+                  aria-hidden="true"
+                  className={`border-t ${isDark ? 'border-white/15' : 'border-black/15'}`}
+                />
 
                 {/* Theme Toggle */}
                 <motion.li className="text-right pr-2">

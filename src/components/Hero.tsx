@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
-import { FaEnvelope, FaLinkedin, FaGithub } from "react-icons/fa";
+import { FaEnvelope, FaLinkedin, FaGithub, FaFilePdf } from "react-icons/fa";
 import { useTheme } from "next-themes";
 
 interface HeroProps {
@@ -250,45 +250,73 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
           </svg>
         </div>
 
-        <p className="text-xl mb-4">
-          Full-Stack Engineer | Product Systems, Cloud & Applied AI
-        </p>
+        <div
+          className={`w-full max-w-2xl px-4 sm:px-6 py-4 sm:py-5 rounded-2xl border backdrop-blur-[3px] ${
+            isDark
+              ? "bg-black/28 border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.28)]"
+              : "bg-white/58 border-white/65 shadow-[0_8px_24px_rgba(15,23,42,0.08)]"
+          }`}
+        >
+          <p className="text-xl mb-4">
+            Full-Stack Engineer | Product Systems, Cloud & Applied AI
+          </p>
 
-        <div className="flex space-x-6 text-2xl mb-4">
-          <a
-            href="mailto:edwardsong08@gmail.com"
-            aria-label="Email"
-            className={`transition transform hover:scale-110 ${
-              isDark ? "hover:text-blue-300" : "hover:text-blue-600"
+          <div className="flex justify-center space-x-6 text-2xl mb-4">
+            <a
+              href="mailto:edwardsong08@gmail.com"
+              aria-label="Email"
+              className={`transition transform hover:scale-110 ${
+                isDark ? "hover:text-blue-300" : "hover:text-blue-600"
+              }`}
+            >
+              <FaEnvelope />
+            </a>
+            <a
+              href="https://www.linkedin.com/in/edward-y-song"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className={`transition transform hover:scale-110 ${
+                isDark ? "hover:text-blue-300" : "hover:text-blue-600"
+              }`}
+            >
+              <FaLinkedin />
+            </a>
+            <a
+              href="https://github.com/edwardsong08"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+              className={`transition transform hover:scale-110 ${
+                isDark ? "hover:text-blue-300" : "hover:text-blue-600"
+              }`}
+            >
+              <FaGithub />
+            </a>
+            <a
+              href="/Resume-Edward_Song.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Resume"
+              className={`transition transform hover:scale-110 ${
+                isDark ? "hover:text-blue-300" : "hover:text-blue-600"
+              }`}
+            >
+              <FaFilePdf />
+            </a>
+          </div>
+
+          <p
+            className={`italic text-sm sm:text-base leading-relaxed ${
+              isDark ? "text-white/95" : "text-slate-700"
             }`}
+            style={{
+              textShadow: isDark ? "0 1px 8px rgba(0, 0, 0, 0.35)" : "none",
+            }}
           >
-            <FaEnvelope />
-          </a>
-          <a
-            href="https://www.linkedin.com/in/edward-y-song"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="LinkedIn"
-            className={`transition transform hover:scale-110 ${
-              isDark ? "hover:text-blue-300" : "hover:text-blue-600"
-            }`}
-          >
-            <FaLinkedin />
-          </a>
-          <a
-            href="https://github.com/edwardsong08"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub"
-            className={`transition transform hover:scale-110 ${
-              isDark ? "hover:text-blue-300" : "hover:text-blue-600"
-            }`}
-          >
-            <FaGithub />
-          </a>
+            Building production systems across React/Next.js, Java/Spring Boot, Go, AWS, and applied AI.
+          </p>
         </div>
-
-        <p className="italic">Building production systems across React/Next.js, Java/Spring Boot, Go, Python, AWS, and applied AI.</p>
       </motion.div>
     </motion.section>
   );
