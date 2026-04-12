@@ -41,16 +41,16 @@ export default function ContactForm() {
   const isDark = resolvedTheme === 'dark';
 
   const sectionText = isDark ? 'text-zinc-100' : 'text-zinc-900';
-  const sectionOverlay = isDark ? 'bg-black/72' : 'bg-[rgba(242,236,226,0.82)]';
+  const sectionOverlay = isDark ? 'bg-black/60' : 'bg-[rgba(242,236,226,0.82)]';
   const headerSurface = isDark
-    ? 'bg-zinc-900 border-b border-zinc-800 shadow-[0_1px_0_rgba(255,255,255,0.04)]'
+    ? 'bg-zinc-800 border-b border-zinc-700 shadow-[0_1px_0_rgba(255,255,255,0.04)]'
     : 'bg-stone-300 border-b border-stone-400 shadow-[0_1px_0_rgba(255,255,255,0.55)]';
   const formBg = isDark
-    ? 'bg-zinc-900/60 border-white/18 shadow-[0_14px_32px_rgba(0,0,0,0.36)]'
-    : 'bg-stone-300 border-stone-400 shadow-[0_12px_26px_rgba(41,37,36,0.12)]';
+    ? 'bg-zinc-900/80 border-white/14 shadow-[0_14px_32px_rgba(0,0,0,0.36)]'
+    : 'bg-stone-200 border-stone-300 shadow-[0_12px_26px_rgba(41,37,36,0.12)]';
   const infoCardBg = isDark
-    ? 'bg-zinc-900/54 border-white/14 shadow-[0_12px_28px_rgba(0,0,0,0.34)]'
-    : 'bg-stone-300 border-stone-400 shadow-[0_10px_24px_rgba(41,37,36,0.10)]';
+    ? 'bg-zinc-900/80 border-white/14 shadow-[0_12px_28px_rgba(0,0,0,0.34)]'
+    : 'bg-stone-200 border-stone-300 shadow-[0_10px_24px_rgba(41,37,36,0.10)]';
   const inputBg = isDark
     ? 'bg-zinc-900/75 text-white border-zinc-500/80'
     : 'bg-stone-50/95 text-zinc-900 border-stone-300';

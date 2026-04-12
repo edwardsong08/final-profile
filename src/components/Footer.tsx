@@ -7,7 +7,7 @@ export default function Footer({ openAbout }: { openAbout: () => void }) {
   const { copyEmail } = useEmailCopy();
   const isDark = resolvedTheme === 'dark';
 
-  const bgFooter = isDark ? 'bg-zinc-900 text-zinc-400' : 'bg-zinc-200 text-zinc-600';
+  const bgFooter = isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-200 text-zinc-600';
   const hoverText = isDark ? 'hover:text-white' : 'hover:text-black';
   const dividerColor = isDark ? 'border-zinc-600' : 'border-zinc-400';
 

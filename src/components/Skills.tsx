@@ -91,17 +91,17 @@ export default function Skills() {
   if (!mounted) return null;
 
   const sectionText = isDark ? 'text-zinc-100' : 'text-zinc-900';
-  const sectionOverlay = isDark ? 'bg-black/72' : 'bg-[rgba(242,236,226,0.82)]';
+  const sectionOverlay = isDark ? 'bg-black/60' : 'bg-[rgba(242,236,226,0.82)]';
   const headerSurface = isDark
-    ? 'bg-zinc-900 border-b border-zinc-800 shadow-[0_1px_0_rgba(255,255,255,0.04)]'
+    ? 'bg-zinc-800 border-b border-zinc-700 shadow-[0_1px_0_rgba(255,255,255,0.04)]'
     : 'bg-stone-300 border-b border-stone-400 shadow-[0_1px_0_rgba(255,255,255,0.55)]';
   const chipClass = isDark
     ? 'bg-zinc-700/80 border-zinc-600 text-zinc-100'
     : 'bg-stone-100/90 border-stone-300 text-zinc-800';
   const contextClass = isDark ? 'text-zinc-300' : 'text-zinc-600';
   const panelClass = isDark
-    ? 'bg-zinc-900/48 border-white/12 backdrop-blur-[2px] shadow-[0_8px_20px_rgba(0,0,0,0.28)]'
-    : 'bg-stone-300 border-stone-400 backdrop-blur-[2px] shadow-[0_6px_18px_rgba(41,37,36,0.10)]';
+    ? 'bg-zinc-900/80 border-white/14 backdrop-blur-[2px] shadow-[0_8px_20px_rgba(0,0,0,0.28)]'
+    : 'bg-stone-200 border-stone-300 backdrop-blur-[2px] shadow-[0_6px_18px_rgba(41,37,36,0.10)]';
   const iconClass = isDark ? 'text-blue-300/90' : 'text-blue-600/80';
 
   return (
@@ -126,7 +126,7 @@ export default function Skills() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-80px 0px -80px 0px' }}
                 transition={{ duration: 0.3, delay: index * 0.03, ease: 'easeOut' }}
-                className={`rounded-xl border p-4 sm:p-5 ${panelClass}`}
+                className={`rounded-xl border p-4 sm:p-5 transition-colors duration-300 hover:shadow-lg hover:shadow-blue-400/30 transition-transform transform hover:scale-[1.01] ${panelClass}`}
               >
                 <div className="flex items-center gap-2.5 mb-2">
                   <Icon className={`text-base sm:text-lg ${iconClass}`} />
