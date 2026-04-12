@@ -110,9 +110,20 @@ export default function Projects() {
   if (!mounted) return null;
 
   const isDark = resolvedTheme === 'dark';
-  const bgSection = isDark ? 'bg-zinc-800 text-zinc-100' : 'bg-zinc-100 text-zinc-900';
-  const bgHeader = isDark ? 'bg-zinc-900' : 'bg-zinc-200';
-  const cardBg = isDark ? 'bg-zinc-700' : 'bg-zinc-200';
+  const sectionText = isDark ? 'text-zinc-100' : 'text-zinc-900';
+  const sectionOverlay = isDark ? 'bg-black/72' : 'bg-[rgba(242,236,226,0.82)]';
+  const headerSurface = isDark
+    ? 'bg-zinc-900 border-b border-zinc-800 shadow-[0_1px_0_rgba(255,255,255,0.04)]'
+    : 'bg-stone-300 border-b border-stone-400 shadow-[0_1px_0_rgba(255,255,255,0.55)]';
+  const spotlightCardBg = isDark
+    ? 'bg-zinc-900/62 border-white/18 shadow-[0_18px_40px_rgba(0,0,0,0.42)]'
+    : 'bg-stone-300 border-stone-400 shadow-[0_14px_30px_rgba(41,37,36,0.12)]';
+  const featureCardBg = isDark
+    ? 'bg-zinc-900/56 border-white/15 shadow-[0_14px_34px_rgba(0,0,0,0.36)]'
+    : 'bg-stone-300 border-stone-400 shadow-[0_12px_26px_rgba(41,37,36,0.10)]';
+  const supportingCardBg = isDark
+    ? 'bg-zinc-900/52 border-white/12 shadow-[0_10px_24px_rgba(0,0,0,0.30)]'
+    : 'bg-stone-300 border-stone-400 shadow-[0_10px_22px_rgba(41,37,36,0.09)]';
   const descriptionText = isDark ? 'text-zinc-300' : 'text-zinc-700';
   const subtitleText = isDark ? 'text-zinc-400' : 'text-zinc-600';
   const noteText = isDark ? 'text-zinc-400' : 'text-zinc-600';
@@ -190,85 +201,62 @@ export default function Projects() {
   );
 
   return (
-    <section className={`${bgSection} transition-colors duration-300`}>
-      <div className={`${bgHeader} py-8 transition-colors duration-300`}>
-        <h2 className="text-4xl font-bold text-center">Featured Work</h2>
-        <p className={`text-center mt-2 text-sm ${subtitleText}`}>
-          Selected production work, platform ownership, and systems-focused builds.
-        </p>
-      </div>
+    <section className={`relative overflow-hidden transition-colors duration-300 ${sectionText}`}>
+      <div
+        className="absolute inset-0 z-0 bg-cover bg-center"
+        style={{ backgroundImage: "url('/sectionsbackground.webp')" }}
+      />
+      <div className={`absolute inset-0 z-0 ${sectionOverlay}`} />
 
-      <div className="max-w-6xl mx-auto px-4 py-16 space-y-8">
-        {spotlightProject && (
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-            className={`transition-colors duration-300 ${cardBg} p-7 sm:p-8 rounded-3xl shadow-md hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-[1.01] flex flex-col`}
-          >
-            <div className="mb-3 flex items-center gap-2">
-              <span className={`w-3 h-3 rounded-full ${statusMap[spotlightProject.status].color}`} />
-              <span className="text-sm font-medium opacity-80">{statusMap[spotlightProject.status].label}</span>
-            </div>
+      <div className="relative z-10">
+        <div className={`${headerSurface} py-8 transition-colors duration-300`}>
+          <h2 className="text-4xl font-bold text-center">Featured Work</h2>
+          <p className={`text-center mt-2 text-sm ${subtitleText}`}>
+            Selected production work, platform ownership, and systems-focused builds.
+          </p>
+        </div>
 
-            <h3 className="text-2xl sm:text-3xl font-semibold mb-4">{spotlightProject.title}</h3>
-            <p className={`${descriptionText} text-base sm:text-lg leading-relaxed`}>
-              {spotlightProject.shortDescription}
-            </p>
-            {spotlightProject.note && (
-              <p className={`mt-3 text-xs italic ${noteText}`}>{spotlightProject.note}</p>
-            )}
-            {renderActions(
-              spotlightProject,
-              spotlightProject.fullDescription !== spotlightProject.shortDescription,
-              true
-            )}
-          </motion.div>
-        )}
-
-        {featureProjects.map((project) => {
-          const statusData = statusMap[project.status];
-          const isExpandable = project.fullDescription !== project.shortDescription;
-
-          return (
+        <div className="max-w-6xl mx-auto px-4 py-16 space-y-8">
+          {spotlightProject && (
             <motion.div
-              key={project.title}
-              initial={{ opacity: 0, y: 32 }}
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.7, ease: 'easeOut' }}
-              className={`transition-colors duration-300 ${cardBg} p-7 rounded-2xl shadow-md hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-[1.01] flex flex-col`}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+              className={`transition-colors duration-300 ${spotlightCardBg} p-7 sm:p-8 rounded-3xl border backdrop-blur-sm hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-[1.01] flex flex-col`}
             >
-              {statusData && (
-                <div className="mb-3 flex items-center gap-2">
-                  <span className={`w-3 h-3 rounded-full ${statusData.color}`} />
-                  <span className="text-sm font-medium opacity-80">{statusData.label}</span>
-                </div>
+              <div className="mb-3 flex items-center gap-2">
+                <span className={`w-3 h-3 rounded-full ${statusMap[spotlightProject.status].color}`} />
+                <span className="text-sm font-medium opacity-80">{statusMap[spotlightProject.status].label}</span>
+              </div>
+
+              <h3 className="text-2xl sm:text-3xl font-semibold mb-4">{spotlightProject.title}</h3>
+              <p className={`${descriptionText} text-base sm:text-lg leading-relaxed`}>
+                {spotlightProject.shortDescription}
+              </p>
+              {spotlightProject.note && (
+                <p className={`mt-3 text-xs italic ${noteText}`}>{spotlightProject.note}</p>
               )}
-
-              <h3 className="text-2xl font-semibold mb-4">{project.title}</h3>
-              <p className={`${descriptionText} flex-grow`}>{project.shortDescription}</p>
-              {renderActions(project, isExpandable, true)}
+              {renderActions(
+                spotlightProject,
+                spotlightProject.fullDescription !== spotlightProject.shortDescription,
+                true
+              )}
             </motion.div>
-          );
-        })}
+          )}
 
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-8"
-        >
-          {supportingProjects.map((project) => {
+          {featureProjects.map((project) => {
             const statusData = statusMap[project.status];
             const isExpandable = project.fullDescription !== project.shortDescription;
 
             return (
-              <div
+              <motion.div
                 key={project.title}
-                className={`transition-colors duration-300 ${cardBg} p-6 rounded-2xl shadow-md hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-103 flex flex-col`}
+                initial={{ opacity: 0, y: 32 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, ease: 'easeOut' }}
+                className={`transition-colors duration-300 ${featureCardBg} p-7 rounded-2xl border backdrop-blur-[2px] hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-[1.01] flex flex-col`}
               >
                 {statusData && (
                   <div className="mb-3 flex items-center gap-2">
@@ -277,13 +265,44 @@ export default function Projects() {
                   </div>
                 )}
 
-                <h3 className="text-xl font-semibold mb-4">{project.title}</h3>
+                <h3 className="text-2xl font-semibold mb-4">{project.title}</h3>
                 <p className={`${descriptionText} flex-grow`}>{project.shortDescription}</p>
-                {renderActions(project, isExpandable)}
-              </div>
+                {renderActions(project, isExpandable, true)}
+              </motion.div>
             );
           })}
-        </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+          >
+            {supportingProjects.map((project) => {
+              const statusData = statusMap[project.status];
+              const isExpandable = project.fullDescription !== project.shortDescription;
+
+              return (
+                <div
+                  key={project.title}
+                  className={`transition-colors duration-300 ${supportingCardBg} p-6 rounded-2xl border backdrop-blur-[2px] hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-103 flex flex-col`}
+                >
+                  {statusData && (
+                    <div className="mb-3 flex items-center gap-2">
+                      <span className={`w-3 h-3 rounded-full ${statusData.color}`} />
+                      <span className="text-sm font-medium opacity-80">{statusData.label}</span>
+                    </div>
+                  )}
+
+                  <h3 className="text-xl font-semibold mb-4">{project.title}</h3>
+                  <p className={`${descriptionText} flex-grow`}>{project.shortDescription}</p>
+                  {renderActions(project, isExpandable)}
+                </div>
+              );
+            })}
+          </motion.div>
+        </div>
       </div>
 
       {selectedProject && (
