@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import { useTheme } from 'next-themes';
+import Image from 'next/image';
 import ProjectModal from './ProjectModal';
 
 type Project = {
@@ -15,6 +16,7 @@ type Project = {
   hidden?: boolean;
   variant?: 'spotlight' | 'feature' | 'standard';
   note?: string;
+  icon?: string;
 };
 
 const projects: Project[] = [
@@ -31,6 +33,7 @@ What makes the project stronger from an engineering perspective is that the back
 ClaimChain also includes an advisory ML layer designed with safe boundaries. The ML service can help suggest package compositions, but it does not override approval decisions, scoring rules, or packaging constraints. That separation was intentional so the platform can incorporate machine learning without sacrificing explainability, control, or operational safety.
 
 Tech stack: Java 17, Spring Boot, PostgreSQL, Flyway, JWT auth with RBAC, Docker, Next.js, TypeScript, Tailwind CSS, FastAPI, Python 3.12, GitHub Actions, AWS deployment patterns, and PDF export workflows.`,
+    icon: '/icons/claimchain.png',
     link: 'https://github.com/edwardsong08/ClaimChain',
     liveDemoLink: 'https://claimchain-tan.vercel.app',
     status: 'live',
@@ -43,6 +46,7 @@ Tech stack: Java 17, Spring Boot, PostgreSQL, Flyway, JWT auth with RBAC, Docker
       'Sole developer across TROA’s public site and operational platform work, including a custom admin portal, career portal, ticketing workflows, Gemini chatbot, security hardening, SEO, and internal volunteer-hours/reporting systems.',
     fullDescription:
       'TROA is a real nonprofit/community platform where I currently serve as the sole developer. My work spans the public site, custom admin tooling, career portal, ticketing flows, Discord support/security improvements, and a Go-based Gemini chatbot.\n\nThis work is stronger as featured experience than as a traditional demo project because much of the operational value lives in internal tools and workflows that are not appropriate to show publicly.\n\nSelected contributions include rebuilding major platform surfaces in React/Next.js and Supabase, resolving ~130 Supabase issues, improving SEO and performance to 95+ Lighthouse scores, shipping volunteer-hours logging plus manual/automated finance reporting, and stabilizing cross-stack issues spanning repo code, Cloudflare, Coolify, and server infrastructure.\n\nPublic-facing live site available; internal admin and operational tooling intentionally not shown for privacy and platform security reasons.',
+    icon: '/icons/troa-helm.png',
     liveDemoLink: 'https://therealmsofasgard.com',
     status: 'live',
     variant: 'feature',
@@ -53,6 +57,7 @@ Tech stack: Java 17, Spring Boot, PostgreSQL, Flyway, JWT auth with RBAC, Docker
       'A single-page professional law firm website built with Next.js, Tailwind, Framer Motion, and Resend. Features responsive design, animated UI, and SEO optimization for legal services in NJ & NY.',
     fullDescription:
       'A single-page professional law firm website built with Next.js, Tailwind, Framer Motion, and Resend. Features responsive design, animated UI, and SEO optimization for legal services in NJ & NY.',
+    icon: '/icons/soominryu.png',
     link: 'https://www.ryu-legal.com',
     status: 'live',
     variant: 'standard',
@@ -63,6 +68,7 @@ Tech stack: Java 17, Spring Boot, PostgreSQL, Flyway, JWT auth with RBAC, Docker
       'Simulated blockchain ledger built with Spring Boot, PostgreSQL, and Docker. Completed in one week as a proof-of-concept for full-stack Java development and rapid learning.',
     fullDescription:
       'Simulated blockchain ledger built with Spring Boot, PostgreSQL, and Docker. Completed in one week as a proof-of-concept for full-stack Java development and rapid learning.\n\nThis project simulates a blockchain-based transaction ledger and was completed in about one week without prior knowledge of Java, Spring Boot, or blockchain. It demonstrates my ability to rapidly learn and integrate multiple enterprise-grade technologies.\n\nThe app was built with Spring Boot (REST + Thymeleaf UI), PostgreSQL, and Docker. Data access combines Spring Data JPA with MyBatis for both standard and complex queries. It includes an immutable audit trail that logs transaction creation, updates, and deletions — simulating blockchain behavior.\n\nThe system supports English and Korean, has robust input validation and error handling, and features a full CI/CD pipeline via GitHub Actions. For deployment, the backend runs in Docker containers on AWS EC2 with an AWS RDS database.',
+    icon: '/icons/vzwledger.png',
     link: 'https://github.com/edwardsong08/vzw-transaction-ledger',
     status: 'livedemo',
     liveDemoLink: 'http://18.117.137.143/dashboard',
@@ -128,6 +134,7 @@ export default function Projects() {
   const descriptionText = isDark ? 'text-zinc-300' : 'text-zinc-700';
   const subtitleText = isDark ? 'text-zinc-400' : 'text-zinc-600';
   const noteText = isDark ? 'text-zinc-400' : 'text-zinc-600';
+  const iconBadgeSurface = isDark ? 'bg-black/16 border-white/8' : 'bg-stone-100/56 border-stone-300/60';
 
   const statusMap: Record<string, { label: string; color: string }> = {
     live: { label: 'LIVE', color: 'bg-green-500' },
@@ -201,6 +208,20 @@ export default function Projects() {
     </div>
   );
 
+  const renderProjectTitle = (project: Project, titleClassName: string) => (
+    <div className="mb-4 flex items-start gap-2.5">
+      {project.icon && (
+        <span
+          aria-hidden="true"
+          className={`mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border ${iconBadgeSurface}`}
+        >
+          <Image src={project.icon} alt="" width={20} height={20} className="h-5 w-5 object-contain" />
+        </span>
+      )}
+      <h3 className={titleClassName}>{project.title}</h3>
+    </div>
+  );
+
   return (
     <section className={`relative overflow-hidden transition-colors duration-300 ${sectionText}`}>
       <div
@@ -226,12 +247,12 @@ export default function Projects() {
               transition={{ duration: 0.8, ease: 'easeOut' }}
               className={`transition-colors duration-300 ${spotlightCardBg} p-7 sm:p-8 rounded-3xl border backdrop-blur-sm hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-[1.01] flex flex-col`}
             >
-              <div className="mb-3 flex items-center gap-2">
+              <div className="mb-4 flex items-center gap-2">
                 <span className={`w-3 h-3 rounded-full ${statusMap[spotlightProject.status].color}`} />
                 <span className="text-sm font-medium opacity-80">{statusMap[spotlightProject.status].label}</span>
               </div>
 
-              <h3 className="text-2xl sm:text-3xl font-semibold mb-4">{spotlightProject.title}</h3>
+              {renderProjectTitle(spotlightProject, 'text-2xl sm:text-3xl font-semibold')}
               <p className={`${descriptionText} text-base sm:text-lg leading-relaxed`}>
                 {spotlightProject.shortDescription}
               </p>
@@ -259,13 +280,13 @@ export default function Projects() {
                 className={`transition-colors duration-300 ${featureCardBg} p-7 rounded-2xl border backdrop-blur-[2px] hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-[1.01] flex flex-col`}
               >
                 {statusData && (
-                  <div className="mb-3 flex items-center gap-2">
+                  <div className="mb-4 flex items-center gap-2">
                     <span className={`w-3 h-3 rounded-full ${statusData.color}`} />
                     <span className="text-sm font-medium opacity-80">{statusData.label}</span>
                   </div>
                 )}
 
-                <h3 className="text-2xl font-semibold mb-4">{project.title}</h3>
+                {renderProjectTitle(project, 'text-2xl font-semibold')}
                 <p className={`${descriptionText} flex-grow`}>{project.shortDescription}</p>
                 {renderActions(project, isExpandable)}
               </motion.div>
@@ -289,13 +310,13 @@ export default function Projects() {
                   className={`transition-colors duration-300 ${supportingCardBg} p-6 rounded-2xl border backdrop-blur-[2px] hover:shadow-lg hover:shadow-purple-400/40 transition-transform transform hover:scale-103 flex flex-col`}
                 >
                   {statusData && (
-                    <div className="mb-3 flex items-center gap-2">
+                    <div className="mb-4 flex items-center gap-2">
                       <span className={`w-3 h-3 rounded-full ${statusData.color}`} />
                       <span className="text-sm font-medium opacity-80">{statusData.label}</span>
                     </div>
                   )}
 
-                  <h3 className="text-xl font-semibold mb-4">{project.title}</h3>
+                  {renderProjectTitle(project, 'text-xl font-semibold')}
                   <p className={`${descriptionText} flex-grow`}>{project.shortDescription}</p>
                   {renderActions(project, isExpandable)}
                 </div>
