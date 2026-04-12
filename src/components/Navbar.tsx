@@ -101,9 +101,17 @@ export default function Navbar() {
             setMenuOpen((prev) => !prev);
           }}
         >
-          <span className={`absolute top-2.5 right-1 w-10 h-1 rounded-full transition-all duration-500 transform group-[.open]:rotate-45 group-[.open]:translate-y-2.5 ${barColor}`} />
-          <span className={`absolute top-5 right-1 w-10 h-1 rounded-full transition-all duration-500 group-[.open]:scale-0 ${barColor}`} />
-          <span className={`absolute top-8 right-1 w-10 h-1 rounded-full transition-all duration-500 transform group-[.open]:-rotate-45 group-[.open]:-translate-y-2.5 ${barColor}`} />
+          <div
+            aria-hidden="true"
+            className={`absolute -inset-0.5 rounded-full border backdrop-blur-sm shadow-[0_6px_18px_rgba(15,23,42,0.14)] ${
+              isDark
+                ? 'bg-zinc-800/72 border-white/15 shadow-[0_6px_18px_rgba(0,0,0,0.35)]'
+                : 'bg-stone-100/78 border-stone-200/90'
+            }`}
+          />
+          <span className={`absolute z-10 top-2.5 right-1 w-10 h-1 rounded-full transition-all duration-500 transform group-[.open]:rotate-45 group-[.open]:translate-y-2.5 ${barColor}`} />
+          <span className={`absolute z-10 top-5 right-1 w-10 h-1 rounded-full transition-all duration-500 group-[.open]:scale-0 ${barColor}`} />
+          <span className={`absolute z-10 top-8 right-1 w-10 h-1 rounded-full transition-all duration-500 transform group-[.open]:-rotate-45 group-[.open]:-translate-y-2.5 ${barColor}`} />
         </motion.div>
       )}
 

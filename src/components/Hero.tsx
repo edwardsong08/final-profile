@@ -20,6 +20,7 @@ interface NavigatorWithUA extends Navigator {
 
 export default function Hero({ onReady, openAbout }: HeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const hintContainerRef = useRef<HTMLDivElement | null>(null);
   const [ready, setReady] = useState(false);
   const [isFirstLandscape, setIsFirstLandscape] = useState(true);
   const [isHintOpen, setIsHintOpen] = useState(false);
@@ -105,6 +106,21 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
   useEffect(() => {
     if (!isCoarsePointer) setIsHintOpen(false);
   }, [isCoarsePointer]);
+
+  useEffect(() => {
+    if (!isCoarsePointer || !isHintOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as Node | null;
+      if (!hintContainerRef.current || (target && hintContainerRef.current.contains(target))) return;
+      setIsHintOpen(false);
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [isCoarsePointer, isHintOpen]);
 
   const handleHintClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (isCoarsePointer) {
@@ -200,7 +216,13 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
         </motion.div>
       </motion.div>
 
-      <div className="absolute left-0 top-[36%] -translate-y-1/2 z-30 group max-[719px]:top-[41%]">
+      <motion.div
+        ref={hintContainerRef}
+        className="absolute left-0 top-[31%] -translate-y-1/2 z-30 group max-[719px]:top-[27%]"
+        initial={{ opacity: 0, x: -8 }}
+        animate={{ opacity: ready ? 1 : 0, x: ready ? 0 : -8 }}
+        transition={{ delay: 3.25, duration: 0.55, ease: "easeOut" }}
+      >
         <button
           type="button"
           aria-label="Theme hint"
@@ -229,7 +251,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
           <p>Click the sun/moon</p>
           <p>to switch theme</p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Landscape */}
       <AnimatePresence mode="sync" onExitComplete={() => setIsFirstLandscape(false)}>

@@ -31,6 +31,7 @@ What makes the project stronger from an engineering perspective is that the back
 ClaimChain also includes an advisory ML layer designed with safe boundaries. The ML service can help suggest package compositions, but it does not override approval decisions, scoring rules, or packaging constraints. That separation was intentional so the platform can incorporate machine learning without sacrificing explainability, control, or operational safety.
 
 Tech stack: Java 17, Spring Boot, PostgreSQL, Flyway, JWT auth with RBAC, Docker, Next.js, TypeScript, Tailwind CSS, FastAPI, Python 3.12, GitHub Actions, AWS deployment patterns, and PDF export workflows.`,
+    link: 'https://github.com/edwardsong08/ClaimChain',
     liveDemoLink: 'https://claimchain-tan.vercel.app',
     status: 'live',
     variant: 'spotlight',
@@ -239,8 +240,7 @@ export default function Projects() {
               )}
               {renderActions(
                 spotlightProject,
-                spotlightProject.fullDescription !== spotlightProject.shortDescription,
-                true
+                spotlightProject.fullDescription !== spotlightProject.shortDescription
               )}
             </motion.div>
           )}
@@ -267,7 +267,7 @@ export default function Projects() {
 
                 <h3 className="text-2xl font-semibold mb-4">{project.title}</h3>
                 <p className={`${descriptionText} flex-grow`}>{project.shortDescription}</p>
-                {renderActions(project, isExpandable, true)}
+                {renderActions(project, isExpandable)}
               </motion.div>
             );
           })}
