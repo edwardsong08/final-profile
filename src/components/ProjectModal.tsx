@@ -7,21 +7,27 @@ import ReactMarkdown from 'react-markdown';
 interface ProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onWatchDemo?: () => void;
   title: string;
   paragraphs: string[];
   link?: string;
   liveDemoLink?: string;
-  roadmapLink?: string; // ✅ new
+  roadmapLink?: string;
+  demoVideoSrc?: string;
+  demoDuration?: string;
 }
 
 export default function ProjectModal({
   isOpen,
   onClose,
+  onWatchDemo,
   title,
   paragraphs,
   link,
   liveDemoLink,
   roadmapLink,
+  demoVideoSrc,
+  demoDuration,
 }: ProjectModalProps) {
   const { resolvedTheme } = useTheme();
   const bgColor =
@@ -77,6 +83,18 @@ export default function ProjectModal({
             </button>
 
             <h2 className="text-3xl font-semibold text-center mb-8">{title}</h2>
+
+            {demoVideoSrc && onWatchDemo && (
+              <div className="mb-6 flex justify-center">
+                <button
+                  type="button"
+                  onClick={onWatchDemo}
+                  className="rounded-full border border-blue-400/40 bg-blue-500/10 px-4 py-1.5 text-sm font-medium text-blue-300 hover:bg-blue-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70"
+                >
+                  Watch Demo • {demoDuration ?? '3:30'}
+                </button>
+              </div>
+            )}
 
             <div className={`text-lg leading-relaxed space-y-6 mb-8 ${textColor}`}>
               {paragraphs.map((p, idx) => (
