@@ -4,6 +4,7 @@ import { FaExternalLinkAlt } from 'react-icons/fa';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import ProjectModal from './ProjectModal';
+import VideoModal from './VideoModal';
 
 type Project = {
   title: string;
@@ -12,6 +13,8 @@ type Project = {
   link?: string;
   liveDemoLink?: string;
   roadmapLink?: string;
+  demoVideoSrc?: string;
+  demoDuration?: string;
   status: 'live' | 'livedemo' | 'demo' | 'progress' | 'inprogress';
   hidden?: boolean;
   variant?: 'spotlight' | 'feature' | 'standard';
@@ -36,9 +39,10 @@ Tech stack: Java 17, Spring Boot, PostgreSQL, Flyway, JWT auth with RBAC, Docker
     icon: '/icons/claimchain.png',
     link: 'https://github.com/edwardsong08/ClaimChain',
     liveDemoLink: 'https://claimchain-tan.vercel.app',
+    demoVideoSrc: '/ClaimChain_Demo.mp4',
+    demoDuration: '3:30',
     status: 'live',
     variant: 'spotlight',
-    note: 'Walkthrough video in progress.',
   },
   {
     title: 'TROA — Platform Ecosystem',
@@ -108,6 +112,13 @@ export default function Projects() {
     link?: string;
     liveDemoLink?: string;
     roadmapLink?: string;
+    demoVideoSrc?: string;
+    demoDuration?: string;
+  } | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<{
+    title: string;
+    videoSrc: string;
+    demoDuration?: string;
   } | null>(null);
 
   useEffect(() => {
@@ -158,6 +169,18 @@ export default function Projects() {
       link: project.link,
       liveDemoLink: project.liveDemoLink,
       roadmapLink: project.roadmapLink,
+      demoVideoSrc: project.demoVideoSrc,
+      demoDuration: project.demoDuration,
+    });
+  };
+
+  const openDemoVideo = (project: Pick<Project, 'title' | 'demoVideoSrc' | 'demoDuration'>) => {
+    if (!project.demoVideoSrc) return;
+
+    setSelectedVideo({
+      title: project.title,
+      videoSrc: project.demoVideoSrc,
+      demoDuration: project.demoDuration,
     });
   };
 
@@ -259,6 +282,44 @@ export default function Projects() {
               {spotlightProject.note && (
                 <p className={`mt-3 text-xs italic ${noteText}`}>{spotlightProject.note}</p>
               )}
+              {spotlightProject.demoVideoSrc && (
+                <button
+                  type="button"
+                  onClick={() => openDemoVideo(spotlightProject)}
+                  className="group mt-4 w-full max-w-2xl self-center lg:max-w-[38rem] overflow-hidden rounded-2xl border border-white/15 text-left shadow-[0_10px_26px_rgba(0,0,0,0.24)] transition-all duration-300 hover:shadow-[0_12px_28px_rgba(0,0,0,0.32)] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70"
+                  aria-label="Watch ClaimChain demo video"
+                >
+                  <div className="relative w-full aspect-video overflow-hidden">
+                    <Image
+                      src="/claimchain-demo-poster.webp"
+                      alt="ClaimChain demo preview"
+                      fill
+                      sizes="(min-width: 1024px) 42rem, (min-width: 640px) 80vw, 100vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.01]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/25 to-black/10 transition-colors duration-300 group-hover:from-black/65 group-hover:via-black/40 group-hover:to-black/25" />
+
+                    <div className="absolute left-3 top-3 z-10 rounded-full border border-white/30 bg-black/45 px-3 py-1 text-[11px] font-medium tracking-wide text-zinc-100">
+                      Demo Video • {spotlightProject.demoDuration ?? '3:30'}
+                    </div>
+
+                    <div className="absolute inset-0 z-10 flex items-center justify-center">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/50 bg-black/35">
+                        <span
+                          aria-hidden="true"
+                          className="ml-1 block h-0 w-0 border-y-[9px] border-y-transparent border-l-[14px] border-l-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/10 opacity-0 transition-all duration-250 group-hover:bg-black/35 group-hover:opacity-100">
+                      <span className="rounded-md border border-white/45 bg-black/45 px-4 py-2 text-sm font-semibold tracking-wide text-white">
+                        Watch Demo
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              )}
               {renderActions(
                 spotlightProject,
                 spotlightProject.fullDescription !== spotlightProject.shortDescription
@@ -335,6 +396,30 @@ export default function Projects() {
           link={selectedProject.link}
           liveDemoLink={selectedProject.liveDemoLink}
           roadmapLink={selectedProject.roadmapLink}
+          demoVideoSrc={selectedProject.demoVideoSrc}
+          demoDuration={selectedProject.demoDuration}
+          onWatchDemo={
+            selectedProject.demoVideoSrc
+              ? () => {
+                  openDemoVideo({
+                    title: selectedProject.title,
+                    demoVideoSrc: selectedProject.demoVideoSrc,
+                    demoDuration: selectedProject.demoDuration,
+                  });
+                  setSelectedProject(null);
+                }
+              : undefined
+          }
+        />
+      )}
+
+      {selectedVideo && (
+        <VideoModal
+          isOpen={!!selectedVideo}
+          onClose={() => setSelectedVideo(null)}
+          title={selectedVideo.title}
+          label={`Demo Video • ${selectedVideo.demoDuration ?? '3:30'}`}
+          videoSrc={selectedVideo.videoSrc}
         />
       )}
     </section>
