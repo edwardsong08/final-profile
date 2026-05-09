@@ -299,7 +299,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
           onClick={openAbout}
         >
           <Image
-            src="/profile_pic.webp"
+            src="/profile_pic_v4.webp"
             alt="Profile Picture"
             width={128}
             height={128}
