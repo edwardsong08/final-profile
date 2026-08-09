@@ -1,40 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Edward Song Portfolio
 
-## Getting Started
+Source for [www.edsong.xyz](https://www.edsong.xyz), a Next.js portfolio featuring selected engineering work, skills, and a contact form.
 
-First, run the development server:
+## Stack
+
+- Next.js Pages Router, React, TypeScript, and Tailwind CSS
+- Framer Motion and next-themes
+- Resend for contact-form delivery
+- Vercel deployment
+
+## Local development
+
+Use Node.js 20.9 or later (Node 22 is used in CI).
 
 ```bash
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create `.env.local` with the Resend API key required by the contact route:
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+```env
+RESEND_API_KEY=re_your_key_here
+```
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Never commit `.env.local` or any production key.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## Quality checks
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npm run typecheck
+npm run test:unit
+npm run build
+npm audit --omit=dev --audit-level=high
+```
 
-## Learn More
+`npm test` runs linting, type-checking, and unit tests together. GitHub Actions runs the full suite, including the production build and dependency audit, on pull requests and updates to `master`.
 
-To learn more about Next.js, take a look at the following resources:
+## Contact form safeguards
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+The `/api/contact` route validates and limits request bodies server-side, escapes email HTML, uses a honeypot, verifies same-origin browser requests, and applies an in-memory per-instance rate limit. The rate limit is intentionally a baseline; add a durable shared limiter (for example, Vercel Firewall plus a managed Redis/KV service) before expecting protection across multiple serverless instances or sustained abuse.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## SEO and deployment
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+The production URL is `https://www.edsong.xyz/`. The project ships a canonical URL, Open Graph/Twitter metadata, JSON-LD profile data, `robots.txt`, `sitemap.xml`, favicon, and baseline security headers. Deploy through the connected Vercel project after CI passes.

@@ -1,11 +1,10 @@
 // src/components/Footer.tsx
-import { useTheme } from 'next-themes';
 import { useEmailCopy } from './EmailCopyProvider';
+import { useDisplayTheme } from '../hooks/useDisplayTheme';
 
 export default function Footer({ openAbout }: { openAbout: () => void }) {
-  const { resolvedTheme } = useTheme();
+  const { isDark } = useDisplayTheme();
   const { copyEmail } = useEmailCopy();
-  const isDark = resolvedTheme === 'dark';
 
   const bgFooter = isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-200 text-zinc-600';
   const hoverText = isDark ? 'hover:text-white' : 'hover:text-black';

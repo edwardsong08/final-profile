@@ -1,5 +1,5 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from 'react';
-import { useTheme } from 'next-themes';
+import { useDisplayTheme } from '../hooks/useDisplayTheme';
 
 const EMAIL_ADDRESS = 'edwardsong08@gmail.com';
 
@@ -10,11 +10,9 @@ type EmailCopyContextValue = {
 const EmailCopyContext = createContext<EmailCopyContextValue | null>(null);
 
 export function EmailCopyProvider({ children }: { children: ReactNode }) {
-  const { resolvedTheme } = useTheme();
+  const { isDark } = useDisplayTheme();
   const [toastVisible, setToastVisible] = useState(false);
   const [toastTick, setToastTick] = useState(0);
-  const isDark = resolvedTheme === 'dark';
-
   const copyEmail = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(EMAIL_ADDRESS);

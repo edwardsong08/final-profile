@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTheme } from 'next-themes';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
+import { useDisplayTheme } from '../hooks/useDisplayTheme';
+import { useModalDialog } from '../hooks/useModalDialog';
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -29,33 +30,14 @@ export default function ProjectModal({
   demoVideoSrc,
   demoDuration,
 }: ProjectModalProps) {
-  const { resolvedTheme } = useTheme();
+  const { isDark } = useDisplayTheme();
+  const dialogRef = useModalDialog(isOpen, onClose);
+  const titleId = useId();
   const bgColor =
-    resolvedTheme === 'dark'
+    isDark
       ? 'bg-zinc-700 border-zinc-600 text-zinc-100'
       : 'bg-zinc-100 border-zinc-300 text-zinc-800';
-  const textColor = resolvedTheme === 'dark' ? 'text-zinc-300' : 'text-zinc-700';
-
-  useEffect(() => {
-    if (isOpen) {
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-      document.body.style.overflow = 'hidden';
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          onClose();
-        }
-      };
-      window.addEventListener('keydown', handleKeyDown);
-
-      return () => {
-        document.body.style.overflow = '';
-        document.body.style.paddingRight = '';
-        window.removeEventListener('keydown', handleKeyDown);
-      };
-    }
-  }, [isOpen, onClose]);
+  const textColor = isDark ? 'text-zinc-300' : 'text-zinc-700';
 
   return (
     <AnimatePresence>
@@ -68,6 +50,11 @@ export default function ProjectModal({
           onClick={onClose}
         >
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            tabIndex={-1}
             className={`relative ${bgColor} rounded-2xl shadow-lg max-w-3xl w-full mx-4 p-8 overflow-y-auto max-h-[90vh] border`}
             initial={{ scale: 0.9, y: 50 }}
             animate={{ scale: 1, y: 0 }}
@@ -76,13 +63,15 @@ export default function ProjectModal({
             onClick={(e) => e.stopPropagation()}
           >
             <button
+              type="button"
               onClick={onClose}
               className="absolute top-4 right-6 text-zinc-400 hover:text-white text-2xl"
+              aria-label={`Close ${title} dialog`}
             >
               &times;
             </button>
 
-            <h2 className="text-3xl font-semibold text-center mb-8">{title}</h2>
+            <h2 id={titleId} className="text-3xl font-semibold text-center mb-8">{title}</h2>
 
             {demoVideoSrc && onWatchDemo && (
               <div className="mb-6 flex justify-center">

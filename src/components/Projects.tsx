@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaExternalLinkAlt } from 'react-icons/fa';
-import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import ProjectModal from './ProjectModal';
 import VideoModal from './VideoModal';
+import { useDisplayTheme } from '../hooks/useDisplayTheme';
 
 type Project = {
   title: string;
@@ -74,8 +74,7 @@ Tech stack: Java 17, Spring Boot, PostgreSQL, Flyway, JWT auth with RBAC, Docker
       'Simulated blockchain ledger built with Spring Boot, PostgreSQL, and Docker. Completed in one week as a proof-of-concept for full-stack Java development and rapid learning.\n\nThis project simulates a blockchain-based transaction ledger and was completed in about one week without prior knowledge of Java, Spring Boot, or blockchain. It demonstrates my ability to rapidly learn and integrate multiple enterprise-grade technologies.\n\nThe app was built with Spring Boot (REST + Thymeleaf UI), PostgreSQL, and Docker. Data access combines Spring Data JPA with MyBatis for both standard and complex queries. It includes an immutable audit trail that logs transaction creation, updates, and deletions — simulating blockchain behavior.\n\nThe system supports English and Korean, has robust input validation and error handling, and features a full CI/CD pipeline via GitHub Actions. For deployment, the backend runs in Docker containers on AWS EC2 with an AWS RDS database.',
     icon: '/icons/vzwledger.png',
     link: 'https://github.com/edwardsong08/vzw-transaction-ledger',
-    status: 'livedemo',
-    liveDemoLink: 'http://18.117.137.143/dashboard',
+    status: 'demo',
     variant: 'standard',
   },
   {
@@ -104,8 +103,7 @@ Tech stack: Java 17, Spring Boot, PostgreSQL, Flyway, JWT auth with RBAC, Docker
 ];
 
 export default function Projects() {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const { isDark } = useDisplayTheme();
   const [selectedProject, setSelectedProject] = useState<{
     title: string;
     description: string;
@@ -121,13 +119,6 @@ export default function Projects() {
     demoDuration?: string;
   } | null>(null);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
-  const isDark = resolvedTheme === 'dark';
   const sectionText = isDark ? 'text-zinc-100' : 'text-zinc-900';
   const sectionOverlay = isDark ? 'bg-black/60' : 'bg-[rgba(242,236,226,0.82)]';
   const headerSurface = isDark

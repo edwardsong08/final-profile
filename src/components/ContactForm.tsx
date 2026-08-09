@@ -1,20 +1,9 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { useState, useEffect } from 'react';
-import { useTheme } from 'next-themes';
+import { useState } from 'react';
 import { useEmailCopy } from './EmailCopyProvider';
-
-// Validation schema
-const schema = yup
-  .object({
-    name: yup.string().required('Name is required'),
-    email: yup.string().email('Invalid email').required('Email is required'),
-    message: yup.string().min(10, 'Message too short').required('Message is required'),
-  })
-  .required();
-
-type FormData = yup.InferType<typeof schema>;
+import { contactSchema, type ContactFormData } from '../lib/contact';
+import { useDisplayTheme } from '../hooks/useDisplayTheme';
 
 export default function ContactForm() {
   const {
@@ -22,23 +11,15 @@ export default function ContactForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
+  } = useForm<ContactFormData>({
+    resolver: yupResolver(contactSchema),
+    defaultValues: { website: '' },
   });
 
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [activeSlide, setActiveSlide] = useState<0 | 1>(0);
-  const { resolvedTheme } = useTheme();
+  const [activeSlide, setActiveSlide] = useState<0 | 1>(1);
+  const { isDark } = useDisplayTheme();
   const { copyEmail } = useEmailCopy();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
-  const isDark = resolvedTheme === 'dark';
 
   const sectionText = isDark ? 'text-zinc-100' : 'text-zinc-900';
   const sectionOverlay = isDark ? 'bg-black/60' : 'bg-[rgba(242,236,226,0.82)]';
@@ -56,7 +37,7 @@ export default function ContactForm() {
     : 'bg-stone-50/95 text-zinc-900 border-stone-300';
   const errorText = 'text-red-400 text-sm mt-2';
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: ContactFormData) => {
     setStatus('idle');
     try {
       const res = await fetch('/api/contact', {
@@ -69,12 +50,9 @@ export default function ContactForm() {
         setStatus('success');
         reset();
       } else {
-        const errorData = await res.json();
-        console.error('Error from server:', errorData);
         setStatus('error');
       }
-    } catch (error) {
-      console.error('Error submitting form:', error);
+    } catch {
       setStatus('error');
     }
   };
@@ -113,7 +91,14 @@ export default function ContactForm() {
                   activeSlide === 0 ? 'translate-x-0' : '-translate-x-1/2'
                 }`}
               >
-                <div className="w-1/2 flex-shrink-0 px-1">
+                <div
+                  id="quick-contact-panel"
+                  role="tabpanel"
+                  aria-labelledby="quick-contact-tab"
+                  aria-hidden={activeSlide !== 0}
+                  inert={activeSlide !== 0}
+                  className="w-1/2 flex-shrink-0 px-1"
+                >
                   <div className="h-full flex flex-col">
                     <div>
                       <h3 className="text-2xl font-semibold mb-4">Best Ways to Reach Me</h3>
@@ -172,18 +157,37 @@ export default function ContactForm() {
                   </div>
                 </div>
 
-                <div className="w-1/2 flex-shrink-0 px-1">
-                  <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col">
+                <div
+                  id="contact-form-panel"
+                  role="tabpanel"
+                  aria-labelledby="contact-form-tab"
+                  aria-hidden={activeSlide !== 1}
+                  inert={activeSlide !== 1}
+                  className="w-1/2 flex-shrink-0 px-1"
+                >
+                  <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col" noValidate>
+                    <input
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      className="absolute h-px w-px overflow-hidden opacity-0"
+                      {...register('website')}
+                    />
                     <div className="mb-6">
                       <label htmlFor="name" className="block mb-2 font-semibold">
                         Name
                       </label>
                       <input
                         id="name"
+                        autoComplete="name"
+                        maxLength={100}
+                        aria-invalid={Boolean(errors.name)}
+                        aria-describedby={errors.name ? 'name-error' : undefined}
                         {...register('name')}
                         className={`w-full px-4 py-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 border ${inputBg}`}
                       />
-                      {errors.name && <p className={errorText}>{errors.name.message}</p>}
+                      {errors.name && <p id="name-error" role="alert" className={errorText}>{errors.name.message}</p>}
                     </div>
 
                     <div className="mb-6">
@@ -193,10 +197,14 @@ export default function ContactForm() {
                       <input
                         id="email"
                         type="email"
+                        autoComplete="email"
+                        maxLength={254}
+                        aria-invalid={Boolean(errors.email)}
+                        aria-describedby={errors.email ? 'email-error' : undefined}
                         {...register('email')}
                         className={`w-full px-4 py-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 border ${inputBg}`}
                       />
-                      {errors.email && <p className={errorText}>{errors.email.message}</p>}
+                      {errors.email && <p id="email-error" role="alert" className={errorText}>{errors.email.message}</p>}
                     </div>
 
                     <div className="mb-8">
@@ -205,10 +213,14 @@ export default function ContactForm() {
                       </label>
                       <textarea
                         id="message"
+                        autoComplete="off"
+                        maxLength={5000}
+                        aria-invalid={Boolean(errors.message)}
+                        aria-describedby={errors.message ? 'message-error' : undefined}
                         {...register('message')}
                         className={`w-full px-4 py-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 border h-40 ${inputBg}`}
                       />
-                      {errors.message && <p className={errorText}>{errors.message.message}</p>}
+                      {errors.message && <p id="message-error" role="alert" className={errorText}>{errors.message.message}</p>}
                     </div>
 
                     <button
@@ -220,12 +232,12 @@ export default function ContactForm() {
                     </button>
 
                     {status === 'success' && (
-                      <p className="text-green-400 text-center mt-4">
+                      <p className="text-green-400 text-center mt-4" role="status">
                         Message sent successfully!
                       </p>
                     )}
                     {status === 'error' && (
-                      <p className="text-red-400 text-center mt-4">
+                      <p className="text-red-400 text-center mt-4" role="alert">
                         Failed to send message. Please try again.
                       </p>
                     )}
@@ -235,9 +247,13 @@ export default function ContactForm() {
             </div>
 
             <div className={`mt-4 pt-3 border-t ${isDark ? 'border-zinc-600/50' : 'border-zinc-300/70'}`}>
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-2" role="tablist" aria-label="Contact options">
                 <button
                   type="button"
+                  id="quick-contact-tab"
+                  role="tab"
+                  aria-controls="quick-contact-panel"
+                  aria-selected={activeSlide === 0}
                   aria-label="Show quick contact options"
                   onClick={() => setActiveSlide(0)}
                   className={`h-2.5 w-2.5 rounded-full border transition-colors ${
@@ -252,6 +268,10 @@ export default function ContactForm() {
                 />
                 <button
                   type="button"
+                  id="contact-form-tab"
+                  role="tab"
+                  aria-controls="contact-form-panel"
+                  aria-selected={activeSlide === 1}
                   aria-label="Show contact form"
                   onClick={() => setActiveSlide(1)}
                   className={`h-2.5 w-2.5 rounded-full border transition-colors ${

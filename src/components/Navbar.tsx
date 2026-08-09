@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useTheme } from 'next-themes';
-import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup, type Variants } from 'framer-motion';
+import { useDisplayTheme } from '../hooks/useDisplayTheme';
 
 const MENU_ITEMS = [
   { label: 'Profile', href: '#hero', id: 'hero' },
@@ -11,18 +11,16 @@ const MENU_ITEMS = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { isDark, setTheme } = useDisplayTheme();
   const [activeSection, setActiveSection] = useState('hero');
   const [heroReady, setHeroReady] = useState(false);
-
-  const isDark = theme === 'dark';
 
   useEffect(() => {
     const timer = setTimeout(() => setHeroReady(true), 1800);
     return () => clearTimeout(timer);
   }, []);
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0, x: 40 },
     visible: {
       opacity: 1,
@@ -91,13 +89,16 @@ export default function Navbar() {
     <div className="fixed top-0 right-0 z-50">
       {/* Hamburger / X Toggle Icon */}
       {heroReady && (
-        <motion.div
+        <motion.button
+          type="button"
+          aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={menuOpen}
+          aria-controls="primary-navigation"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
-          className={`fixed top-6 right-6 w-12 h-12 cursor-pointer group z-50 ${menuOpen ? 'open' : ''}`}
-          onClick={(e) => {
-            e.stopPropagation();
+          className={`fixed top-6 right-6 w-12 h-12 appearance-none border-0 bg-transparent p-0 cursor-pointer group z-50 ${menuOpen ? 'open' : ''}`}
+          onClick={() => {
             setMenuOpen((prev) => !prev);
           }}
         >
@@ -112,7 +113,7 @@ export default function Navbar() {
           <span className={`absolute z-10 top-2.5 right-1 w-10 h-1 rounded-full transition-all duration-500 transform group-[.open]:rotate-45 group-[.open]:translate-y-2.5 ${barColor}`} />
           <span className={`absolute z-10 top-5 right-1 w-10 h-1 rounded-full transition-all duration-500 group-[.open]:scale-0 ${barColor}`} />
           <span className={`absolute z-10 top-8 right-1 w-10 h-1 rounded-full transition-all duration-500 transform group-[.open]:-rotate-45 group-[.open]:-translate-y-2.5 ${barColor}`} />
-        </motion.div>
+        </motion.button>
       )}
 
       {/* Menu Background & Content */}
@@ -120,7 +121,9 @@ export default function Navbar() {
         {menuOpen && (
           <>
             <LayoutGroup>
-              <motion.ul
+              <motion.nav
+                id="primary-navigation"
+                aria-label="Primary navigation"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -128,10 +131,12 @@ export default function Navbar() {
                 className={`fixed top-2 right-2 w-46 z-40 pt-24 pr-6 pb-6 pl-4 rounded-lg shadow-lg
                   ${isDark ? 'bg-zinc-900/90' : 'bg-white/90'} text-right space-y-6`}
               >
-                {MENU_ITEMS.map((item) => (
-                  <motion.li key={item.href} className="relative">
+                <ul className="space-y-6">
+                  {MENU_ITEMS.map((item) => (
+                    <motion.li key={item.href} className="relative">
                     <a
                       href={item.href}
+                      onClick={() => setMenuOpen(false)}
                       className={`text-lg font-semibold transition-colors ${
                         activeSection === item.id
                           ? isDark
@@ -153,86 +158,88 @@ export default function Navbar() {
                         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                       />
                     )}
-                  </motion.li>
-                ))}
+                    </motion.li>
+                  ))}
 
-                <li
-                  aria-hidden="true"
-                  className={`border-t ${isDark ? 'border-white/15' : 'border-black/15'}`}
-                />
+                  <li
+                    aria-hidden="true"
+                    className={`border-t ${isDark ? 'border-white/15' : 'border-black/15'}`}
+                  />
 
-                <motion.li className="relative">
-                  <a
-                    href="/Resume-Edward_Song.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`text-lg font-semibold transition-colors ${
-                      isDark
-                        ? 'text-white/70 hover:text-white'
-                        : 'text-black/70 hover:text-black'
-                    }`}
-                  >
-                    Resume
-                  </a>
-                </motion.li>
-
-                <li
-                  aria-hidden="true"
-                  className={`border-t ${isDark ? 'border-white/15' : 'border-black/15'}`}
-                />
-
-                {/* Theme Toggle */}
-                <motion.li className="text-right pr-2">
-                  <div className="relative w-28 h-10 inline-block">
-                    <input
-                      type="checkbox"
-                      id="theme-switch"
-                      className="sr-only"
-                      checked={isDark}
-                      onChange={() => setTheme(isDark ? 'light' : 'dark')}
-                    />
-                    <label
-                      htmlFor="theme-switch"
-                      className="w-full h-full cursor-pointer bg-zinc-300 dark:bg-zinc-700 rounded-full border border-zinc-500 flex items-center relative overflow-hidden"
+                  <motion.li className="relative">
+                    <a
+                      href="/Resume-Edward_Song.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`text-lg font-semibold transition-colors ${
+                        isDark
+                          ? 'text-white/70 hover:text-white'
+                          : 'text-black/70 hover:text-black'
+                      }`}
                     >
-                      <motion.div
-                        className="absolute w-14 h-8 rounded-full shadow-md flex justify-center items-center text-xs font-semibold"
-                        layout
-                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                        animate={{
-                          x: isDark ? 56 : 0,
-                          backgroundColor: isDark ? '#111827' : '#ffffff',
-                          color: isDark ? '#ffffff' : '#111827',
-                        }}
-                        style={{ left: 0 }}
-                      >
-                        {isDark ? 'Dark' : 'Light'}
-                      </motion.div>
+                      Resume
+                    </a>
+                  </motion.li>
 
-                      <div className="flex justify-between w-full z-0 text-xs font-semibold px-3">
-                        <span
-                          className={`pl-[2px] transition-opacity duration-300 ${
-                            !isDark ? 'opacity-0' : 'opacity-100 text-white'
-                          }`}
+                  <li
+                    aria-hidden="true"
+                    className={`border-t ${isDark ? 'border-white/15' : 'border-black/15'}`}
+                  />
+
+                  <motion.li className="text-right pr-2">
+                    <div className="relative w-28 h-10 inline-block">
+                      <input
+                        type="checkbox"
+                        id="theme-switch"
+                        className="sr-only"
+                        checked={isDark}
+                        onChange={() => setTheme(isDark ? 'light' : 'dark')}
+                      />
+                      <label
+                        htmlFor="theme-switch"
+                        className="w-full h-full cursor-pointer bg-zinc-300 dark:bg-zinc-700 rounded-full border border-zinc-500 flex items-center relative overflow-hidden"
+                      >
+                        <motion.div
+                          className="absolute w-14 h-8 rounded-full shadow-md flex justify-center items-center text-xs font-semibold"
+                          layout
+                          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                          animate={{
+                            x: isDark ? 56 : 0,
+                            backgroundColor: isDark ? '#111827' : '#ffffff',
+                            color: isDark ? '#ffffff' : '#111827',
+                          }}
+                          style={{ left: 0 }}
                         >
-                          Light
-                        </span>
-                        <span
-                          className={`pr-[2px] transition-opacity duration-300 ${
-                            isDark ? 'opacity-0' : 'opacity-100 text-white'
-                          }`}
-                        >
-                          Dark
-                        </span>
-                      </div>
-                    </label>
-                  </div>
-                </motion.li>
-              </motion.ul>
+                          {isDark ? 'Dark' : 'Light'}
+                        </motion.div>
+
+                        <div className="flex justify-between w-full z-0 text-xs font-semibold px-3">
+                          <span
+                            className={`pl-[2px] transition-opacity duration-300 ${
+                              !isDark ? 'opacity-0' : 'opacity-100 text-white'
+                            }`}
+                          >
+                            Light
+                          </span>
+                          <span
+                            className={`pr-[2px] transition-opacity duration-300 ${
+                              isDark ? 'opacity-0' : 'opacity-100 text-white'
+                            }`}
+                          >
+                            Dark
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  </motion.li>
+                </ul>
+              </motion.nav>
             </LayoutGroup>
 
             {/* Overlay to close menu */}
-            <div
+            <button
+              type="button"
+              aria-label="Close navigation menu"
               className="fixed inset-0 z-30"
               onClick={() => setMenuOpen(false)}
             />

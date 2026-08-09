@@ -10,8 +10,16 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Visible keyboard focus for links and controls. */
+:focus-visible {
+  outline: 3px solid #60a5fa;
+  outline-offset: 3px;
+}
+
 /* ============================= */
+
 /* Font Base                     */
+
 /* ============================= */
 body {
   @apply font-sans bg-white text-black transition-[background-color] duration-300;
@@ -22,7 +30,9 @@ html.dark body {
 }
 
 /* ============================= */
+
 /* Global Elegant Scrollbar     */
+
 /* ============================= */
 
 ::-webkit-scrollbar {
@@ -36,7 +46,7 @@ html.dark body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #999999;
+  background-color: #999;
 }
 
 ::-webkit-scrollbar-track {
@@ -62,7 +72,9 @@ html.dark * {
 }
 
 /* ============================= */
+
 /* Scrollbar styling for modal  */
+
 /* ============================= */
 
 .aboutme-scroll::-webkit-scrollbar {
@@ -89,7 +101,9 @@ html.dark * {
 }
 
 /* ============================= */
+
 /* Autofill override styling     */
+
 /* ============================= */
 
 input:-webkit-autofill,
@@ -98,18 +112,31 @@ input:-webkit-autofill:focus,
 textarea:-webkit-autofill,
 textarea:-webkit-autofill:hover,
 textarea:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0px 1000px #27272a inset !important; /* bg-zinc-800 */
-  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 0 0 1000px #27272a inset !important; /* bg-zinc-800 */
+  -webkit-text-fill-color: #fff !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 
+html:not(.dark) input:-webkit-autofill,
+html:not(.dark) input:-webkit-autofill:hover,
+html:not(.dark) input:-webkit-autofill:focus,
+html:not(.dark) textarea:-webkit-autofill,
+html:not(.dark) textarea:-webkit-autofill:hover,
+html:not(.dark) textarea:-webkit-autofill:focus {
+  box-shadow: 0 0 0 1000px #fafaf9 inset !important;
+  -webkit-text-fill-color: #18181b !important;
+}
+
 /* ============================= */
+
 /* Theme toggle transitions      */
+
 /* ============================= */
 
 .theme-toggle {
   transition: all 0.4s ease-in-out;
 }
+
 .theme-toggle .toggle {
   transition: transform 0.3s ease-in-out;
 }

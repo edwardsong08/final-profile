@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import { FaEnvelope, FaLinkedin, FaGithub, FaFilePdf } from "react-icons/fa";
-import { useTheme } from "next-themes";
 import { useEmailCopy } from "./EmailCopyProvider";
+import { useDisplayTheme } from "../hooks/useDisplayTheme";
 
 interface HeroProps {
   onReady?: () => void;
@@ -25,9 +25,8 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
   const [isFirstLandscape, setIsFirstLandscape] = useState(true);
   const [isHintOpen, setIsHintOpen] = useState(false);
   const [isCoarsePointer, setIsCoarsePointer] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { isDark, setTheme } = useDisplayTheme();
   const { copyEmail } = useEmailCopy();
-  const isDark = theme === "dark";
 
   const { scrollY } = useScroll();
   const mountainY = useTransform(scrollY, [0, 300], [0, 30]);
@@ -104,7 +103,10 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
   }, []);
 
   useEffect(() => {
-    if (!isCoarsePointer) setIsHintOpen(false);
+    if (isCoarsePointer) return;
+
+    const closeHintFrame = window.requestAnimationFrame(() => setIsHintOpen(false));
+    return () => window.cancelAnimationFrame(closeHintFrame);
   }, [isCoarsePointer]);
 
   useEffect(() => {
@@ -174,9 +176,12 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
       />
 
       {/* Moon/Sun Toggle */}
-      <motion.div
+      <motion.button
+        type="button"
+        aria-label={`Switch to ${isDark ? "light" : "dark"} theme`}
+        aria-pressed={isDark}
         className="absolute top-0 left-[10%] z-10 cursor-pointer group
-                   w-40 h-40 -translate-y-40
+                   w-40 h-40 -translate-y-40 appearance-none border-0 bg-transparent p-0
                    max-[719px]:w-24 max-[719px]:h-24 max-[719px]:-translate-y-46"
         initial={{ y: 0, scaleX: 1, scaleY: 1 }}
         animate={{
@@ -200,7 +205,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
           <div className="absolute inset-0 backface-hidden">
             <Image
               src="/moon.webp"
-              alt="Moon"
+              alt=""
               fill
               className="object-contain rounded-full"
             />
@@ -208,13 +213,13 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
           <div className="absolute inset-0 rotate-y-180 backface-hidden">
             <Image
               src="/sun.webp"
-              alt="Sun"
+              alt=""
               fill
               className="object-contain rounded-full"
             />
           </div>
         </motion.div>
-      </motion.div>
+      </motion.button>
 
       <motion.div
         ref={hintContainerRef}
@@ -277,7 +282,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
             <motion.div style={{ y: mountainY }} className="relative w-full h-full">
               <Image
                 src={isDark ? "/heromountain.webp" : "/springland.webp"}
-                alt={isDark ? "Hero Mountain" : "Spring Landscape"}
+                alt=""
                 fill
                 priority
                 className="object-bottom object-cover"
@@ -294,13 +299,15 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
         animate={{ opacity: ready ? 1 : 0, y: ready ? 0 : 30 }}
         transition={{ delay: 3.2, duration: 0.8, ease: "easeOut" }}
       >
-        <div
-          className="relative w-32 h-32 mb-4 cursor-pointer group"
+        <button
+          type="button"
+          aria-label="Learn more about Edward Song"
+          className="relative w-32 h-32 mb-4 cursor-pointer group appearance-none border-0 bg-transparent p-0"
           onClick={openAbout}
         >
           <Image
             src="/profile_pic_v4.webp"
-            alt="Profile Picture"
+            alt="Edward Song"
             width={128}
             height={128}
             className={`rounded-full border-4 shadow-lg object-cover w-full h-full transition group-hover:brightness-75 ${
@@ -335,7 +342,7 @@ export default function Hero({ onReady, openAbout }: HeroProps) {
               </textPath>
             </text>
           </svg>
-        </div>
+        </button>
 
         <div
           className={`w-full max-w-2xl px-4 sm:px-6 py-4 sm:py-5 rounded-2xl border backdrop-blur-[3px] ${

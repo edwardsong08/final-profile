@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useTheme } from 'next-themes';
 import { motion } from 'framer-motion';
 import { FiLayout, FiServer, FiDatabase, FiCloud, FiCpu, FiTool, FiPenTool } from 'react-icons/fi';
+import { useDisplayTheme } from '../hooks/useDisplayTheme';
 
 interface SkillCategory {
   category: string;
@@ -79,16 +78,7 @@ const skillCategories: SkillCategory[] = [
 ];
 
 export default function Skills() {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  const isDark = resolvedTheme === 'dark';
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
+  const { isDark } = useDisplayTheme();
 
   const sectionText = isDark ? 'text-zinc-100' : 'text-zinc-900';
   const sectionOverlay = isDark ? 'bg-black/60' : 'bg-[rgba(242,236,226,0.82)]';
