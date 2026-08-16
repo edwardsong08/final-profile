@@ -1,0 +1,19 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+      <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#315C72" stroke-opacity="0.055" stroke-width="1" />
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="#F6F7F4" />
+  <rect width="1200" height="630" fill="url(#grid)" />
+  <text x="60" y="72" fill="#171A18" font-family="Arial, sans-serif" font-size="22" font-weight="600">Edward Song</text>
+  <text x="60" y="98" fill="#5F6661" font-family="Arial, sans-serif" font-size="14">Northern New Jersey</text>
+  <text x="1140" y="70" fill="#171A18" font-family="Arial, sans-serif" font-size="15" text-anchor="end">Product Engineer</text>
+  <text x="1140" y="94" fill="#171A18" font-family="Arial, sans-serif" font-size="15" text-anchor="end">Technical Lead</text>
+  <text x="60" y="350" fill="#315C72" font-family="Arial, sans-serif" font-size="14" font-weight="600" letter-spacing="1.2">SOFTWARE, INFRASTRUCTURE, AND THE TEAMS AROUND THEM</text>
+  <text x="60" y="430" fill="#171A18" font-family="Arial, sans-serif" font-size="70" font-weight="500" letter-spacing="-3">Product engineer</text>
+  <text x="60" y="505" fill="#171A18" font-family="Arial, sans-serif" font-size="70" font-weight="500" letter-spacing="-3">and technical lead.</text>
+  <text x="60" y="558" fill="#5F6661" font-family="Arial, sans-serif" font-size="17">Volunteer CTO at TROA · sole developer · four technical teams</text>
+  <line x1="865" y1="553" x2="1140" y2="553" stroke="#315C72" stroke-width="1" />
+  <text x="1140" y="584" fill="#5F6661" font-family="Arial, sans-serif" font-size="14" text-anchor="end">TROA · ClaimChain · Ryu Legal</text>
+</svg>

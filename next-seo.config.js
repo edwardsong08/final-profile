@@ -1,11 +1,11 @@
 const siteUrl = 'https://www.edsong.xyz';
 
 const defaultSeo = {
-  defaultTitle: 'Edward Song | Full-Stack Engineer',
+  defaultTitle: 'Edward Song — Product Engineer & Technical Lead',
   titleTemplate: '%s | Edward Song',
   canonical: siteUrl,
   description:
-    'Full-stack engineer building production systems across React, Next.js, Java, Spring Boot, Go, AWS, and applied AI.',
+    'Edward Song is a Product Engineer, Technical Lead, and Volunteer CTO who creates digital products, sets technical direction, and leads multidisciplinary technology teams.',
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -13,20 +13,20 @@ const defaultSeo = {
     site_name: 'Edward Song',
     images: [
       {
-        url: `${siteUrl}/lighthero.webp`,
-        width: 1536,
-        height: 1024,
-        alt: 'Edward Song portfolio landscape',
+        url: `${siteUrl}/og/edward-song-zen.png`,
+        width: 1200,
+        height: 630,
+        alt: 'Edward Song — Product Engineer and Technical Lead',
       },
     ],
     description:
-      'Portfolio featuring ClaimChain, TROA platform work, and production-focused engineering projects.',
+      'Product strategy, engineering, and technical leadership across TROA, ClaimChain, and Ryu Legal.',
   },
   twitter: {
     cardType: 'summary_large_image',
   },
   additionalMetaTags: [
-    { name: 'theme-color', content: '#000000' },
+    { name: 'theme-color', content: '#f6f7f4' },
   ],
 };
 

@@ -1,28 +1,35 @@
-// src/pages/index.tsx
-import { useState } from 'react';
 import { NextSeo, SocialProfileJsonLd, WebPageJsonLd } from 'next-seo';
-import Hero from '../components/Hero';
-import Skills from '../components/Skills';
-import Projects from '../components/Projects';
-import ContactForm from '../components/ContactForm';
-import Footer from '../components/Footer';
-import AboutMeModal from '../components/AboutMeModal';
+import PortfolioZen from '../components/v21/PortfolioZen';
 
 export default function Home() {
-  const [isAboutOpen, setIsAboutOpen] = useState(false);
-
   return (
     <>
       <NextSeo
-        title="Edward Song | Full-Stack Engineer"
-        description="Full-stack engineer building production systems across React/Next.js, Java/Spring Boot, Go, AWS, and applied AI. Portfolio featuring ClaimChain, TROA platform work, and production-focused engineering projects."
+        title="Product Engineer & Technical Lead"
+        description="Edward Song is a Product Engineer, Technical Lead, and Volunteer CTO at TROA. He creates digital products, sets technical direction, and leads multidisciplinary technology teams."
         canonical="https://www.edsong.xyz/"
+        openGraph={{
+          title: 'Edward Song — Product Engineer & Technical Lead',
+          description:
+            'Product strategy, engineering, and technical leadership across TROA, ClaimChain, and Ryu Legal.',
+          url: 'https://www.edsong.xyz/',
+          type: 'website',
+          images: [
+            {
+              url: 'https://www.edsong.xyz/og/edward-song-zen.png',
+              width: 1200,
+              height: 630,
+              alt: 'Edward Song — Product Engineer and Technical Lead',
+            },
+          ],
+        }}
+        additionalMetaTags={[{ name: 'theme-color', content: '#f6f7f4' }]}
       />
       <WebPageJsonLd
         id="https://www.edsong.xyz/#webpage"
         url="https://www.edsong.xyz/"
-        title="Edward Song | Full-Stack Engineer"
-        description="Full-stack engineer building production systems across React, Next.js, Java, Spring Boot, Go, AWS, and applied AI."
+        title="Edward Song — Product Engineer & Technical Lead"
+        description="Edward Song creates digital products, sets technical direction, and leads multidisciplinary technology teams at TROA."
       />
       <SocialProfileJsonLd
         type="Person"
@@ -33,28 +40,7 @@ export default function Home() {
           'https://github.com/edwardsong08',
         ]}
       />
-
-      <div className="scroll-smooth">
-        <header id="hero">
-          <Hero openAbout={() => setIsAboutOpen(true)} />
-        </header>
-
-        <section id="projects">
-          <Projects />
-        </section>
-
-        <section id="skills">
-          <Skills />
-        </section>
-
-        <section id="contact">
-          <ContactForm />
-        </section>
-
-        <Footer openAbout={() => setIsAboutOpen(true)} />
-      </div>
-
-      <AboutMeModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
+      <PortfolioZen />
     </>
   );
 }

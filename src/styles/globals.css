@@ -1,142 +1,79 @@
 @import "tailwindcss";
 
-/* Base transitions for background only (prevents text flicker) */
-html,
-body {
-  transition: background-color 0.3s ease;
+:root {
+  color-scheme: light;
+
+  --page-background: #f6f7f4;
+  --page-foreground: #171a18;
+  --focus-ring: #315c72;
+  --selection-background: #c7d9df;
+  --selection-foreground: #171a18;
+}
+
+* {
+  box-sizing: border-box;
+  scrollbar-color: #a7afaa transparent;
+  scrollbar-width: thin;
 }
 
 html {
+  background: var(--page-background);
   scroll-behavior: smooth;
 }
 
-/* Visible keyboard focus for links and controls. */
-:focus-visible {
-  outline: 3px solid #60a5fa;
-  outline-offset: 3px;
-}
-
-/* ============================= */
-
-/* Font Base                     */
-
-/* ============================= */
 body {
-  @apply font-sans bg-white text-black transition-[background-color] duration-300;
+  background: var(--page-background);
+  color: var(--page-foreground);
+  font-family: Aptos, "Segoe UI Variable", "Segoe UI", Helvetica, Arial, sans-serif;
+  font-kerning: normal;
+  font-synthesis: none;
+  margin: 0;
+  min-width: 20rem;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
-html.dark body {
-  @apply bg-black text-white;
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
 
-/* ============================= */
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
 
-/* Global Elegant Scrollbar     */
+::selection {
+  background: var(--selection-background);
+  color: var(--selection-foreground);
+}
 
-/* ============================= */
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 4px;
+}
 
 ::-webkit-scrollbar {
-  width: 8px;
   height: 8px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #c0c0c0;
-  border-radius: 9999px;
+  background: #a7afaa;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #999;
+  background: #7e8882;
 }
 
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 
-html.dark ::-webkit-scrollbar-thumb {
-  background-color: #4b5563; /* Tailwind gray-600 */
-}
-
-html.dark ::-webkit-scrollbar-thumb:hover {
-  background-color: #6b7280; /* Tailwind gray-500 */
-}
-
-/* Firefox support */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #c0c0c0 transparent;
-}
-
-html.dark * {
-  scrollbar-color: #4b5563 transparent;
-}
-
-/* ============================= */
-
-/* Scrollbar styling for modal  */
-
-/* ============================= */
-
-.aboutme-scroll::-webkit-scrollbar {
-  width: 8px;
-}
-
-.aboutme-scroll::-webkit-scrollbar-thumb {
-  background-color: #4B5563;
-  border-radius: 9999px;
-  transition: background-color 0.2s ease;
-}
-
-.aboutme-scroll::-webkit-scrollbar-thumb:hover {
-  background-color: #6B7280;
-}
-
-.aboutme-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.aboutme-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: #4B5563 transparent;
-}
-
-/* ============================= */
-
-/* Autofill override styling     */
-
-/* ============================= */
-
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-textarea:-webkit-autofill,
-textarea:-webkit-autofill:hover,
-textarea:-webkit-autofill:focus {
-  box-shadow: 0 0 0 1000px #27272a inset !important; /* bg-zinc-800 */
-  -webkit-text-fill-color: #fff !important;
-  transition: background-color 5000s ease-in-out 0s;
-}
-
-html:not(.dark) input:-webkit-autofill,
-html:not(.dark) input:-webkit-autofill:hover,
-html:not(.dark) input:-webkit-autofill:focus,
-html:not(.dark) textarea:-webkit-autofill,
-html:not(.dark) textarea:-webkit-autofill:hover,
-html:not(.dark) textarea:-webkit-autofill:focus {
-  box-shadow: 0 0 0 1000px #fafaf9 inset !important;
-  -webkit-text-fill-color: #18181b !important;
-}
-
-/* ============================= */
-
-/* Theme toggle transitions      */
-
-/* ============================= */
-
-.theme-toggle {
-  transition: all 0.4s ease-in-out;
-}
-
-.theme-toggle .toggle {
-  transition: transform 0.3s ease-in-out;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
