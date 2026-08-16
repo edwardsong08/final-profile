@@ -258,6 +258,51 @@
   }
 }
 
+@media (width <= 22rem) {
+  .claimArtifact {
+    aspect-ratio: auto;
+  }
+
+  .roleFlow {
+    align-items: stretch;
+    gap: 0.55rem;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0.8rem;
+  }
+
+  .roleNode {
+    grid-template-columns: 2rem minmax(0, 1fr);
+    min-height: 0;
+    padding: 0.7rem 0.8rem;
+  }
+
+  .roleNode small {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .roleNode strong,
+  .roleNode span {
+    grid-column: 2;
+  }
+
+  .roleNode strong {
+    font-size: 0.75rem;
+    margin-top: 0;
+  }
+
+  .roleNode span {
+    margin-top: 0.2rem;
+  }
+
+  .roleNode:not(:last-child)::after {
+    height: 0.55rem;
+    left: 50%;
+    top: calc(100% + 1px);
+    width: 1px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .screenshot {
     transition: none;

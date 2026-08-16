@@ -357,6 +357,15 @@ export default function SmokeField() {
       textCanvas.width = canvas.width;
       textCanvas.height = canvas.height;
 
+      const configuredPosition = window
+        .getComputedStyle(layer)
+        .getPropertyValue('--mantra-y')
+        .trim();
+      const parsedPosition = Number.parseFloat(configuredPosition);
+      const mantraPosition = Number.isFinite(parsedPosition)
+        ? Math.min(0.82, Math.max(0.18, parsedPosition / 100))
+        : 0.5;
+
       const fontSize = Math.min(32, Math.max(20, bounds.width * 0.021)) * pixelRatio;
       textContext.clearRect(0, 0, textCanvas.width, textCanvas.height);
       textContext.fillStyle = '#ffffff';
@@ -369,7 +378,7 @@ export default function SmokeField() {
       textContext.fillText(
         'Learn. Teach. Grow.',
         textCanvas.width / 2,
-        textCanvas.height / 2,
+        textCanvas.height * mantraPosition,
       );
 
       gl.activeTexture(gl.TEXTURE1);

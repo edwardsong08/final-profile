@@ -40,6 +40,8 @@
 }
 
 .smokeLayer {
+  --mantra-y: 50%;
+
   height: 100%;
   inset: 0;
   pointer-events: none;
@@ -73,7 +75,7 @@
   margin: 0;
   opacity: 0;
   position: absolute;
-  top: 50%;
+  top: var(--mantra-y);
   transform: translate(-50%, -50%);
   transition: opacity 800ms ease;
   white-space: nowrap;
@@ -842,44 +844,42 @@ a:hover .linkArrow {
 
 @media (width <= 51.25rem) {
   .hero {
-    height: auto;
-    min-height: max(48rem, 100svh);
+    height: 100svh;
+    min-height: 45rem;
   }
 
   .heroFrame {
-    display: flex;
-    flex-direction: column;
-    min-height: max(48rem, 100svh);
-    padding: 1.5rem 1.25rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: auto 1fr auto;
+    height: 100%;
+    min-height: 45rem;
+    padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.25rem, 4vw, 2.5rem);
   }
 
   .heroIdentity {
-    align-items: start;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .quietLabel {
-    margin: 0;
+    grid-column: 1 / span 4;
+    grid-row: 1;
   }
 
   .heroRole {
-    margin-top: 0.4rem;
-    text-align: left;
-  }
-
-  .heroRole h1 span {
-    display: inline;
-  }
-
-  .heroRole h1 span::before {
-    color: var(--accent);
-    content: ' · ';
+    grid-column: 9 / -1;
+    grid-row: 1;
   }
 
   .heroIntro {
-    margin-top: clamp(4.5rem, 14vh, 7rem);
-    padding: 0;
+    grid-column: 1 / span 7;
+    grid-row: 3;
+    margin: 0;
+    padding: 0 0 0.25rem;
+  }
+
+  .heroActions {
+    grid-column: 9 / -1;
+    grid-row: 3;
+    margin: 0;
+    padding: 0 0 0.25rem;
+    place-self: end stretch;
   }
 
   .heroSummary {
@@ -888,18 +888,8 @@ a:hover .linkArrow {
     max-width: 38rem;
   }
 
-  .heroActions {
-    margin-top: 2.5rem;
-    min-width: 0;
-    padding: 0;
-  }
-
   .smokeField {
     opacity: 0.52;
-  }
-
-  .heroMantra {
-    top: 68%;
   }
 
   .navInner {
@@ -911,8 +901,8 @@ a:hover .linkArrow {
   }
 
   .section {
-    padding-bottom: 6rem;
-    padding-top: 6rem;
+    padding-bottom: 5rem;
+    padding-top: 5rem;
     scroll-margin-top: 4rem;
   }
 
@@ -939,7 +929,7 @@ a:hover .linkArrow {
   }
 
   .projectList {
-    gap: 6.25rem;
+    gap: 5.75rem;
     margin-top: 2.75rem;
   }
 
@@ -948,7 +938,7 @@ a:hover .linkArrow {
   }
 
   .capabilityList {
-    margin-top: 3.5rem;
+    margin-top: 3rem;
   }
 
   .capabilityList li {
@@ -1001,21 +991,66 @@ a:hover .linkArrow {
   }
 }
 
-@media (width <= 34rem) {
+@media (width <= 40rem) {
+  .hero {
+    height: auto;
+    min-height: max(50rem, 100svh);
+  }
+
+  .smokeLayer {
+    --mantra-y: 33%;
+  }
+
+  .heroFrame {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto minmax(12rem, 1fr) auto auto;
+    height: auto;
+    min-height: max(50rem, 100svh);
+    padding: 1.4rem 1.25rem 1.75rem;
+  }
+
   .heroIdentity {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .heroRole {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    text-align: right;
+  }
+
+  .heroRole h1 span {
     display: block;
   }
 
-  .quietLabel {
-    margin-top: 0.3rem;
-  }
-
   .heroIntro {
-    margin-top: 3.75rem;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    max-width: 34rem;
   }
 
+  .heroActions {
+    grid-column: 1 / -1;
+    grid-row: 4;
+    margin-top: 1.5rem;
+    min-width: 0;
+  }
+}
+
+@media (width <= 34rem) {
   .heroMantra {
     font-size: 1.2rem;
+  }
+
+  .section {
+    padding-bottom: 4.5rem;
+    padding-top: 4.5rem;
+  }
+
+  .projectList {
+    gap: 5rem;
   }
 
   .navInner {
