@@ -29,7 +29,7 @@ const projects: Record<ProjectId, {
     status: 'Active',
     title: 'Creating and leading TROA’s technology function.',
     intro:
-      'I created and have maintained nearly all of TROA’s current product and internal systems. As Volunteer CTO, I set technical direction with the board and lead a multidisciplinary group spanning software development, UI/UX design, Network Engineering, and IT Operations.',
+      'TROA’s current product and internal systems are maintained through coordinated stewardship as Volunteer CTO. Technical direction is set with the board, and coordination spans software development, UI/UX design, Network Engineering, and IT Operations.',
     facts: [
       {
         label: 'Organization',
@@ -41,7 +41,7 @@ const projects: Record<ProjectId, {
       },
       {
         label: 'Technical organization',
-        value: 'A group of roughly ten: two developers including me, two UI/UX designers, three to four network engineers, and two IT Operations specialists.',
+        value: 'A group of roughly ten: two developers, two UI/UX designers, three to four network engineers, and two IT Operations specialists.',
       },
     ],
     problem:
@@ -54,7 +54,7 @@ const projects: Record<ProjectId, {
       'Set technical direction with the board and negotiate compliance, scope, timelines, and tradeoffs with the departments affected by each decision.',
     ],
     state:
-      'The ecosystem is active and continues to expand. I remain hands-on across design, frontend, backend, data, security, performance, SEO, DevOps, and maintenance while leading the specialists responsible for UI/UX, networking, and IT Operations.',
+      'The ecosystem is active and continues to expand. Delivery remains hands-on across design, frontend, backend, data, security, performance, SEO, DevOps, and maintenance while leading the specialists responsible for UI/UX, networking, and IT Operations.',
     note:
       'The public platform is shown here. Administrative, reporting, volunteer, and support tools contain private operational information and are described without exposing their interfaces or data.',
     links: [
@@ -67,7 +67,7 @@ const projects: Record<ProjectId, {
     status: 'Advanced prototype',
     title: 'Provider submission, admin review, and buyer purchase in one governed workflow.',
     intro:
-      'ClaimChain is an independent prototype using test data. Providers submit unpaid claims, administrators review and package them, and buyers purchase anonymized inventory. I defined the product and built the application, data model, advisory service, and staging workflow.',
+      'ClaimChain is an independent prototype using test data. Providers submit unpaid claims, administrators review and package them, and buyers purchase anonymized inventory. The product model, data model, advisory service, and staging workflow were implemented to validate this flow.',
     facts: [
       {
         label: 'Workflow',
@@ -106,7 +106,7 @@ const projects: Record<ProjectId, {
     status: 'Live and maintained',
     title: 'A live NJ/NY law-firm site with server-validated contact intake.',
     intro:
-      'Since 2022, I have handled requirements, UX and visual design, Next.js implementation, SEO, deployment, and ongoing maintenance for a New Jersey and New York law-firm website. The site presents the firm’s services, jurisdiction, disclosures, and contact path.',
+      'Requirements, UX and visual design, Next.js implementation, SEO, deployment, and ongoing maintenance have been managed since 2022 for a New Jersey and New York law-firm website. The site presents the firm’s services, jurisdiction, disclosures, and contact path.',
     facts: [
       {
         label: 'Client path',
@@ -212,7 +212,7 @@ export default function CaseStudyZen({ project }: { project: ProjectId }) {
             </section>
             <section>
               <p className={styles.sectionLabel}>Decisions</p>
-              <h2>Where I placed the boundaries</h2>
+              <h2>How boundaries were placed</h2>
               <ol>
                 {content.decisions.map((decision) => <li key={decision}>{decision}</li>)}
               </ol>

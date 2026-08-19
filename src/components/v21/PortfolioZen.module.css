@@ -339,7 +339,7 @@ a:hover .linkArrow {
 .section {
   margin: 0 auto;
   max-width: 90rem;
-  padding: clamp(6rem, 10vw, 10rem) clamp(1.25rem, 4vw, 4.5rem);
+  padding: clamp(4.5rem, 7vw, 7rem) clamp(1.25rem, 4vw, 4.5rem);
   scroll-margin-top: 4.25rem;
 }
 
@@ -373,7 +373,7 @@ a:hover .linkArrow {
 .projectList {
   display: flex;
   flex-direction: column;
-  gap: clamp(7rem, 11vw, 11.5rem);
+  gap: clamp(5rem, 8vw, 8rem);
   margin-top: clamp(3.5rem, 4.5vw, 5.5rem);
 }
 
@@ -382,7 +382,7 @@ a:hover .linkArrow {
   border-bottom: 1px solid var(--rule);
   display: flex;
   justify-content: flex-end;
-  margin-top: clamp(2.5rem, 4vw, 4rem);
+  margin-top: clamp(1.8rem, 3.2vw, 3.2rem);
   position: sticky;
   top: 4.25rem;
   z-index: 40;
@@ -483,6 +483,7 @@ a:hover .linkArrow {
 
 .projectMedia:focus-visible {
   outline-offset: 4px;
+  outline: 1px solid var(--accent);
 }
 
 .projectMeta {
@@ -511,12 +512,12 @@ a:hover .linkArrow {
 
 .projectFacts {
   border-top: 1px solid var(--rule);
-  margin: 2.25rem 0 0;
+  margin: 2rem 0 0;
 }
 
 .projectFacts > div {
   border-bottom: 1px solid var(--rule);
-  padding: 1rem 0 1.1rem;
+  padding: 0.95rem 0;
 }
 
 .projectFacts dt {
@@ -561,12 +562,12 @@ a:hover .linkArrow {
 }
 
 .capabilitySection {
-  padding-bottom: clamp(5rem, 8vw, 8rem);
+  padding-bottom: clamp(4rem, 6.5vw, 6.5rem);
 }
 
 .capabilityList {
   list-style: none;
-  margin: clamp(4rem, 6vw, 6rem) 0 0;
+  margin: clamp(3rem, 5vw, 4.8rem) 0 0;
   padding: 0;
 }
 
@@ -575,7 +576,7 @@ a:hover .linkArrow {
   display: grid;
   gap: 2rem;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  padding: clamp(1.5rem, 2.5vw, 2.25rem) 0;
+  padding: clamp(1.3rem, 2vw, 1.8rem) 0;
 }
 
 .capabilityList li:last-child {
@@ -604,18 +605,18 @@ a:hover .linkArrow {
 
 .capabilityEvidence {
   color: var(--quiet);
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   line-height: 1.55;
   margin: 0.9rem 0 0;
 }
 
 .experienceSection {
-  padding-top: clamp(5rem, 8vw, 8rem);
+  padding-top: clamp(4rem, 6.5vw, 6.5rem);
 }
 
 .experienceList {
   list-style: none;
-  margin: clamp(3.5rem, 5vw, 5rem) 0 0;
+  margin: clamp(3rem, 4vw, 4.2rem) 0 0;
   padding: 0;
 }
 
@@ -625,7 +626,7 @@ a:hover .linkArrow {
   display: grid;
   gap: 2rem;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  padding: 1.3rem 0;
+  padding: 1.15rem 0;
 }
 
 .experienceList li:last-child {
@@ -690,6 +691,7 @@ a:hover .linkArrow {
   margin: 0;
   overflow: hidden;
   position: relative;
+  min-height: 17rem;
 }
 
 .contactSection {
@@ -698,6 +700,7 @@ a:hover .linkArrow {
   display: grid;
   gap: clamp(2rem, 4vw, 3.5rem);
   grid-template-columns: repeat(12, minmax(0, 1fr));
+  padding-top: 2.4rem;
 }
 
 .contactSection > div:first-child {
@@ -1044,10 +1047,10 @@ a:hover .linkArrow {
     font-size: 1.2rem;
   }
 
-  .section {
-    padding-bottom: 4.5rem;
-    padding-top: 4.5rem;
-  }
+.section {
+  padding-bottom: 4.5rem;
+  padding-top: 4.5rem;
+}
 
   .projectList {
     gap: 5rem;

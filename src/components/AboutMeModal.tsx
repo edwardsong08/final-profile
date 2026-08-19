@@ -63,9 +63,9 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
             </div>
 
             <p className={`text-lg leading-relaxed mb-8 text-center ${textColor}`}>
-              Before software development, I&apos;ve had the opportunity to explore many of my interests,
-              including an educational background in engineering and political science and a professional
-              background in education, writing, and law.
+              Before software development, interests developed across an educational background in
+              engineering and political science, plus professional experience in education, writing,
+              and law.
             </p>
 
             <div className="relative mx-auto mb-6 w-1/3 min-w-[240px] h-auto">
@@ -80,13 +80,10 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
             </div>
 
             <p className={`text-lg leading-relaxed mb-8 text-center ${textColor}`}>
-              Teaching has always been a rewarding experience, and watching my students grow continues to inspire me.
-              I will forever remain a teacher and a student—nurturing to others and unafraid to ask questions.
-              The challenges I have faced in law have taught me that a methodical approach will always yield a solution,
-              so I will apply this to every challenge that comes my way.
-              Through writing comedy, I discovered that there are always new, valid perspectives,
-              and I will remain vigilantly open-minded.
-              Ultimately, these are the principles by which I live and approach software development.
+              Teaching has shaped a durable approach: keep learning, stay patient with ambiguity, and
+              translate complex ideas into clear actions. Legal-adjacent experience reinforced methodical
+              thinking, and comedy writing reinforced perspective and curiosity. These habits continue to
+              guide engineering and collaboration.
             </p>
 
             <div className="relative mx-auto mb-6 w-1/3 min-w-[240px] h-auto">
@@ -101,9 +98,8 @@ export default function AboutMeModal({ isOpen, onClose }: AboutMeModalProps) {
             </div>
 
             <p className={`text-lg leading-relaxed mb-8 text-center ${textColor}`}>
-              I am passionate about political, educational, and judicial reforms.
-              My free time is spent hiking with my dog, tampering as an amateur guitar luthier,
-              reading, or golfing.
+              Political, educational, and judicial reform remain strong interests.
+              Free time often involves hiking, guitar projects, reading, and golfing.
             </p>
 
             <div className="relative mx-auto mb-4 w-1/3 min-w-[240px] h-auto">

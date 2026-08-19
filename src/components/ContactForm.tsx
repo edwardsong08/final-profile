@@ -75,11 +75,11 @@ export default function ContactForm() {
           <div className={`${infoCardBg} backdrop-blur-sm border p-7 rounded-2xl hover:shadow-lg hover:shadow-emerald-400/30 lg:w-1/2 lg:min-h-[520px]`}>
             <h3 className="text-2xl font-semibold mb-4">Open to Software Engineering Opportunities</h3>
             <div className="space-y-3 text-base">
-              <p>I’m currently seeking software engineering roles where I can contribute across product, platform, and systems work.</p>
-              <p>Recent work has included full-stack product development, internal platform tooling, production debugging, infrastructure coordination, and applied AI integrations.</p>
-              <p>I’m especially drawn to technology that improves real workflows and creates practical, positive impact for users, teams, and communities.</p>
-              <p>Most interested in full-stack, platform, and systems-focused roles where strong engineering ownership, product sense, and thoughtful execution matter.</p>
-              <p>Open to conversations with recruiters, hiring managers, and teams about opportunities, interviews, and technical discussions.</p>
+              <p>This site is focused on product, platform, and systems opportunities with clear ownership from architecture through delivery.</p>
+              <p>Recent work includes full-stack product development, internal platform tooling, production debugging, infrastructure coordination, and applied AI integrations.</p>
+              <p>Current focus is on work that improves real workflows and creates practical outcomes for users, teams, and communities.</p>
+              <p>Particular interest is in product engineering, platform engineering, and systems roles where execution discipline and communication are part of the job.</p>
+              <p>Direct conversations with recruiters, hiring managers, and technical teams are welcome for roles, interviews, and project discussions.</p>
             </div>
           </div>
 

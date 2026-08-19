@@ -10,40 +10,34 @@ const EMAIL = 'edwardsong08@gmail.com';
 
 const capabilities = [
   {
-    title: 'Product strategy and design',
+    title: 'Product definition and design',
     description:
-      'I work with board members, department leads, administrators, and users to turn competing needs into product direction, requirements, interfaces, and a delivery plan.',
-    evidence: 'Discovery · product strategy · workflow design · UI/UX · roadmaps',
+      'Translate ambiguous asks into scoped work, then align execution with measurable outcomes.',
+    evidence: 'Discovery, planning, workflow design, scope.',
   },
   {
     title: 'Engineering across the stack',
     description:
-      'I stay hands-on from frontend and backend code through data models, integrations, testing, performance, SEO, and deployment. The range matters because decisions in one layer rarely stay there.',
-    evidence: 'Next.js · Laravel · Spring Boot · Go · FastAPI · PostgreSQL · Supabase',
+      'Build and evolve systems end-to-end with explicit boundaries and maintainable handoffs.',
+    evidence: 'Next.js, Laravel, Spring Boot, FastAPI, Go, PostgreSQL, Supabase',
   },
   {
-    title: 'Security, compliance, and data access',
+    title: 'Security, compliance, and access',
     description:
-      'I translate policy and risk into explicit permissions, server-side controls, auditability, validation, and operational safeguards—and explain the tradeoffs to non-specialists.',
-    evidence: 'RBAC · RLS · audit trails · validation · privacy · secret boundaries',
+      'Convert policy into explicit permissions, validation, and safe exposure boundaries.',
+    evidence: 'RBAC, RLS, auditability, validation, privacy controls',
   },
   {
-    title: 'Delivery and technical operations',
+    title: 'Delivery and operations',
     description:
-      'I own how software reaches and survives production: CI/CD, cloud and container deployments, monitoring, incident follow-up, and performance work. I partner with Network Engineering and IT Operations where their systems meet the applications.',
-    evidence: 'Linux · Proxmox · MeshCentral · WiFiman · Docker · Cloudflare · Coolify · AWS · CI/CD',
+      'Sustain production quality through CI/CD, deployment discipline, and coordinated operations.',
+    evidence: 'Linux, Proxmox, Cloudflare, Coolify, AWS, CI/CD',
   },
   {
     title: 'Technical leadership',
     description:
-      'I set direction with TROA’s board, negotiate scope and timelines with other departments, and lead developers, UI/UX designers, network engineers, and IT Operations specialists.',
-    evidence: 'Technical direction · planning · review · compliance · cross-team decisions',
-  },
-  {
-    title: 'Writing, teaching, and enablement',
-    description:
-      'More than fifteen years of English teaching, admissions work, and professional writing sharpened how I question assumptions, structure information, document decisions, and teach people to use what we build.',
-    evidence: 'Instruction · editing · documentation · audience-aware communication',
+      'Set direction with the board, then coordinate execution decisions across product, network, and operations teams.',
+    evidence: 'Roadmapping, review, tradeoff management, cross-team delivery',
   },
 ];
 
@@ -55,13 +49,13 @@ const experience = [
   },
   {
     dates: '2022–now',
-    role: 'Software Engineer (Contract)',
-    organization: 'Ryu Legal',
+    role: 'Software Engineer',
+    organization: 'Ryu Legal · contracts',
   },
   {
     dates: '2021–2023',
-    role: 'Product Lead',
-    organization: 'Startup',
+    role: 'Product Engineer',
+    organization: 'Legal Startup',
   },
 ];
 
@@ -184,13 +178,12 @@ export default function PortfolioZen() {
             <p className={styles.quietLabel}>Northern New Jersey</p>
           </div>
 
-          <div className={styles.heroIntro}>
+            <div className={styles.heroIntro}>
             <p className={styles.heroKicker}>Current work · TROA</p>
             <p className={styles.heroSummary}>
-              At TROA, I serve as Volunteer CTO. I set technical direction with the board, lead
-              a multidisciplinary technology team, and remain hands-on from product design
-              through engineering, security, deployment, and performance. I created and have
-              maintained nearly all of the organization’s current digital systems.
+              Volunteer CTO at TROA, setting technical direction with the board and coordinating
+              multidisciplinary delivery from product design through engineering, security,
+              deployment, and performance. TROA’s technology function is delivered through a team model that now supports public services, internal operations, hiring, training, support, and game systems.
             </p>
           </div>
 
@@ -269,17 +262,15 @@ export default function PortfolioZen() {
                   <p className={styles.projectMeta}>Volunteer CTO · Active since 2026</p>
                   <h3 id="troa-title">TROA</h3>
                   <p className={styles.projectLead}>
-                    I created TROA’s current technology ecosystem and continue to lead its
-                    development and operation. It supports more than 50 volunteers and a Discord
-                    community of more than 800 members across public services, internal
-                    administration, hiring, training, support, and game operations.
+                    A nonprofit technology ecosystem supporting more than 50 volunteers and a 800+
+                    member community. Public services, internal administration, onboarding, support,
+                    and game systems are coordinated through shared technical direction.
                   </p>
                   <dl className={styles.projectFacts}>
                     <div>
                       <dt>Product scope</dt>
                       <dd>
-                        Public platform, shared accounts, administration, careers, ticketing,
-                        LMS, interactive map, grounded assistant, and game-service tools.
+                        Public platform, admin, careers, ticketing, LMS, map, assistant, and game tools.
                       </dd>
                     </div>
                     <div>
@@ -320,9 +311,9 @@ export default function PortfolioZen() {
                   <p className={styles.projectMeta}>Independent product engineering · 2025–2026</p>
                   <h3 id="claimchain-title">ClaimChain</h3>
                   <p className={styles.projectLead}>
-                    I designed and built an independent prototype using test data—not an operating
-                    marketplace. Providers submit unpaid claims, administrators review and package
-                    them, and buyers purchase anonymized inventory.
+                    Independent prototype using test data, not an operating marketplace.
+                    Providers submit claims, administrators review and package them, and
+                    buyers purchase anonymized inventory.
                   </p>
                   <dl className={styles.projectFacts}>
                     <div>
@@ -341,7 +332,7 @@ export default function PortfolioZen() {
                     </div>
                   </dl>
                 </div>
-                <div className={styles.projectLinks}>
+                  <div className={styles.projectLinks}>
                   <Link href="/work/claimchain">
                     Read case study <Arrow />
                   </Link>
@@ -350,9 +341,6 @@ export default function PortfolioZen() {
                   </a>
                   <a href="https://github.com/edwardsong08/ClaimChain" target="_blank" rel="noreferrer">
                     View repository <Arrow external />
-                  </a>
-                  <a href="/ClaimChain_Demo.mp4" target="_blank" rel="noreferrer">
-                    Watch walkthrough <Arrow external />
                   </a>
                 </div>
               </div>
@@ -372,16 +360,14 @@ export default function PortfolioZen() {
                   <p className={styles.projectMeta}>Contract engineering · Ongoing since 2022</p>
                   <h3 id="ryu-title">Ryu Legal</h3>
                   <p className={styles.projectLead}>
-                    Since 2022, I have handled requirements, UX and visual design, Next.js
-                    implementation, SEO, deployment, and ongoing maintenance for a New Jersey and
-                    New York law-firm website.
+                    End-to-end work on a New Jersey/New York law firm website:
+                    requirements, implementation, SEO, deployment, and ongoing maintenance.
                   </p>
                   <dl className={styles.projectFacts}>
                     <div>
                       <dt>Client path</dt>
                       <dd>
-                        Clear service information, visible legal disclosures, and a direct route
-                        from services to contact.
+                        Service information, legal disclosures, and a clear service-to-contact flow.
                       </dd>
                     </div>
                     <div>
@@ -412,11 +398,9 @@ export default function PortfolioZen() {
           aria-labelledby="capabilities-title"
         >
           <div className={styles.sectionHeading}>
-            <h2 id="capabilities-title">How I work</h2>
+            <h2 id="capabilities-title">How the work runs</h2>
             <p>
-              Most technical problems are not confined to one discipline. I work across the
-              product, the code, and the operating context while knowing when a specialist should
-              own the decision.
+              Delivery is strongest when each layer has clear boundaries and a clear next step.
             </p>
           </div>
 
@@ -459,23 +443,22 @@ export default function PortfolioZen() {
         <section id="about" className={`${styles.section} ${styles.aboutSection}`} aria-labelledby="about-title">
           <div className={styles.aboutCopy}>
             <p className={styles.sectionLabel}>About</p>
-            <h2 id="about-title">Writing and teaching are part of how I engineer.</h2>
+            <h2 id="about-title">Writing and teaching shape the engineering approach.</h2>
             <p>
-              For more than fifteen years, I taught English to students across age groups,
-              including SAT English, LSAT, and other graduate-school entrance exams, and advised
-              applicants on admissions strategy and essays. I also wrote professionally for a
-              comedy club and platform.
+              For over fifteen years, English instruction has supported tutoring and admissions advising
+              across SAT English, LSAT, and graduate-school preparation, including admissions
+              strategy and writing coaching. Professional comedy writing also shaped a habit of
+              concise, audience-first communication.
             </p>
             <p>
-              That work taught me to locate ambiguity, structure complex information, adapt an
-              explanation to its audience, and make difficult ideas usable. I bring the same
-              habits to product discovery, technical decisions, documentation, and
-              cross-functional leadership.
+              That background reinforces a practical approach to ambiguity: structuring complex
+              information, adapting explanations to different audiences, and turning technical
+              decisions into clear requirements and documentation for cross-functional teams.
             </p>
             <p>
-              I work in Korean and English and am based in Northern New Jersey. Away from the
-              screen, I spend time hiking, playing guitar, reading, golfing, and driving around
-              with a Labrador who has opinions about every trip.
+              Korean and English fluency, along with a Northern New Jersey base, anchor how this work
+              is done with community teams. Outside the screen, this includes hiking, guitar, reading,
+              golfing, and travel.
             </p>
           </div>
 
@@ -494,8 +477,7 @@ export default function PortfolioZen() {
           <div>
             <p className={styles.sectionLabel}>Contact</p>
             <h2 id="contact-title">
-              I’m interested in senior product engineering, forward-deployed engineering, and
-              technical lead roles.
+              Open to senior product engineering, forward-deployed engineering, and technical lead roles.
             </h2>
           </div>
           <div className={styles.contactLinks}>
