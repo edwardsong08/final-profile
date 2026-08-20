@@ -3,7 +3,6 @@ const siteUrl = 'https://www.edsong.xyz';
 const defaultSeo = {
   defaultTitle: 'Edward Song — Product Engineer & Technical Lead',
   titleTemplate: '%s | Edward Song',
-  canonical: siteUrl,
   description:
     'Edward Song is a Product Engineer, Technical Lead, and Volunteer CTO working across product direction, hands-on engineering, and multidisciplinary technology leadership.',
   openGraph: {
@@ -14,7 +13,7 @@ const defaultSeo = {
     images: [
       {
         url: `${siteUrl}/og/edward-song-zen.png`,
-        width: 1200,
+        width: 1199,
         height: 630,
         alt: 'Edward Song — Product Engineer and Technical Lead',
       },

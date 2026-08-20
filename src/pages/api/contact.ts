@@ -64,6 +64,8 @@ function consumeRateLimit(identifier: string) {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  res.setHeader('Cache-Control', 'no-store');
+
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ success: false, error: 'Method not allowed' });
@@ -73,7 +75,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(403).json({ success: false, error: 'Invalid request origin' });
   }
 
-  if (!req.headers['content-type']?.includes('application/json')) {
+  const contentType = req.headers['content-type']?.split(';', 1)[0]?.trim().toLowerCase();
+  if (contentType !== 'application/json') {
     return res.status(415).json({ success: false, error: 'Content-Type must be application/json' });
   }
 

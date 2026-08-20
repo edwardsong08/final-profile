@@ -22,7 +22,7 @@ export default function ClaimChainCaseStudy() {
       <WebPageJsonLd
         id="https://www.edsong.xyz/work/claimchain#webpage"
         url="https://www.edsong.xyz/work/claimchain"
-        title="ClaimChain Product Engineering Case Study — Edward Song"
+        name="ClaimChain Product Engineering Case Study — Edward Song"
         description={description}
       />
       <BreadcrumbJsonLd itemListElements={[

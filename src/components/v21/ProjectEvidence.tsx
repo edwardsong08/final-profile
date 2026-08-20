@@ -488,7 +488,7 @@ export function TroaEvidence({
                             : ''}
                     width={1218}
                           height={site.height}
-                          loading={priority || isCurrent ? 'eager' : 'lazy'}
+                          loading={priority && isCurrent ? 'eager' : 'lazy'}
                     sizes="(max-width: 960px) 100vw, 58vw"
                     className={styles.troaLongScreenshot}
                     draggable={false}

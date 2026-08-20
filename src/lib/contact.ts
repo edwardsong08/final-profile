@@ -27,7 +27,7 @@ export const contactSchema = yup
       .min(10, 'Message must be at least 10 characters')
       .max(CONTACT_LIMITS.message, `Message must be ${CONTACT_LIMITS.message.toLocaleString()} characters or fewer`)
       .required('Message is required'),
-    website: yup.string().max(0, 'Invalid submission').default(''),
+    website: yup.string().trim().max(200, 'Invalid submission').default(''),
   })
   .required();
 

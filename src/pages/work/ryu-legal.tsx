@@ -22,7 +22,7 @@ export default function RyuLegalCaseStudy() {
       <WebPageJsonLd
         id="https://www.edsong.xyz/work/ryu-legal#webpage"
         url="https://www.edsong.xyz/work/ryu-legal"
-        title="Ryu Legal Product & UX Case Study — Edward Song"
+        name="Ryu Legal Product and UX Case Study — Edward Song"
         description={description}
       />
       <BreadcrumbJsonLd itemListElements={[

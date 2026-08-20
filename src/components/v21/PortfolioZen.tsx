@@ -71,14 +71,15 @@ const projects = [
 ] as const;
 
 const primarySections = [
-  { id: 'work', label: 'Work', secondary: false },
-  { id: 'experience', label: 'Experience', secondary: false },
-  { id: 'capabilities', label: 'Capabilities', secondary: true },
-  { id: 'about', label: 'About', secondary: true },
-  { id: 'contact', label: 'Contact', secondary: false },
+  { id: 'work', label: 'Work' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'capabilities', label: 'Capabilities' },
+  { id: 'about', label: 'About' },
+  { id: 'contact', label: 'Contact' },
 ] as const;
 
 const projectIds = projects.map((project) => project.id);
+type ProjectId = (typeof projectIds)[number];
 const primarySectionIds = primarySections.map((section) => section.id);
 
 const troaSlideNarratives: Record<TroaSlideId, {
@@ -310,6 +311,29 @@ function WorkIndex() {
   );
 }
 
+function MobileWorkSelector({
+  activeProject,
+  onSelect,
+}: {
+  activeProject: ProjectId;
+  onSelect: (projectId: ProjectId) => void;
+}) {
+  return (
+    <nav className={styles.mobileWorkSelector} aria-label="Choose a selected project">
+      {projects.map((project) => (
+        <button
+          type="button"
+          key={project.id}
+          aria-pressed={activeProject === project.id}
+          onClick={() => onSelect(project.id)}
+        >
+          {project.label}
+        </button>
+      ))}
+    </nav>
+  );
+}
+
 function PrimaryNavigation({
   activeSection,
   onActiveSectionChange,
@@ -317,19 +341,53 @@ function PrimaryNavigation({
   activeSection: string;
   onActiveSectionChange: (sectionId: string) => void;
 }) {
+  const [isMobileIndexOpen, setIsMobileIndexOpen] = useState(false);
+  const mobileIndexToggleRef = useRef<HTMLButtonElement>(null);
+  const activeSectionLabel = primarySections.find(
+    (section) => section.id === activeSection,
+  )?.label ?? 'Work';
+
+  useEffect(() => {
+    if (!isMobileIndexOpen) return;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setIsMobileIndexOpen(false);
+      window.requestAnimationFrame(() => mobileIndexToggleRef.current?.focus());
+    };
+
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [isMobileIndexOpen]);
+
+  const navigateToSection = (sectionId: string) => {
+    onActiveSectionChange(sectionId);
+    if (isMobileIndexOpen) {
+      window.requestAnimationFrame(() => mobileIndexToggleRef.current?.focus({ preventScroll: true }));
+    }
+    setIsMobileIndexOpen(false);
+  };
+
+  const closeMobileIndex = () => {
+    setIsMobileIndexOpen(false);
+    window.requestAnimationFrame(() => mobileIndexToggleRef.current?.focus({ preventScroll: true }));
+  };
+
   return (
     <nav className={styles.stickyNav} aria-label="Primary navigation">
-      <div className={styles.navInner}>
+      <div className={`${styles.navInner} ${styles.desktopNavigation}`}>
         <a className={styles.navName} href="#top" aria-label="Edward Song, back to top">
           ES
         </a>
         <ul>
           {primarySections.map((section) => (
-            <li className={section.secondary ? styles.secondaryNavItem : undefined} key={section.id}>
+            <li key={section.id}>
               <a
                 href={`#${section.id}`}
                 aria-current={activeSection === section.id ? 'location' : undefined}
-                onClick={() => onActiveSectionChange(section.id)}
+                onClick={() => navigateToSection(section.id)}
               >
                 {section.label}
               </a>
@@ -338,6 +396,59 @@ function PrimaryNavigation({
           <li>
             <a href="/Resume-Edward_Song.pdf" target="_blank" rel="noreferrer">
               Résumé
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div className={styles.mobileNavigation}>
+        <a className={styles.navName} href="#top" aria-label="Edward Song, back to top">
+          ES
+        </a>
+        <span className={styles.mobileCurrentSection} aria-live="polite">
+          {activeSectionLabel}
+        </span>
+        <button
+          ref={mobileIndexToggleRef}
+          className={styles.mobileIndexToggle}
+          type="button"
+          aria-controls="mobile-section-index"
+          aria-expanded={isMobileIndexOpen}
+          onClick={() => setIsMobileIndexOpen((isOpen) => !isOpen)}
+        >
+          <span>Index</span>
+          <span aria-hidden="true">{isMobileIndexOpen ? '−' : '+'}</span>
+        </button>
+      </div>
+
+      <div
+        id="mobile-section-index"
+        className={styles.mobileSectionIndex}
+        data-open={isMobileIndexOpen ? 'true' : 'false'}
+        aria-hidden={isMobileIndexOpen ? undefined : 'true'}
+      >
+        <ul>
+          {primarySections.map((section) => (
+            <li key={section.id}>
+              <a
+                href={`#${section.id}`}
+                aria-current={activeSection === section.id ? 'location' : undefined}
+                onClick={() => navigateToSection(section.id)}
+              >
+                <span>{section.label}</span>
+                <span aria-hidden="true">→</span>
+              </a>
+            </li>
+          ))}
+          <li>
+            <a
+              href="/Resume-Edward_Song.pdf"
+              target="_blank"
+              rel="noreferrer"
+              onClick={closeMobileIndex}
+            >
+              <span>Résumé</span>
+              <span aria-hidden="true">↗</span>
             </a>
           </li>
         </ul>
@@ -351,11 +462,42 @@ function PrimaryNavigation({
 
 export default function PortfolioZen() {
   const [activeTroaSlide, setActiveTroaSlide] = useState<TroaSlideId>('public-platform');
+  const [activeMobileProject, setActiveMobileProject] = useState<ProjectId>('project-troa');
   const [activePrimarySection, setActivePrimarySection] = useActiveSection(
     primarySectionIds,
     0.32,
   );
   const troaNarrative = troaSlideNarratives[activeTroaSlide];
+
+  useEffect(() => {
+    const syncProjectFromHash = () => {
+      if (!window.matchMedia('(max-width: 51.25rem)').matches) return;
+      const projectId = window.location.hash.slice(1) as ProjectId;
+      if (!projectIds.includes(projectId)) return;
+      setActiveMobileProject(projectId);
+      window.requestAnimationFrame(() => {
+        document.getElementById(projectId)?.scrollIntoView({ block: 'start' });
+      });
+    };
+
+    const initialSyncFrame = window.requestAnimationFrame(syncProjectFromHash);
+    window.addEventListener('hashchange', syncProjectFromHash);
+    return () => {
+      window.cancelAnimationFrame(initialSyncFrame);
+      window.removeEventListener('hashchange', syncProjectFromHash);
+    };
+  }, []);
+
+  const selectMobileProject = (projectId: ProjectId) => {
+    setActiveMobileProject(projectId);
+    window.history.replaceState(null, '', `#${projectId}`);
+    window.requestAnimationFrame(() => {
+      document.getElementById(projectId)?.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    });
+  };
 
   return (
     <div className={styles.page}>
@@ -409,18 +551,30 @@ export default function PortfolioZen() {
       />
 
       <main>
-        <section id="work" className={`${styles.section} ${styles.workSection}`} aria-labelledby="work-title">
+        <section
+          id="work"
+          className={`${styles.section} ${styles.workSection} ${styles.traceSection}`}
+          aria-labelledby="work-title"
+          data-trace-active={activePrimarySection === 'work' ? 'true' : 'false'}
+        >
           <div className={styles.sectionHeading}>
-            <h2 id="work-title">Selected work</h2>
+            <h2 id="work-title" className={styles.traceTitle}>
+              Selected work
+            </h2>
           </div>
 
           <WorkIndex />
+          <MobileWorkSelector
+            activeProject={activeMobileProject}
+            onSelect={selectMobileProject}
+          />
 
           <div className={styles.projectList}>
             <article
               id="project-troa"
               className={`${styles.project} ${styles.troaProject}`}
               aria-labelledby="troa-title"
+              data-mobile-active={activeMobileProject === 'project-troa' ? 'true' : 'false'}
             >
               <div className={styles.projectMedia}>
                 <ProjectEvidence
@@ -491,6 +645,7 @@ export default function PortfolioZen() {
               id="project-claimchain"
               className={`${styles.project} ${styles.projectReverse}`}
               aria-labelledby="claimchain-title"
+              data-mobile-active={activeMobileProject === 'project-claimchain' ? 'true' : 'false'}
             >
               <div
                 className={`${styles.projectMedia} ${styles.claimchainMedia}`}
@@ -507,23 +662,23 @@ export default function PortfolioZen() {
                     submit claims, administrators review and package them, and buyers purchase
                     anonymized inventory.
                   </p>
-                  <dl className={styles.projectFacts}>
-                    <div>
-                      <dt>Authority</dt>
-                      <dd>
-                        The backend controls eligibility, lifecycle, payment state, and export
-                        access; ML remains advisory.
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Implemented flow</dt>
-                      <dd>
-                        Administrative review, Stripe test-payment reconciliation, and entitled PDF
-                        export across three roles.
-                      </dd>
-                    </div>
-                  </dl>
                 </div>
+                <dl className={`${styles.projectFacts} ${styles.projectDetailFacts}`}>
+                  <div>
+                    <dt>Authority</dt>
+                    <dd>
+                      The backend controls eligibility, lifecycle, payment state, and export
+                      access; ML remains advisory.
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Implemented flow</dt>
+                    <dd>
+                      Administrative review, Stripe test-payment reconciliation, and entitled PDF
+                      export across three roles.
+                    </dd>
+                  </div>
+                </dl>
                 <div className={styles.projectLinks}>
                   <Link href="/work/claimchain">
                     Read case study <Arrow />
@@ -539,6 +694,7 @@ export default function PortfolioZen() {
               id="project-ryu"
               className={styles.project}
               aria-labelledby="ryu-title"
+              data-mobile-active={activeMobileProject === 'project-ryu' ? 'true' : 'false'}
             >
               <div className={styles.projectMedia}>
                 <ProjectEvidence project="ryu-legal" />
@@ -553,23 +709,23 @@ export default function PortfolioZen() {
                     information architecture and interface design through deployment, SEO, and
                     maintenance.
                   </p>
-                  <dl className={styles.projectFacts}>
-                    <div>
-                      <dt>Client path</dt>
-                      <dd>
-                        Clear service information, visible legal disclosures, and a direct contact
-                        workflow.
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Safeguards</dt>
-                      <dd>
-                        Server validation and bounded failure handling protect the contact workflow
-                        while provider credentials remain outside the browser.
-                      </dd>
-                    </div>
-                  </dl>
                 </div>
+                <dl className={`${styles.projectFacts} ${styles.projectDetailFacts}`}>
+                  <div>
+                    <dt>Client path</dt>
+                    <dd>
+                      Clear service information, visible legal disclosures, and a direct contact
+                      workflow.
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Safeguards</dt>
+                    <dd>
+                      Server validation and bounded failure handling protect the contact workflow
+                      while provider credentials remain outside the browser.
+                    </dd>
+                  </div>
+                </dl>
                 <div className={styles.projectLinks}>
                   <Link href="/work/ryu-legal">
                     Read case study <Arrow />
@@ -587,10 +743,12 @@ export default function PortfolioZen() {
           id="experience"
           className={`${styles.section} ${styles.experienceSection} ${styles.traceSection}`}
           aria-labelledby="experience-title"
-          data-active={activePrimarySection === 'experience' ? 'true' : 'false'}
+          data-trace-active={activePrimarySection === 'experience' ? 'true' : 'false'}
         >
           <div className={styles.sectionHeading}>
-            <h2 id="experience-title">Experience</h2>
+            <h2 id="experience-title" className={styles.traceTitle}>
+              Experience
+            </h2>
             <a className={styles.textLink} href="/Resume-Edward_Song.pdf" target="_blank" rel="noreferrer">
               Full résumé <Arrow external />
             </a>
@@ -611,10 +769,12 @@ export default function PortfolioZen() {
           id="capabilities"
           className={`${styles.section} ${styles.capabilitySection} ${styles.traceSection}`}
           aria-labelledby="capabilities-title"
-          data-active={activePrimarySection === 'capabilities' ? 'true' : 'false'}
+          data-trace-active={activePrimarySection === 'capabilities' ? 'true' : 'false'}
         >
           <div className={styles.sectionHeading}>
-            <h2 id="capabilities-title">Capabilities</h2>
+            <h2 id="capabilities-title" className={styles.traceTitle}>
+              Capabilities
+            </h2>
           </div>
 
           <ul className={styles.capabilityList}>
@@ -637,26 +797,30 @@ export default function PortfolioZen() {
           id="about"
           className={`${styles.section} ${styles.aboutSection} ${styles.traceSection}`}
           aria-labelledby="about-title"
-          data-active={activePrimarySection === 'about' ? 'true' : 'false'}
+          data-trace-active={activePrimarySection === 'about' ? 'true' : 'false'}
         >
           <div className={styles.aboutCopy}>
-            <p className={styles.sectionLabel}>About</p>
+            <p className={`${styles.sectionLabel} ${styles.traceTitle}`}>
+              About
+            </p>
             <h2 id="about-title">Writing and teaching shape the engineering approach.</h2>
-            <p>
+            <p className={styles.aboutLead}>
               Before and alongside software, I spent more than fifteen years teaching English and
               preparing students for the SAT, LSAT, graduate-school exams, admissions, and
               application writing. I also wrote professionally for a comedy club and platform. Both
               taught the same discipline: understand the audience, find the real problem, and make
               the next step clear.
             </p>
-            <p>
-              That experience still shapes discovery, requirements, documentation, and the
-              conversations where technical and nontechnical teams need to reach a decision.
-            </p>
-            <p>
-              Based in Northern New Jersey. Korean and English. Away from work: hiking, guitar,
-              reading, golf, and travel.
-            </p>
+            <div className={styles.aboutClosing}>
+              <p>
+                That experience still shapes discovery, requirements, documentation, and the
+                conversations where technical and nontechnical teams need to reach a decision.
+              </p>
+              <p>
+                Based in Northern New Jersey. Korean and English. Away from work: hiking, guitar,
+                reading, golf, and travel.
+              </p>
+            </div>
           </div>
 
           <figure className={styles.aboutImage}>
@@ -675,9 +839,12 @@ export default function PortfolioZen() {
           className={`${styles.section} ${styles.contactSection} ${styles.traceSection}`}
           aria-labelledby="contact-title"
           data-active={activePrimarySection === 'contact' ? 'true' : 'false'}
+          data-trace-active={activePrimarySection === 'contact' ? 'true' : 'false'}
         >
           <div>
-            <p className={styles.sectionLabel}>Contact</p>
+            <p className={`${styles.sectionLabel} ${styles.traceTitle}`}>
+              Contact
+            </p>
             <h2 id="contact-title">
               Interested in senior product engineering, forward-deployed engineering, and technical lead roles.
             </h2>

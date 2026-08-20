@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import "tailwindcss/preflight.css";
 
 :root {
   color-scheme: light;

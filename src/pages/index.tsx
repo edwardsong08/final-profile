@@ -17,7 +17,7 @@ export default function Home() {
           images: [
             {
               url: 'https://www.edsong.xyz/og/edward-song-zen.png',
-              width: 1200,
+              width: 1199,
               height: 630,
               alt: 'Edward Song — Product Engineer and Technical Lead',
             },
@@ -28,13 +28,19 @@ export default function Home() {
       <WebPageJsonLd
         id="https://www.edsong.xyz/#webpage"
         url="https://www.edsong.xyz/"
-        title="Edward Song — Product Engineer & Technical Lead"
+        name="Edward Song — Product Engineer and Technical Lead"
         description="Edward Song works across product direction, hands-on engineering, and multidisciplinary technology leadership."
+        mainEntity={{ '@id': 'https://www.edsong.xyz/#person' }}
       />
       <SocialProfileJsonLd
         type="Person"
+        id="https://www.edsong.xyz/#person"
         name="Edward Song"
         url="https://www.edsong.xyz/"
+        image="https://www.edsong.xyz/og/edward-song-zen.png"
+        jobTitle="Product Engineer and Technical Lead"
+        description="Product Engineer, Technical Lead, and Volunteer CTO working across product direction, hands-on engineering, and multidisciplinary technology leadership."
+        knowsLanguage={['English', 'Korean']}
         sameAs={[
           'https://www.linkedin.com/in/edward-y-song',
           'https://github.com/edwardsong08',

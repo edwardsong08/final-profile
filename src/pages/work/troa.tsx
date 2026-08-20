@@ -22,7 +22,7 @@ export default function TroaCaseStudy() {
       <WebPageJsonLd
         id="https://www.edsong.xyz/work/troa#webpage"
         url="https://www.edsong.xyz/work/troa"
-        title="TROA Product & Technical Leadership — Edward Song"
+        name="TROA Product and Technical Leadership — Edward Song"
         description={description}
       />
       <BreadcrumbJsonLd itemListElements={[

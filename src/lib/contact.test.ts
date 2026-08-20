@@ -18,13 +18,24 @@ describe('contactSchema', () => {
     });
   });
 
-  it('rejects a populated honeypot and invalid fields', async () => {
+  it('normalizes a populated honeypot so the endpoint can answer silently', async () => {
+    await expect(
+      contactSchema.validate({
+        name: 'Automated Submission',
+        email: 'bot@example.com',
+        message: 'This message should not be delivered.',
+        website: 'https://spam.example',
+      })
+    ).resolves.toMatchObject({ website: 'https://spam.example' });
+  });
+
+  it('rejects invalid contact fields', async () => {
     await expect(
       contactSchema.validate({
         name: 'A\r\nB',
         email: 'not-an-email',
         message: 'short',
-        website: 'https://spam.example',
+        website: '',
       })
     ).rejects.toThrow();
   });
