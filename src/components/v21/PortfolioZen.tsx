@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
-import { ProjectEvidence } from './ProjectEvidence';
+import { ProjectEvidence, type TroaSlideId } from './ProjectEvidence';
 import SmokeField from './SmokeField';
 import styles from './PortfolioZen.module.css';
 
@@ -75,6 +75,88 @@ const primarySections = [
 
 const projectIds = projects.map((project) => project.id);
 const primarySectionIds = primarySections.map((section) => section.id);
+
+const troaSlideNarratives: Record<TroaSlideId, {
+  facts: Array<{ label: string; value: string }>;
+  heading: string;
+  summary: string;
+}> = {
+  'public-platform': {
+    heading: 'Public platform',
+    summary:
+      'The next public experience brings TROA’s community, advocacy, services, and organizational work into a clearer and more accessible entry point.',
+    facts: [
+      {
+        label: 'Work',
+        value: 'Product direction, UX, engineering, accessibility, performance, SEO, and deployment.',
+      },
+      {
+        label: 'Purpose',
+        value: 'Make a broad nonprofit ecosystem easier for members, volunteers, and visitors to understand and navigate.',
+      },
+    ],
+  },
+  careers: {
+    heading: 'Volunteer recruitment',
+    summary:
+      'A dedicated path gives candidates context on TROA and its open roles, then carries applications into a private staff workflow.',
+    facts: [
+      {
+        label: 'Candidate path',
+        value: 'Role discovery, application, confirmation, and applicant progress.',
+      },
+      {
+        label: 'Operating boundary',
+        value: 'Public applications connect to role-gated review and administration.',
+      },
+    ],
+  },
+  ticketing: {
+    heading: 'Member support',
+    summary:
+      'Ticketing gives members a clear request path and provides staff with a structured way to manage, document, and resolve support and moderation work.',
+    facts: [
+      {
+        label: 'Member experience',
+        value: 'Focused intake and visible progress from request through resolution.',
+      },
+      {
+        label: 'Staff workflow',
+        value: 'Role-aware handling, administrative context, and accountable records.',
+      },
+    ],
+  },
+  'learning-center': {
+    heading: 'Training and development',
+    summary:
+      'The Learning Center supports structured training, progress, and credentials within the same broader identity and access model.',
+    facts: [
+      {
+        label: 'Learner path',
+        value: 'Courses, progress, completion, and learning records.',
+      },
+      {
+        label: 'Operational fit',
+        value: 'Training connects with volunteer onboarding and organizational requirements.',
+      },
+    ],
+  },
+  'private-operations': {
+    heading: 'Private operations',
+    summary:
+      'Internal tools support people, finance, legal, IT, reporting, support, and governance. Their scope and control model are shown without exposing private interfaces or data.',
+    facts: [
+      {
+        label: 'Operating model',
+        value: 'Purpose-built workflows help non-engineer administrators manage recurring organizational work.',
+      },
+      {
+        label: 'Control model',
+        value: 'Shared identity, role-scoped access, server-side privileges, separate trust boundaries, and audit history.',
+      },
+    ],
+  },
+};
 
 function Arrow({ external = false }: { external?: boolean }) {
   return (
@@ -259,6 +341,9 @@ function PrimaryNavigation() {
 }
 
 export default function PortfolioZen() {
+  const [activeTroaSlide, setActiveTroaSlide] = useState<TroaSlideId>('public-platform');
+  const troaNarrative = troaSlideNarratives[activeTroaSlide];
+
   return (
     <div className={styles.page}>
       <a className={styles.skipLink} href="#work">
@@ -320,9 +405,16 @@ export default function PortfolioZen() {
           <WorkIndex />
 
           <div className={styles.projectList}>
-            <article id="project-troa" className={styles.project} aria-labelledby="troa-title">
+            <article
+              id="project-troa"
+              className={`${styles.project} ${styles.troaProject}`}
+              aria-labelledby="troa-title"
+            >
               <div className={styles.projectMedia}>
-                <ProjectEvidence project="troa" />
+                <ProjectEvidence
+                  project="troa"
+                  onTroaSlideChange={setActiveTroaSlide}
+                />
               </div>
 
               <div className={styles.projectCopy}>
@@ -330,25 +422,47 @@ export default function PortfolioZen() {
                   <p className={styles.projectMeta}>Volunteer CTO · Active since 2026</p>
                   <h3 id="troa-title">TROA</h3>
                   <p className={styles.projectLead}>
-                    A nonprofit technology ecosystem supporting more than 50 volunteers and a 800+
-                    member community. Public services, internal administration, onboarding, support,
-                    and game systems are coordinated through shared technical direction.
+                    TROA supports more than 50 volunteers and a Discord community of more than 800
+                    members. Its technology spans public services and the private systems used to
+                    operate the organization.
                   </p>
-                  <dl className={styles.projectFacts}>
-                    <div>
-                      <dt>Product scope</dt>
-                      <dd>
-                        Public platform, admin, careers, ticketing, LMS, map, assistant, and game tools.
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Technical model</dt>
-                      <dd>
-                        Shared identity, role-gated administration, server-side privileged access,
-                        audited workflows, and separate trust boundaries across applications.
-                      </dd>
-                    </div>
-                  </dl>
+                </div>
+                <div
+                  className={styles.troaSlideNarrative}
+                >
+                  {(Object.entries(troaSlideNarratives) as Array<[
+                    TroaSlideId,
+                    (typeof troaSlideNarratives)[TroaSlideId],
+                  ]>).map(([slideId, narrative]) => {
+                    const isActive = slideId === activeTroaSlide;
+
+                    return (
+                      <div
+                        className={styles.troaNarrativePanel}
+                        data-active={isActive ? 'true' : 'false'}
+                        aria-hidden={isActive ? undefined : 'true'}
+                        key={slideId}
+                      >
+                        <h4>{narrative.heading}</h4>
+                        <p>{narrative.summary}</p>
+                        <dl className={styles.projectFacts}>
+                          {narrative.facts.map((fact) => (
+                            <div key={fact.label}>
+                              <dt>{fact.label}</dt>
+                              <dd>{fact.value}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </div>
+                    );
+                  })}
+                  <span
+                    className={styles.visuallyHidden}
+                    aria-live="polite"
+                    aria-atomic="true"
+                  >
+                    {troaNarrative.heading}. {troaNarrative.summary}
+                  </span>
                 </div>
                 <div className={styles.projectLinks}>
                   <Link href="/work/troa">

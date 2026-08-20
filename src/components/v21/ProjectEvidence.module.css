@@ -63,6 +63,7 @@
 .troaArtifact {
   grid-template-rows: auto minmax(0, 1fr);
   height: auto;
+  position: relative;
 }
 
 .troaHeader {
@@ -119,18 +120,56 @@
   outline-offset: -3px;
 }
 
+.troaPrivateStatus {
+  color: var(--artifact-muted);
+  font-size: 0.58rem;
+  font-weight: 650;
+  letter-spacing: 0.055em;
+  padding-inline: 0.65rem;
+  text-transform: uppercase;
+}
+
 .troaFrameStage {
   background: #e5e9e6;
+  cursor: grab;
   min-height: 0;
   overflow: hidden;
   position: relative;
 }
 
+.troaFrameStage[data-dragging='true'] {
+  cursor: grabbing;
+}
+
+.troaDragSurface {
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+  will-change: transform;
+}
+
+.troaSlideTrack {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  height: 100%;
+  transform: translateX(-33.3333%);
+  width: 300%;
+}
+
+.troaSlidePanel {
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
 .troaScroller {
   height: 100%;
-  overflow-y: auto;
+  overflow: hidden auto;
   scrollbar-color: var(--artifact-accent) var(--artifact-bg);
   scrollbar-width: thin;
+  touch-action: pan-y;
+  user-select: none;
 }
 
 .troaScroller[data-engagement='keyboard'] {
@@ -139,21 +178,95 @@
 }
 
 .troaFrameStage:hover .scrollCue,
-.troaScroller[data-engagement='keyboard'] ~ .scrollCue,
-.troaScroller[data-engagement='touch'] ~ .scrollCue {
+.troaFrameStage[data-engagement='keyboard'] .scrollCue,
+.troaFrameStage[data-engagement='touch'] .scrollCue {
   opacity: 0;
 }
 
-.troaScroller[data-engagement='keyboard'] ~ .interactiveCaption,
-.troaScroller[data-engagement='touch'] ~ .interactiveCaption {
+.troaFrameStage[data-engagement='keyboard'] + .interactiveCaption,
+.troaFrameStage[data-engagement='touch'] + .interactiveCaption {
   opacity: 0;
   transform: translateY(100%);
 }
 
+.troaImageSlide {
+  height: 100%;
+  min-height: 100%;
+  width: 100%;
+}
+
 .troaLongScreenshot {
+  -webkit-user-drag: none;
   display: block;
   height: auto;
+  user-select: none;
   width: 100%;
+}
+
+.troaPrivateSurface {
+  background: #f6f7f4;
+  color: var(--artifact-ink);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 100%;
+  padding: clamp(0.8rem, 2vw, 1.35rem);
+}
+
+.troaPrivateHeading {
+  align-items: end;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: clamp(0.55rem, 1.2vw, 0.85rem);
+}
+
+.troaPrivateHeading small {
+  color: var(--artifact-accent);
+  font-size: 0.56rem;
+  font-weight: 680;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+}
+
+.troaPrivateHeading strong {
+  color: var(--artifact-muted);
+  font-size: 0.62rem;
+  font-weight: 540;
+}
+
+.troaPrivateIndex {
+  border-top: 1px solid var(--artifact-rule);
+  display: grid;
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+}
+
+.troaPrivateIndex > div {
+  align-items: center;
+  border-bottom: 1px solid var(--artifact-rule);
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(8.5rem, 0.9fr) minmax(0, 1.35fr);
+  padding: clamp(0.45rem, 1vw, 0.68rem) 0;
+}
+
+.troaPrivateIndex strong {
+  font-size: clamp(0.63rem, 1vw, 0.75rem);
+  font-weight: 620;
+}
+
+.troaPrivateIndex span,
+.troaControlRow span {
+  color: var(--artifact-muted);
+  font-size: clamp(0.58rem, 0.9vw, 0.67rem);
+  line-height: 1.4;
+}
+
+.troaPrivateIndex .troaControlRow strong {
+  color: var(--artifact-accent);
+  font-size: 0.56rem;
+  font-weight: 680;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
 }
 
 .troaSurfaceCaption {
@@ -261,6 +374,7 @@
 
 .ryuArtifact {
   grid-template-rows: auto minmax(0, 1fr);
+  position: relative;
 }
 
 .ryuViewport {
@@ -310,8 +424,8 @@
   opacity: 0;
 }
 
-.ryuScroller[data-engagement='keyboard'] ~ .interactiveCaption,
-.ryuScroller[data-engagement='touch'] ~ .interactiveCaption {
+.ryuViewport[data-engagement='keyboard'] + .interactiveCaption,
+.ryuViewport[data-engagement='touch'] + .interactiveCaption {
   opacity: 0;
   transform: translateY(100%);
 }
@@ -537,6 +651,25 @@
     font-size: 0.63rem;
   }
 
+  .troaPrivateSurface {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .troaPrivateHeading {
+    padding-bottom: 0.45rem;
+  }
+
+  .troaPrivateHeading strong {
+    display: none;
+  }
+
+  .troaPrivateIndex > div {
+    gap: 0.5rem;
+    grid-template-columns: minmax(7.4rem, 0.9fr) minmax(0, 1.2fr);
+    padding-block: 0.38rem;
+  }
+
+
   .deliveryFlow {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -578,6 +711,34 @@
 
   .authorityBand p {
     margin-top: 0.5rem;
+  }
+}
+
+@media (width <= 48rem), (hover: none) and (pointer: coarse) {
+  .troaArtifact,
+  .ryuArtifact {
+    aspect-ratio: auto;
+    grid-template-rows: auto auto auto;
+    height: auto;
+  }
+
+  .troaFrameStage,
+  .ryuViewport {
+    aspect-ratio: 16 / 10;
+  }
+
+  .interactiveCaption {
+    opacity: 1;
+    position: static;
+    transform: none;
+  }
+
+  .troaFrameStage[data-engagement='keyboard'] + .interactiveCaption,
+  .troaFrameStage[data-engagement='touch'] + .interactiveCaption,
+  .ryuViewport[data-engagement='keyboard'] + .interactiveCaption,
+  .ryuViewport[data-engagement='touch'] + .interactiveCaption {
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -636,9 +797,13 @@
   }
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .troaFrameStage:hover .interactiveCaption,
-  .ryuViewport:hover .interactiveCaption {
+@media (width > 48rem) and (hover: hover) and (pointer: fine) {
+  .troaPrivateSurface {
+    padding-bottom: 3.75rem;
+  }
+
+  .troaFrameStage:hover + .interactiveCaption,
+  .ryuViewport:hover + .interactiveCaption {
     opacity: 0;
     transform: translateY(100%);
   }
