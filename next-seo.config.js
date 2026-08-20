@@ -5,7 +5,7 @@ const defaultSeo = {
   titleTemplate: '%s | Edward Song',
   canonical: siteUrl,
   description:
-    'Edward Song is a Product Engineer, Technical Lead, and Volunteer CTO who creates digital products, sets technical direction, and leads multidisciplinary technology teams.',
+    'Edward Song is a Product Engineer, Technical Lead, and Volunteer CTO working across product direction, hands-on engineering, and multidisciplinary technology leadership.',
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -20,7 +20,7 @@ const defaultSeo = {
       },
     ],
     description:
-      'Product strategy, engineering, and technical leadership across TROA, ClaimChain, and Ryu Legal.',
+      'Product direction, hands-on engineering, and technical leadership across TROA, ClaimChain, and Ryu Legal.',
   },
   twitter: {
     cardType: 'summary_large_image',

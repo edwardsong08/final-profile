@@ -123,7 +123,6 @@
 }
 
 .eyebrow,
-.sectionLabel,
 .facts dt,
 .status {
   font-size: 0.7rem;
@@ -149,10 +148,6 @@
   line-height: 0.98;
   margin: 1.8rem 0 0;
   text-wrap: balance;
-}
-
-.hero h1.longTitle {
-  font-size: clamp(2.5rem, 4.2vw, 4.25rem);
 }
 
 .intro {
@@ -227,11 +222,6 @@
 
 .narrative section:last-child {
   grid-column: 7 / -1;
-}
-
-.sectionLabel {
-  color: var(--accent-dark);
-  margin: 0 0 1rem;
 }
 
 .narrative h2,

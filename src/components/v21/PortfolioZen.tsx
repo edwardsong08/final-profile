@@ -10,34 +10,39 @@ const EMAIL = 'edwardsong08@gmail.com';
 
 const capabilities = [
   {
-    title: 'Product definition and design',
+    annotation: 'Applied across',
+    title: 'Product and systems direction',
     description:
-      'Translate ambiguous asks into scoped work, then align execution with measurable outcomes.',
-    evidence: 'Discovery, planning, workflow design, scope.',
+      'Define workflows and scope with users, department leads, and executives.',
+    evidence: 'TROA · ClaimChain · Ryu Legal',
   },
   {
-    title: 'Engineering across the stack',
+    annotation: 'Selected stack',
+    title: 'Application engineering',
     description:
-      'Build and evolve systems end-to-end with explicit boundaries and maintainable handoffs.',
-    evidence: 'Next.js, Laravel, Spring Boot, FastAPI, Go, PostgreSQL, Supabase',
+      'Build and maintain interfaces, services, data models, integrations, and deployments.',
+    evidence: 'Next.js · Laravel · Spring Boot · PostgreSQL',
   },
   {
-    title: 'Security, compliance, and access',
+    annotation: 'Controls',
+    title: 'Security and operational controls',
     description:
-      'Convert policy into explicit permissions, validation, and safe exposure boundaries.',
-    evidence: 'RBAC, RLS, auditability, validation, privacy controls',
+      'Turn compliance and policy into permissions, validation, server authority, and audit history.',
+    evidence: 'RBAC · RLS · validation · audit trails',
   },
   {
+    annotation: 'Environments',
     title: 'Delivery and operations',
     description:
-      'Sustain production quality through CI/CD, deployment discipline, and coordinated operations.',
-    evidence: 'Linux, Proxmox, Cloudflare, Coolify, AWS, CI/CD',
+      'Set production standards across cloud, on-premises, and vendor services.',
+    evidence: 'AWS · Cloudflare · containers · CI/CD',
   },
   {
+    annotation: 'Leadership scope',
     title: 'Technical leadership',
     description:
-      'Set direction with the board, then coordinate execution decisions across product, network, and operations teams.',
-    evidence: 'Roadmapping, review, tradeoff management, cross-team delivery',
+      'Set direction and lead delivery across software, UI/UX, network engineering, and IT operations.',
+    evidence: 'Board collaboration · team direction · compliance',
   },
 ];
 
@@ -50,12 +55,12 @@ const experience = [
   {
     dates: '2022–now',
     role: 'Software Engineer',
-    organization: 'Ryu Legal · contracts',
+    organization: 'Ryu Legal + client work',
   },
   {
     dates: '2021–2023',
     role: 'Product Engineer',
-    organization: 'Legal Startup',
+    organization: 'Legal startup',
   },
 ];
 
@@ -67,8 +72,8 @@ const projects = [
 
 const primarySections = [
   { id: 'work', label: 'Work', secondary: false },
-  { id: 'capabilities', label: 'Capabilities', secondary: true },
   { id: 'experience', label: 'Experience', secondary: false },
+  { id: 'capabilities', label: 'Capabilities', secondary: true },
   { id: 'about', label: 'About', secondary: true },
   { id: 'contact', label: 'Contact', secondary: false },
 ] as const;
@@ -84,22 +89,22 @@ const troaSlideNarratives: Record<TroaSlideId, {
   'public-platform': {
     heading: 'Public platform',
     summary:
-      'The next public experience brings TROA’s community, advocacy, services, and organizational work into a clearer and more accessible entry point.',
+      'A shared public entry point for TROA’s services, volunteer programs, advocacy, and community.',
     facts: [
       {
-        label: 'Work',
-        value: 'Product direction, UX, engineering, accessibility, performance, SEO, and deployment.',
+        label: 'Responsibility',
+        value: 'Product direction and delivery from information architecture through deployment.',
       },
       {
-        label: 'Purpose',
-        value: 'Make a broad nonprofit ecosystem easier for members, volunteers, and visitors to understand and navigate.',
+        label: 'Design choice',
+        value: 'One accessible content structure connects the ecosystem without flattening its distinct programs.',
       },
     ],
   },
   careers: {
     heading: 'Volunteer recruitment',
     summary:
-      'A dedicated path gives candidates context on TROA and its open roles, then carries applications into a private staff workflow.',
+      'A dedicated recruitment path gives candidates context, a focused application flow, and visibility after submission.',
     facts: [
       {
         label: 'Candidate path',
@@ -114,41 +119,41 @@ const troaSlideNarratives: Record<TroaSlideId, {
   ticketing: {
     heading: 'Member support',
     summary:
-      'Ticketing gives members a clear request path and provides staff with a structured way to manage, document, and resolve support and moderation work.',
+      'A single request path helps members seek support while giving staff a structured record from intake through resolution.',
     facts: [
       {
         label: 'Member experience',
-        value: 'Focused intake and visible progress from request through resolution.',
+        value: 'Focused intake and clear status through resolution.',
       },
       {
         label: 'Staff workflow',
-        value: 'Role-aware handling, administrative context, and accountable records.',
+        value: 'Role-aware handling, relevant context, and accountable records.',
       },
     ],
   },
   'learning-center': {
     heading: 'Training and development',
     summary:
-      'The Learning Center supports structured training, progress, and credentials within the same broader identity and access model.',
+      'Structured training, progress, and credentials connect learning with volunteer onboarding and organizational requirements.',
     facts: [
       {
         label: 'Learner path',
         value: 'Courses, progress, completion, and learning records.',
       },
       {
-        label: 'Operational fit',
-        value: 'Training connects with volunteer onboarding and organizational requirements.',
+        label: 'Operating boundary',
+        value: 'Learner records remain within the broader identity and access model.',
       },
     ],
   },
   'private-operations': {
     heading: 'Private operations',
     summary:
-      'Internal tools support people, finance, legal, IT, reporting, support, and governance. Their scope and control model are shown without exposing private interfaces or data.',
+      'Internal systems support people, finance, legal, IT, reporting, support, and governance without exposing private interfaces or operational data.',
     facts: [
       {
-        label: 'Operating model',
-        value: 'Purpose-built workflows help non-engineer administrators manage recurring organizational work.',
+        label: 'Operator experience',
+        value: 'Purpose-built workflows let non-engineer administrators manage recurring work.',
       },
       {
         label: 'Control model',
@@ -305,9 +310,13 @@ function WorkIndex() {
   );
 }
 
-function PrimaryNavigation() {
-  const [activeSection, setActiveSection] = useActiveSection(primarySectionIds, 0.32);
-
+function PrimaryNavigation({
+  activeSection,
+  onActiveSectionChange,
+}: {
+  activeSection: string;
+  onActiveSectionChange: (sectionId: string) => void;
+}) {
   return (
     <nav className={styles.stickyNav} aria-label="Primary navigation">
       <div className={styles.navInner}>
@@ -320,7 +329,7 @@ function PrimaryNavigation() {
               <a
                 href={`#${section.id}`}
                 aria-current={activeSection === section.id ? 'location' : undefined}
-                onClick={() => setActiveSection(section.id)}
+                onClick={() => onActiveSectionChange(section.id)}
               >
                 {section.label}
               </a>
@@ -342,6 +351,10 @@ function PrimaryNavigation() {
 
 export default function PortfolioZen() {
   const [activeTroaSlide, setActiveTroaSlide] = useState<TroaSlideId>('public-platform');
+  const [activePrimarySection, setActivePrimarySection] = useActiveSection(
+    primarySectionIds,
+    0.32,
+  );
   const troaNarrative = troaSlideNarratives[activeTroaSlide];
 
   return (
@@ -367,11 +380,11 @@ export default function PortfolioZen() {
           </div>
 
             <div className={styles.heroIntro}>
-            <p className={styles.heroKicker}>Current work · TROA</p>
+            <p className={styles.heroKicker}>Current work · Volunteer CTO at TROA</p>
             <p className={styles.heroSummary}>
-              Volunteer CTO at TROA, setting technical direction with the board and coordinating
-              multidisciplinary delivery from product design through engineering, security,
-              deployment, and performance. TROA’s technology function is delivered through a team model that now supports public services, internal operations, hiring, training, support, and game systems.
+              Setting technical direction with the board while remaining hands-on in product
+              engineering and leading teams across software, UI/UX, network engineering, and IT
+              operations.
             </p>
           </div>
 
@@ -390,16 +403,15 @@ export default function PortfolioZen() {
         </div>
       </header>
 
-      <PrimaryNavigation />
+      <PrimaryNavigation
+        activeSection={activePrimarySection}
+        onActiveSectionChange={setActivePrimarySection}
+      />
 
       <main>
         <section id="work" className={`${styles.section} ${styles.workSection}`} aria-labelledby="work-title">
           <div className={styles.sectionHeading}>
             <h2 id="work-title">Selected work</h2>
-            <p>
-              Three projects at different scales: an organization-wide product ecosystem, an
-              independent workflow prototype, and a maintained production site for a client.
-            </p>
           </div>
 
           <WorkIndex />
@@ -422,9 +434,9 @@ export default function PortfolioZen() {
                   <p className={styles.projectMeta}>Volunteer CTO · Active since 2026</p>
                   <h3 id="troa-title">TROA</h3>
                   <p className={styles.projectLead}>
-                    TROA supports more than 50 volunteers and a Discord community of more than 800
-                    members. Its technology spans public services and the private systems used to
-                    operate the organization.
+                    TROA’s technology supports more than 50 volunteers and a community of more than
+                    800 members. The CTO role combines board-level direction, product engineering,
+                    and leadership of a multidisciplinary team.
                   </p>
                 </div>
                 <div
@@ -469,7 +481,7 @@ export default function PortfolioZen() {
                     Read case study <Arrow />
                   </Link>
                   <a href="https://therealmsofasgard.com" target="_blank" rel="noreferrer">
-                    Visit public platform <Arrow external />
+                    Visit main site <Arrow external />
                   </a>
                 </div>
               </div>
@@ -491,23 +503,23 @@ export default function PortfolioZen() {
                   <p className={styles.projectMeta}>Independent product engineering · 2025–2026</p>
                   <h3 id="claimchain-title">ClaimChain</h3>
                   <p className={styles.projectLead}>
-                    Independent prototype using test data, not an operating marketplace.
-                    Providers submit claims, administrators review and package them, and
-                    buyers purchase anonymized inventory.
+                    An independent test-data prototype for a three-role claims workflow: providers
+                    submit claims, administrators review and package them, and buyers purchase
+                    anonymized inventory.
                   </p>
                   <dl className={styles.projectFacts}>
                     <div>
-                      <dt>Control boundary</dt>
+                      <dt>Authority</dt>
                       <dd>
-                        The backend controls eligibility, payment state, and export access. ML is
-                        advisory only.
+                        The backend controls eligibility, lifecycle, payment state, and export
+                        access; ML remains advisory.
                       </dd>
                     </div>
                     <div>
-                      <dt>Built across</dt>
+                      <dt>Implemented flow</dt>
                       <dd>
-                        Next.js, Spring Boot, PostgreSQL, FastAPI, Stripe webhooks, and an AWS
-                        staging workflow.
+                        Administrative review, Stripe test-payment reconciliation, and entitled PDF
+                        export across three roles.
                       </dd>
                     </div>
                   </dl>
@@ -516,9 +528,6 @@ export default function PortfolioZen() {
                   <Link href="/work/claimchain">
                     Read case study <Arrow />
                   </Link>
-                  <a href="https://claimchain-tan.vercel.app" target="_blank" rel="noreferrer">
-                    Open hosted demo <Arrow external />
-                  </a>
                   <a href="https://github.com/edwardsong08/ClaimChain" target="_blank" rel="noreferrer">
                     View repository <Arrow external />
                   </a>
@@ -540,21 +549,23 @@ export default function PortfolioZen() {
                   <p className={styles.projectMeta}>Contract engineering · Ongoing since 2022</p>
                   <h3 id="ryu-title">Ryu Legal</h3>
                   <p className={styles.projectLead}>
-                    End-to-end work on a New Jersey/New York law firm website:
-                    requirements, implementation, SEO, deployment, and ongoing maintenance.
+                    Ongoing product and engineering work for a live NJ/NY law-firm site, from
+                    information architecture and interface design through deployment, SEO, and
+                    maintenance.
                   </p>
                   <dl className={styles.projectFacts}>
                     <div>
                       <dt>Client path</dt>
                       <dd>
-                        Service information, legal disclosures, and a clear service-to-contact flow.
+                        Clear service information, visible legal disclosures, and a direct contact
+                        workflow.
                       </dd>
                     </div>
                     <div>
-                      <dt>Production boundary</dt>
+                      <dt>Safeguards</dt>
                       <dd>
-                        Contact requests are bounded and validated on the server before email
-                        delivery; provider credentials remain outside the browser.
+                        Server validation and bounded failure handling protect the contact workflow
+                        while provider credentials remain outside the browser.
                       </dd>
                     </div>
                   </dl>
@@ -573,34 +584,10 @@ export default function PortfolioZen() {
         </section>
 
         <section
-          id="capabilities"
-          className={`${styles.section} ${styles.capabilitySection}`}
-          aria-labelledby="capabilities-title"
-        >
-          <div className={styles.sectionHeading}>
-            <h2 id="capabilities-title">How the work runs</h2>
-            <p>
-              Delivery is strongest when each layer has clear boundaries and a clear next step.
-            </p>
-          </div>
-
-          <ul className={styles.capabilityList}>
-            {capabilities.map((capability) => (
-              <li key={capability.title}>
-                <h3>{capability.title}</h3>
-                <div>
-                  <p>{capability.description}</p>
-                  <p className={styles.capabilityEvidence}>{capability.evidence}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section
           id="experience"
-          className={`${styles.section} ${styles.experienceSection}`}
+          className={`${styles.section} ${styles.experienceSection} ${styles.traceSection}`}
           aria-labelledby="experience-title"
+          data-active={activePrimarySection === 'experience' ? 'true' : 'false'}
         >
           <div className={styles.sectionHeading}>
             <h2 id="experience-title">Experience</h2>
@@ -620,25 +607,55 @@ export default function PortfolioZen() {
           </ol>
         </section>
 
-        <section id="about" className={`${styles.section} ${styles.aboutSection}`} aria-labelledby="about-title">
+        <section
+          id="capabilities"
+          className={`${styles.section} ${styles.capabilitySection} ${styles.traceSection}`}
+          aria-labelledby="capabilities-title"
+          data-active={activePrimarySection === 'capabilities' ? 'true' : 'false'}
+        >
+          <div className={styles.sectionHeading}>
+            <h2 id="capabilities-title">Capabilities</h2>
+          </div>
+
+          <ul className={styles.capabilityList}>
+            {capabilities.map((capability) => (
+              <li key={capability.title}>
+                <h3>{capability.title}</h3>
+                <div>
+                  <p>{capability.description}</p>
+                  <p className={styles.capabilityEvidence}>
+                    <span>{capability.annotation}:</span>{' '}
+                    <span>{capability.evidence}</span>
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section
+          id="about"
+          className={`${styles.section} ${styles.aboutSection} ${styles.traceSection}`}
+          aria-labelledby="about-title"
+          data-active={activePrimarySection === 'about' ? 'true' : 'false'}
+        >
           <div className={styles.aboutCopy}>
             <p className={styles.sectionLabel}>About</p>
             <h2 id="about-title">Writing and teaching shape the engineering approach.</h2>
             <p>
-              For over fifteen years, English instruction has supported tutoring and admissions advising
-              across SAT English, LSAT, and graduate-school preparation, including admissions
-              strategy and writing coaching. Professional comedy writing also shaped a habit of
-              concise, audience-first communication.
+              Before and alongside software, I spent more than fifteen years teaching English and
+              preparing students for the SAT, LSAT, graduate-school exams, admissions, and
+              application writing. I also wrote professionally for a comedy club and platform. Both
+              taught the same discipline: understand the audience, find the real problem, and make
+              the next step clear.
             </p>
             <p>
-              That background reinforces a practical approach to ambiguity: structuring complex
-              information, adapting explanations to different audiences, and turning technical
-              decisions into clear requirements and documentation for cross-functional teams.
+              That experience still shapes discovery, requirements, documentation, and the
+              conversations where technical and nontechnical teams need to reach a decision.
             </p>
             <p>
-              Korean and English fluency, along with a Northern New Jersey base, anchor how this work
-              is done with community teams. Outside the screen, this includes hiking, guitar, reading,
-              golfing, and travel.
+              Based in Northern New Jersey. Korean and English. Away from work: hiking, guitar,
+              reading, golf, and travel.
             </p>
           </div>
 
@@ -653,11 +670,16 @@ export default function PortfolioZen() {
           </figure>
         </section>
 
-        <section id="contact" className={`${styles.section} ${styles.contactSection}`} aria-labelledby="contact-title">
+        <section
+          id="contact"
+          className={`${styles.section} ${styles.contactSection} ${styles.traceSection}`}
+          aria-labelledby="contact-title"
+          data-active={activePrimarySection === 'contact' ? 'true' : 'false'}
+        >
           <div>
             <p className={styles.sectionLabel}>Contact</p>
             <h2 id="contact-title">
-              Open to senior product engineering, forward-deployed engineering, and technical lead roles.
+              Interested in senior product engineering, forward-deployed engineering, and technical lead roles.
             </h2>
           </div>
           <div className={styles.contactLinks}>

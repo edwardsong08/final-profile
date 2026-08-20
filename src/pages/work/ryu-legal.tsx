@@ -4,7 +4,7 @@ import CaseStudyZen from '../../components/v21/CaseStudyZen';
 
 export default function RyuLegalCaseStudy() {
   const description =
-    'Edward Song’s ongoing product and engineering work for Ryu Legal’s live NJ/NY website and server-validated contact workflow.';
+    'Edward Song’s ongoing product and engineering work for Ryu Legal’s live NJ/NY website, including its server-validated contact workflow.';
 
   return (
     <>

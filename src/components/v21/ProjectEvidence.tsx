@@ -1,6 +1,18 @@
-import { animate, motion, useMotionValue, useReducedMotion } from 'framer-motion';
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+} from 'framer-motion';
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import {
+  type KeyboardEvent as ReactKeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
+  type RefObject,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { flushSync } from 'react-dom';
 
 import styles from './ProjectEvidence.module.css';
@@ -8,6 +20,206 @@ import styles from './ProjectEvidence.module.css';
 type EvidenceProps = {
   priority?: boolean;
 };
+
+type DragScrollSession = {
+  axis: 'pending' | 'horizontal' | 'vertical';
+  lastTime: number;
+  lastX: number;
+  pointerId: number;
+  pointerType: string;
+  scrollTop: number;
+  velocityX: number;
+  x: number;
+  y: number;
+};
+
+type HorizontalDragState = {
+  distanceX: number;
+  velocityX: number;
+};
+
+function handleVerticalScrollKey(
+  event: ReactKeyboardEvent<HTMLDivElement>,
+  scrollerRef: RefObject<HTMLDivElement | null>,
+  prefersReducedMotion: boolean | null,
+) {
+  if (event.altKey || event.ctrlKey || event.metaKey) return false;
+
+  const scroller = scrollerRef.current;
+  if (!scroller) return false;
+
+  const pageDistance = scroller.clientHeight * 0.82;
+  let target: number | null = null;
+
+  switch (event.key) {
+    case 'ArrowUp':
+      target = scroller.scrollTop - 64;
+      break;
+    case 'ArrowDown':
+      target = scroller.scrollTop + 64;
+      break;
+    case 'PageUp':
+      target = scroller.scrollTop - pageDistance;
+      break;
+    case 'PageDown':
+      target = scroller.scrollTop + pageDistance;
+      break;
+    case ' ':
+      target = scroller.scrollTop + (event.shiftKey ? -pageDistance : pageDistance);
+      break;
+    case 'Home':
+      target = 0;
+      break;
+    case 'End':
+      target = scroller.scrollHeight;
+      break;
+    default:
+      return false;
+  }
+
+  event.preventDefault();
+  scroller.scrollTo({
+    behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    top: target,
+  });
+  return true;
+}
+
+function useVerticalDragScroll(
+  scrollerRef: RefObject<HTMLDivElement | null>,
+  {
+    allowTouchHorizontal = false,
+    allowVerticalScroll = true,
+    onHorizontalCancel,
+    onHorizontalEnd,
+    onHorizontalMove,
+    onHorizontalStart,
+    preserveHorizontalGesture = false,
+  }: {
+    allowTouchHorizontal?: boolean;
+    allowVerticalScroll?: boolean;
+    onHorizontalCancel?: () => void;
+    onHorizontalEnd?: (state: HorizontalDragState) => void;
+    onHorizontalMove?: (state: HorizontalDragState) => void;
+    onHorizontalStart?: () => void;
+    preserveHorizontalGesture?: boolean;
+  } = {},
+) {
+  const sessionRef = useRef<DragScrollSession | null>(null);
+  const [isPanning, setIsPanning] = useState(false);
+
+  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const scroller = scrollerRef.current;
+    if (
+      !scroller
+      || !event.isPrimary
+      || (event.pointerType === 'touch' && !allowTouchHorizontal)
+      || event.button !== 0
+    ) return;
+
+    const rect = scroller.getBoundingClientRect();
+    const scrollbarWidth = scroller.offsetWidth - scroller.clientWidth;
+    if (scrollbarWidth > 0 && event.clientX >= rect.right - scrollbarWidth - 2) return;
+
+    sessionRef.current = {
+      axis: 'pending',
+      lastTime: event.timeStamp,
+      lastX: event.clientX,
+      pointerId: event.pointerId,
+      pointerType: event.pointerType,
+      scrollTop: scroller.scrollTop,
+      velocityX: 0,
+      x: event.clientX,
+      y: event.clientY,
+    };
+  };
+
+  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const session = sessionRef.current;
+    const scroller = scrollerRef.current;
+    if (!session || !scroller || session.pointerId !== event.pointerId) return;
+
+    const distanceX = event.clientX - session.x;
+    const distanceY = event.clientY - session.y;
+    const absoluteX = Math.abs(distanceX);
+    const absoluteY = Math.abs(distanceY);
+    const elapsed = event.timeStamp - session.lastTime;
+
+    if (elapsed > 0) {
+      const instantaneousVelocity = ((event.clientX - session.lastX) / elapsed) * 1000;
+      session.velocityX = session.velocityX * 0.6 + instantaneousVelocity * 0.4;
+      session.lastTime = event.timeStamp;
+      session.lastX = event.clientX;
+    }
+
+    if (session.axis === 'pending') {
+      if (Math.max(absoluteX, absoluteY) < 11) return;
+
+      const isVerticalIntent = allowVerticalScroll && (
+        preserveHorizontalGesture
+          ? absoluteY > absoluteX * 1.15
+          : absoluteY >= absoluteX * 0.8
+      );
+      session.axis = isVerticalIntent ? 'vertical' : 'horizontal';
+
+      if (session.axis === 'vertical') {
+        if (session.pointerType === 'touch') {
+          sessionRef.current = null;
+          return;
+        }
+        event.currentTarget.setPointerCapture(event.pointerId);
+        setIsPanning(true);
+      } else {
+        event.currentTarget.setPointerCapture(event.pointerId);
+        onHorizontalStart?.();
+      }
+    }
+
+    if (session.axis === 'vertical') {
+      event.preventDefault();
+      scroller.scrollTop = session.scrollTop - distanceY;
+    } else if (session.axis === 'horizontal') {
+      event.preventDefault();
+      onHorizontalMove?.({ distanceX, velocityX: session.velocityX });
+    }
+  };
+
+  const releasePointer = (
+    event: ReactPointerEvent<HTMLDivElement>,
+    canceled: boolean,
+  ) => {
+    const session = sessionRef.current;
+    if (!session || session.pointerId !== event.pointerId) return;
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    if (session.axis === 'horizontal') {
+      if (canceled) {
+        onHorizontalCancel?.();
+      } else {
+        onHorizontalEnd?.({
+          distanceX: event.clientX - session.x,
+          velocityX: session.velocityX,
+        });
+      }
+    }
+    sessionRef.current = null;
+    setIsPanning(false);
+  };
+
+  return {
+    isPanning,
+    onPointerCancel: (event: ReactPointerEvent<HTMLDivElement>) => {
+      releasePointer(event, true);
+    },
+    onPointerDown,
+    onPointerMove,
+    onPointerUp: (event: ReactPointerEvent<HTMLDivElement>) => {
+      releasePointer(event, false);
+    },
+  };
+}
 
 const troaSites = [
   {
@@ -71,8 +283,6 @@ export function TroaEvidence({
   const [engagement, setEngagement] = useState<'none' | 'keyboard' | 'touch'>('none');
   const [isDragging, setIsDragging] = useState(false);
   const pointerTypeRef = useRef<string | null>(null);
-  const dragStartRef = useRef<{ pointerId: number; x: number; y: number } | null>(null);
-  const pendingDragDirectionRef = useRef<-1 | 1 | null>(null);
   const isSettlingRef = useRef(false);
   const settleFallbackRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -159,92 +369,60 @@ export function TroaEvidence({
     });
   };
 
+  const verticalDragScroll = useVerticalDragScroll(scrollerRef, {
+    allowTouchHorizontal: true,
+    onHorizontalCancel: () => {
+      setIsDragging(false);
+      returnToCenter();
+    },
+    onHorizontalEnd: ({ distanceX, velocityX }) => {
+      setIsDragging(false);
+      if (isSettlingRef.current) return;
+
+      const width = scrollerRef.current?.clientWidth ?? 0;
+      const threshold = Math.max(44, Math.min(72, width * 0.12));
+      const projectedDistance = Math.abs(distanceX) >= 24
+        ? distanceX + velocityX * 0.08
+        : distanceX;
+
+      if (Math.abs(projectedDistance) >= threshold) {
+        settlePage(projectedDistance < 0 ? 1 : -1);
+      } else {
+        returnToCenter();
+      }
+    },
+    onHorizontalMove: ({ distanceX }) => {
+      if (isSettlingRef.current) return;
+
+      const width = scrollerRef.current?.clientWidth ?? 0;
+      if (!width) return;
+
+      const absoluteDistance = Math.abs(distanceX);
+      const resistedDistance = absoluteDistance <= width
+        ? distanceX
+        : Math.sign(distanceX) * (width + (absoluteDistance - width) * 0.16);
+      dragX.set(resistedDistance);
+    },
+    onHorizontalStart: () => {
+      if (isSettlingRef.current) return;
+      dragX.stop();
+      setIsDragging(true);
+    },
+    preserveHorizontalGesture: true,
+  });
+
   return (
     <figure className={styles.troaEvidence}>
       <div className={`${styles.artifact} ${styles.troaArtifact}`}>
-        <div className={`${styles.artifactHeader} ${styles.troaHeader}`}>
-          <span className={styles.troaHeaderTitle}>TROA ecosystem</span>
-          <div className={styles.troaHeaderMeta}>
-            <span className={styles.troaPageCount} aria-live="polite">
-              {activeIndex + 1} / {troaSites.length}
-            </span>
-            {activeSite.url ? (
-              <a
-                className={styles.troaOpenLink}
-                href={activeSite.url}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={`Open the live TROA ${activeSite.label} site in a new tab`}
-              >
-                <span aria-hidden="true">↗</span>
-              </a>
-            ) : (
-              <span className={styles.troaPrivateStatus}>Private</span>
-            )}
-          </div>
-        </div>
         <div
           className={styles.troaFrameStage}
           data-dragging={isDragging ? 'true' : 'false'}
           data-engagement={engagement}
+          data-panning={verticalDragScroll.isPanning ? 'true' : 'false'}
         >
           <motion.div
             className={styles.troaDragSurface}
             style={{ x: dragX }}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={prefersReducedMotion ? 0.12 : 0.72}
-            dragMomentum={false}
-            onDragStart={() => setIsDragging(true)}
-            onPointerDown={(event) => {
-              if (!event.isPrimary) return;
-              pendingDragDirectionRef.current = null;
-              dragStartRef.current = {
-                pointerId: event.pointerId,
-                x: event.clientX,
-                y: event.clientY,
-              };
-            }}
-            onPointerUp={(event) => {
-              const start = dragStartRef.current;
-              dragStartRef.current = null;
-              if (!start || start.pointerId !== event.pointerId) return;
-
-              const distanceX = event.clientX - start.x;
-              const distanceY = event.clientY - start.y;
-              const width = scrollerRef.current?.clientWidth ?? 0;
-              const threshold = Math.max(44, Math.min(72, width * 0.12));
-
-              if (
-                Math.abs(distanceX) >= threshold
-                && Math.abs(distanceX) > Math.abs(distanceY) * 1.2
-              ) {
-                pendingDragDirectionRef.current = distanceX < 0 ? 1 : -1;
-              }
-            }}
-            onPointerCancel={() => {
-              dragStartRef.current = null;
-              pendingDragDirectionRef.current = null;
-              setIsDragging(false);
-              returnToCenter();
-            }}
-            onDragEnd={(_, info) => {
-              setIsDragging(false);
-
-              const width = scrollerRef.current?.clientWidth ?? 0;
-              const threshold = Math.max(44, Math.min(72, width * 0.12));
-              const projectedDistance = info.offset.x + info.velocity.x * 0.08;
-              const pendingDirection = pendingDragDirectionRef.current;
-              pendingDragDirectionRef.current = null;
-
-              if (pendingDirection) {
-                settlePage(pendingDirection);
-              } else if (Math.abs(projectedDistance) >= threshold) {
-                settlePage(projectedDistance < 0 ? 1 : -1);
-              } else {
-                returnToCenter();
-              }
-            }}
           >
             <div className={styles.troaSlideTrack}>
               {visibleSites.map(({ site, position }) => {
@@ -262,7 +440,7 @@ export function TroaEvidence({
                       role={isCurrent ? 'region' : undefined}
                       aria-label={isCurrent
                         ? activeSite.kind === 'image'
-                          ? `Scrollable preview of the TROA ${activeSite.label} homepage. Scroll vertically to explore; drag horizontally or use Left and Right Arrow keys to change sites.`
+                          ? `Scrollable preview of the TROA ${activeSite.label} homepage. Scroll or drag vertically to explore; drag horizontally or use Left and Right Arrow keys to change sites.`
                           : 'Overview of TROA private operating systems. Drag horizontally or use Left and Right Arrow keys to change sites.'
                         : undefined}
                       tabIndex={isCurrent ? 0 : -1}
@@ -281,13 +459,25 @@ export function TroaEvidence({
                         if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
                           event.preventDefault();
                           settlePage(event.key === 'ArrowLeft' ? -1 : 1);
+                        } else {
+                          handleVerticalScrollKey(event, scrollerRef, prefersReducedMotion);
                         }
                       } : undefined}
                       onPointerDown={isCurrent ? (event) => {
                         if (!event.isPrimary) return;
                         pointerTypeRef.current = event.pointerType;
                         setEngagement(event.pointerType === 'mouse' ? 'none' : 'touch');
+                        verticalDragScroll.onPointerDown(event);
                       } : undefined}
+                      onPointerMove={isCurrent
+                        ? verticalDragScroll.onPointerMove
+                        : undefined}
+                      onPointerUp={isCurrent
+                        ? verticalDragScroll.onPointerUp
+                        : undefined}
+                      onPointerCancel={isCurrent
+                        ? verticalDragScroll.onPointerCancel
+                        : undefined}
                     >
                       <div className={styles.troaImageSlide}>
                         {site.kind === 'image' ? (
@@ -348,17 +538,19 @@ export function TroaEvidence({
           </motion.div>
           {activeSite.kind === 'image' && (
             <span className={styles.scrollCue} aria-hidden="true">
-              Scroll preview
+              Scroll
             </span>
           )}
         </div>
-        <div
-          className={`${styles.troaSurfaceCaption} ${styles.interactiveCaption}`}
-          aria-hidden="true"
-        >
-          <small>{activeSite.label}</small>
-          <strong>{activeSite.description}</strong>
-        </div>
+        {activeSite.kind === 'image' && (
+          <div
+            className={`${styles.troaSurfaceCaption} ${styles.interactiveCaption}`}
+            aria-hidden="true"
+          >
+            <small>{activeSite.label}</small>
+            <strong>{activeSite.description}</strong>
+          </div>
+        )}
       </div>
       <nav className={styles.troaPager} aria-label="TROA ecosystem previews">
         <button
@@ -432,10 +624,6 @@ export function ClaimChainEvidence({ view = 'demo' }: ClaimChainEvidenceProps) {
 
     return (
       <figure className={`${styles.artifact} ${styles.claimVideoArtifact}`}>
-        <div className={styles.artifactHeader}>
-          <span>ClaimChain demo</span>
-          <strong>3:30 · prototype</strong>
-        </div>
         <div className={styles.claimVideoStage}>
           <video
             ref={videoRef}
@@ -458,7 +646,7 @@ export function ClaimChainEvidence({ view = 'demo' }: ClaimChainEvidenceProps) {
               aria-label="Play the 3 minute 30 second ClaimChain product walkthrough"
             >
               <span aria-hidden="true">▶</span>
-              Play demo
+              Play demo · 3:30
             </button>
           )}
         </div>
@@ -498,14 +686,13 @@ export function ClaimChainEvidence({ view = 'demo' }: ClaimChainEvidenceProps) {
 export function RyuEvidence({ priority = false }: EvidenceProps) {
   const stages = ['Services', 'NJ / NY scope', 'Validated request', 'Server email'];
   const pointerTypeRef = useRef<string | null>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const verticalDragScroll = useVerticalDragScroll(scrollerRef);
+  const prefersReducedMotion = useReducedMotion();
   const [engagement, setEngagement] = useState<'none' | 'keyboard' | 'touch'>('none');
 
   return (
     <figure className={`${styles.artifact} ${styles.ryuArtifact}`}>
-      <div className={styles.artifactHeader}>
-        <span>Ryu Legal production path</span>
-        <strong>Live</strong>
-      </div>
       <div
         className={`${styles.screenshotViewport} ${styles.ryuViewport}`}
         data-engagement={engagement}
@@ -513,9 +700,11 @@ export function RyuEvidence({ priority = false }: EvidenceProps) {
         <div
           className={styles.ryuScroller}
           data-engagement={engagement}
+          data-panning={verticalDragScroll.isPanning ? 'true' : 'false'}
           role="region"
-          aria-label="Scrollable full-page preview of the Ryu Legal production website"
+          aria-label="Scrollable full-page preview of the Ryu Legal production website. Scroll or drag vertically to explore."
           tabIndex={0}
+          ref={scrollerRef}
           onBlur={() => {
             pointerTypeRef.current = null;
             setEngagement('none');
@@ -525,11 +714,18 @@ export function RyuEvidence({ priority = false }: EvidenceProps) {
             setEngagement(pointerType ? (pointerType === 'mouse' ? 'none' : 'touch') : 'keyboard');
             pointerTypeRef.current = null;
           }}
-          onKeyDown={() => setEngagement('keyboard')}
+          onKeyDown={(event) => {
+            setEngagement('keyboard');
+            handleVerticalScrollKey(event, scrollerRef, prefersReducedMotion);
+          }}
           onPointerDown={(event) => {
             pointerTypeRef.current = event.pointerType;
             setEngagement(event.pointerType === 'mouse' ? 'none' : 'touch');
+            verticalDragScroll.onPointerDown(event);
           }}
+          onPointerMove={verticalDragScroll.onPointerMove}
+          onPointerUp={verticalDragScroll.onPointerUp}
+          onPointerCancel={verticalDragScroll.onPointerCancel}
         >
           <Image
             src="/case-studies/ryu-home-full.webp"
@@ -539,10 +735,11 @@ export function RyuEvidence({ priority = false }: EvidenceProps) {
             loading={priority ? 'eager' : 'lazy'}
             sizes="(max-width: 960px) 100vw, 52vw"
             className={styles.ryuLongScreenshot}
+            draggable={false}
           />
         </div>
         <span className={styles.scrollCue} aria-hidden="true">
-          Scroll preview
+          Scroll
         </span>
       </div>
       <div

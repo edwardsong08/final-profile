@@ -27,9 +27,9 @@ const projects: Record<ProjectId, {
   troa: {
     eyebrow: 'TROA · Volunteer CTO · Active since 2026',
     status: 'Active',
-    title: 'Creating and leading TROA’s technology function.',
+    title: 'Building TROA’s technology function as the organization grows.',
     intro:
-      'TROA’s current product and internal systems are maintained through coordinated stewardship as Volunteer CTO. Technical direction is set with the board, and coordination spans software development, UI/UX design, Network Engineering, and IT Operations.',
+      'The Volunteer CTO role spans technical direction with the board, product engineering, and leadership across software development, UI/UX design, Network Engineering, and IT Operations. The ecosystem supports both public services and internal work.',
     facts: [
       {
         label: 'Organization',
@@ -37,7 +37,7 @@ const projects: Record<ProjectId, {
       },
       {
         label: 'Product scope',
-        value: 'Public platform, shared accounts, administration, careers, ticketing, LMS, interactive map, grounded assistant, infrastructure, and game-service operations.',
+        value: 'Public platform and identity; hiring and training; member support; administration and reporting; mapping, assistant, infrastructure, and game services.',
       },
       {
         label: 'Technical organization',
@@ -45,29 +45,29 @@ const projects: Record<ProjectId, {
       },
     ],
     problem:
-      'TROA’s finance, HR, legal, IT, gaming, and program teams need different workflows, while identity, permissions, reporting, and compliance cross all of them. The challenge is to turn those competing needs into coherent products without collapsing every system into one trust boundary or creating tools that only a developer can operate.',
+      'Finance, HR, legal, IT, gaming, and program teams need distinct workflows, while identity, permissions, reporting, and compliance cross them. The challenge is coherence without a single trust boundary or routine work that depends on a developer.',
     decisions: [
-      'Build a connected product ecosystem for public services, internal operations, hiring, support, training, mapping, and the assistant rather than treating each request as an isolated site.',
-      'Share Supabase identity across applications while keeping privileged reads and writes server-side and restricting each administrative area by role.',
-      'Give non-engineer administrators purpose-built workflows for content, people, finance, legal, support, education, and reporting instead of exposing implementation detail.',
-      'Remain hands-on in product design and application engineering while giving Network Engineering and IT Operations clear ownership of their specialist work.',
-      'Set technical direction with the board and negotiate compliance, scope, timelines, and tradeoffs with the departments affected by each decision.',
+      'Build a connected ecosystem rather than treating each public or internal request as an isolated site.',
+      'Share Supabase identity while keeping privileged access server-side and restricting administrative areas by role.',
+      'Give non-engineer administrators purpose-built workflows for recurring work.',
+      'Keep product engineering hands-on while Network Engineering and IT Operations own specialist work.',
+      'Set direction with the board and resolve compliance, scope, timeline, and departmental tradeoffs early.',
     ],
     state:
-      'The ecosystem is active and continues to expand. Delivery remains hands-on across design, frontend, backend, data, security, performance, SEO, DevOps, and maintenance while leading the specialists responsible for UI/UX, networking, and IT Operations.',
+      'The ecosystem is active and expanding. Current work focuses on product evolution, operational controls, and greater delivery capacity without stepping away from engineering.',
     note:
       'The public platform is shown here. Administrative, reporting, volunteer, and support tools contain private operational information and are described without exposing their interfaces or data.',
     links: [
-      { label: 'Visit public platform', href: 'https://therealmsofasgard.com', external: true },
+      { label: 'Visit main site', href: 'https://therealmsofasgard.com', external: true },
     ],
     next: { label: 'ClaimChain', href: '/work/claimchain' },
   },
   claimchain: {
     eyebrow: 'ClaimChain · Independent product engineering · 2025–2026',
-    status: 'Advanced prototype',
-    title: 'Provider submission, admin review, and buyer purchase in one governed workflow.',
+    status: 'Working prototype',
+    title: 'A governed workflow for claims review, purchase, and export.',
     intro:
-      'ClaimChain is an independent prototype using test data. Providers submit unpaid claims, administrators review and package them, and buyers purchase anonymized inventory. The product model, data model, advisory service, and staging workflow were implemented to validate this flow.',
+      'ClaimChain is an independent three-role prototype. Providers submit unpaid claims, administrators review and package them, and buyers purchase anonymized inventory. The application, data model, advisory service, and staging workflow validate the complete path.',
     facts: [
       {
         label: 'Workflow',
@@ -95,7 +95,6 @@ const projects: Record<ProjectId, {
     note:
       'This is a portfolio prototype using test data. Production operation would require additional legal, compliance, privacy, security, and operational review.',
     links: [
-      { label: 'Open hosted demo', href: 'https://claimchain-tan.vercel.app', external: true },
       { label: 'View repository', href: 'https://github.com/edwardsong08/ClaimChain', external: true },
       { label: 'Watch walkthrough', href: '/ClaimChain_Demo.mp4', external: true },
     ],
@@ -104,16 +103,16 @@ const projects: Record<ProjectId, {
   'ryu-legal': {
     eyebrow: 'Ryu Legal · Contract engineering · 2022–now',
     status: 'Live and maintained',
-    title: 'A live NJ/NY law-firm site with server-validated contact intake.',
+    title: 'A live NJ/NY law-firm site with a clear service-to-contact path.',
     intro:
-      'Requirements, UX and visual design, Next.js implementation, SEO, deployment, and ongoing maintenance have been managed since 2022 for a New Jersey and New York law-firm website. The site presents the firm’s services, jurisdiction, disclosures, and contact path.',
+      'Since 2022, the engagement has covered requirements, UX and visual design, Next.js implementation, SEO, deployment, and ongoing maintenance. The site presents the firm’s services, NJ/NY scope, disclosures, and contact path.',
     facts: [
       {
         label: 'Client path',
         value: 'Service information and NJ/NY scope lead to a direct contact workflow with visible legal disclosures.',
       },
       {
-        label: 'My responsibility',
+        label: 'Engagement scope',
         value: 'Requirements, information architecture, interface design, implementation, SEO, deployment, and maintenance.',
       },
       {
@@ -132,7 +131,7 @@ const projects: Record<ProjectId, {
     state:
       'The maintained production site provides NJ/NY service information, visible disclosures, search metadata, and a server endpoint that sends validated contact requests through Resend.',
     note:
-      'This case study describes the implemented workflow and safeguards. It does not claim measured search, acquisition, or conversion outcomes.',
+      'The case study is limited to the public experience and implemented safeguards; no client data or contact submissions are shown.',
     links: [
       { label: 'Visit live site', href: 'https://www.ryu-legal.com', external: true },
     ],
@@ -169,10 +168,7 @@ export default function CaseStudyZen({ project }: { project: ProjectId }) {
             <Link className={styles.backLink} href="/#work">← Selected work</Link>
             <p className={styles.eyebrow}>{content.eyebrow}</p>
             <p className={styles.status}>{content.status}</p>
-            <h1
-              id="case-title"
-              className={project === 'claimchain' ? styles.longTitle : undefined}
-            >
+            <h1 id="case-title">
               {content.title}
             </h1>
             <p className={styles.intro}>{content.intro}</p>
@@ -210,13 +206,11 @@ export default function CaseStudyZen({ project }: { project: ProjectId }) {
 
           <div className={styles.narrative}>
             <section>
-              <p className={styles.sectionLabel}>The operating problem</p>
-              <h2>What had to remain true</h2>
+              <h2>Operating context</h2>
               <p>{content.problem}</p>
             </section>
             <section>
-              <p className={styles.sectionLabel}>Decisions</p>
-              <h2>How boundaries were placed</h2>
+              <h2>Key decisions</h2>
               <ol>
                 {content.decisions.map((decision) => <li key={decision}>{decision}</li>)}
               </ol>
@@ -225,8 +219,7 @@ export default function CaseStudyZen({ project }: { project: ProjectId }) {
 
           <section className={styles.currentState}>
             <div>
-              <p className={styles.sectionLabel}>Current state</p>
-              <h2>What exists now</h2>
+              <h2>Current state</h2>
               <p>{content.state}</p>
             </div>
             <aside aria-label="Scope note">

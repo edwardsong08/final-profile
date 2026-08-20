@@ -6,12 +6,12 @@ export default function Home() {
     <>
       <NextSeo
         title="Product Engineer & Technical Lead"
-        description="Edward Song is a Product Engineer, Technical Lead, and Volunteer CTO at TROA. He creates digital products, sets technical direction, and leads multidisciplinary technology teams."
+        description="Edward Song is a Product Engineer, Technical Lead, and Volunteer CTO working across product direction, hands-on engineering, and multidisciplinary technology leadership."
         canonical="https://www.edsong.xyz/"
         openGraph={{
           title: 'Edward Song — Product Engineer & Technical Lead',
           description:
-            'Product strategy, engineering, and technical leadership across TROA, ClaimChain, and Ryu Legal.',
+            'Product direction, hands-on engineering, and technical leadership across TROA, ClaimChain, and Ryu Legal.',
           url: 'https://www.edsong.xyz/',
           type: 'website',
           images: [
@@ -29,7 +29,7 @@ export default function Home() {
         id="https://www.edsong.xyz/#webpage"
         url="https://www.edsong.xyz/"
         title="Edward Song — Product Engineer & Technical Lead"
-        description="Edward Song creates digital products, sets technical direction, and leads multidisciplinary technology teams at TROA."
+        description="Edward Song works across product direction, hands-on engineering, and multidisciplinary technology leadership."
       />
       <SocialProfileJsonLd
         type="Person"

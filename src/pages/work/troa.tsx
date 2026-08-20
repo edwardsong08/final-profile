@@ -4,7 +4,7 @@ import CaseStudyZen from '../../components/v21/CaseStudyZen';
 
 export default function TroaCaseStudy() {
   const description =
-    'Edward Song’s Volunteer CTO work creating TROA’s product ecosystem, setting technical direction, and leading development, UI/UX, Network Engineering, and IT Operations.';
+    'Edward Song’s Volunteer CTO work across board-level technical direction, hands-on product engineering, and leadership of TROA’s multidisciplinary technology team.';
 
   return (
     <>
