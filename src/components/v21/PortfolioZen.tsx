@@ -63,7 +63,18 @@ const projects = [
   { id: 'project-troa', label: 'TROA' },
   { id: 'project-claimchain', label: 'ClaimChain' },
   { id: 'project-ryu', label: 'Ryu Legal' },
-];
+] as const;
+
+const primarySections = [
+  { id: 'work', label: 'Work', secondary: false },
+  { id: 'capabilities', label: 'Capabilities', secondary: true },
+  { id: 'experience', label: 'Experience', secondary: false },
+  { id: 'about', label: 'About', secondary: true },
+  { id: 'contact', label: 'Contact', secondary: false },
+] as const;
+
+const projectIds = projects.map((project) => project.id);
+const primarySectionIds = primarySections.map((section) => section.id);
 
 function Arrow({ external = false }: { external?: boolean }) {
   return (
@@ -105,52 +116,144 @@ function ScrollProgress() {
   return <span ref={progressRef} className={styles.progressValue} aria-hidden="true" />;
 }
 
-function WorkIndex() {
-  const [activeProject, setActiveProject] = useState(projects[0].id);
+function useActiveSection(sectionIds: readonly string[], viewportAnchor: number) {
+  const [activeSection, setActiveSection] = useState(sectionIds[0]);
 
   useEffect(() => {
-    const targets = projects
-      .map((project) => document.getElementById(project.id))
-      .filter((target): target is HTMLElement => Boolean(target));
+    let animationFrame = 0;
+    let disposed = false;
 
-    if (!targets.length) return;
+    const update = () => {
+      const anchor = window.innerHeight * viewportAnchor;
+      let nextSection = sectionIds[0];
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntry = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort(
-            (first, second) =>
-              Math.abs(first.boundingClientRect.top - window.innerHeight * 0.32) -
-              Math.abs(second.boundingClientRect.top - window.innerHeight * 0.32),
-          )[0];
+      for (const sectionId of sectionIds) {
+        const section = document.getElementById(sectionId);
+        if (!section) continue;
 
-        if (visibleEntry) setActiveProject(visibleEntry.target.id);
-      },
-      {
-        rootMargin: '-18% 0px -54% 0px',
-        threshold: [0, 0.1, 0.35],
-      },
-    );
+        if (section.getBoundingClientRect().top <= anchor) {
+          nextSection = sectionId;
+        } else {
+          break;
+        }
+      }
 
-    targets.forEach((target) => observer.observe(target));
-    return () => observer.disconnect();
-  }, []);
+      if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
+        nextSection = sectionIds.at(-1) ?? nextSection;
+      }
+
+      setActiveSection((currentSection) =>
+        currentSection === nextSection ? currentSection : nextSection,
+      );
+      animationFrame = 0;
+    };
+
+    const requestUpdate = () => {
+      if (disposed || animationFrame) return;
+      animationFrame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener('hashchange', requestUpdate);
+    window.addEventListener('resize', requestUpdate);
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    void document.fonts?.ready.then(requestUpdate);
+
+    return () => {
+      disposed = true;
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+      window.removeEventListener('hashchange', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+      window.removeEventListener('scroll', requestUpdate);
+    };
+  }, [sectionIds, viewportAnchor]);
+
+  return [activeSection, setActiveSection] as const;
+}
+
+function WorkIndex() {
+  const [activeProject, setActiveProject] = useActiveSection(projectIds, 0.36);
+  const indexRef = useRef<HTMLUListElement>(null);
+  const linkRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
+
+  useEffect(() => {
+    const index = indexRef.current;
+    const activeLink = linkRefs.current[activeProject];
+    if (!index || !activeLink) return;
+
+    const positionIndicator = () => {
+      const indexBounds = index.getBoundingClientRect();
+      const linkBounds = activeLink.getBoundingClientRect();
+      index.style.setProperty('--work-indicator-x', `${linkBounds.left - indexBounds.left}px`);
+      index.style.setProperty('--work-indicator-width', `${linkBounds.width}px`);
+    };
+
+    positionIndicator();
+    const resizeObserver = new ResizeObserver(positionIndicator);
+    resizeObserver.observe(index);
+    const readyFrame = window.requestAnimationFrame(() => {
+      index.dataset.indicatorReady = 'true';
+    });
+
+    return () => {
+      window.cancelAnimationFrame(readyFrame);
+      resizeObserver.disconnect();
+    };
+  }, [activeProject]);
 
   return (
     <nav className={styles.workIndex} aria-label="Selected project index">
-      <ul>
+      <ul ref={indexRef}>
         {projects.map((project) => (
           <li key={project.id}>
             <a
+              ref={(link) => {
+                linkRefs.current[project.id] = link;
+              }}
               href={`#${project.id}`}
               aria-current={activeProject === project.id ? 'location' : undefined}
+              onClick={() => setActiveProject(project.id)}
             >
               {project.label}
             </a>
           </li>
         ))}
       </ul>
+    </nav>
+  );
+}
+
+function PrimaryNavigation() {
+  const [activeSection, setActiveSection] = useActiveSection(primarySectionIds, 0.32);
+
+  return (
+    <nav className={styles.stickyNav} aria-label="Primary navigation">
+      <div className={styles.navInner}>
+        <a className={styles.navName} href="#top" aria-label="Edward Song, back to top">
+          ES
+        </a>
+        <ul>
+          {primarySections.map((section) => (
+            <li className={section.secondary ? styles.secondaryNavItem : undefined} key={section.id}>
+              <a
+                href={`#${section.id}`}
+                aria-current={activeSection === section.id ? 'location' : undefined}
+                onClick={() => setActiveSection(section.id)}
+              >
+                {section.label}
+              </a>
+            </li>
+          ))}
+          <li>
+            <a href="/Resume-Edward_Song.pdf" target="_blank" rel="noreferrer">
+              Résumé
+            </a>
+          </li>
+        </ul>
+      </div>
+      <span className={styles.progressTrack} aria-hidden="true">
+        <ScrollProgress />
+      </span>
     </nav>
   );
 }
@@ -202,38 +305,7 @@ export default function PortfolioZen() {
         </div>
       </header>
 
-      <nav className={styles.stickyNav} aria-label="Primary navigation">
-        <div className={styles.navInner}>
-          <a className={styles.navName} href="#top" aria-label="Edward Song, back to top">
-            ES
-          </a>
-          <ul>
-            <li>
-              <a href="#work">Work</a>
-            </li>
-            <li className={styles.secondaryNavItem}>
-              <a href="#capabilities">Capabilities</a>
-            </li>
-            <li>
-              <a href="#experience">Experience</a>
-            </li>
-            <li className={styles.secondaryNavItem}>
-              <a href="#about">About</a>
-            </li>
-            <li>
-              <a href="#contact">Contact</a>
-            </li>
-            <li>
-              <a href="/Resume-Edward_Song.pdf" target="_blank" rel="noreferrer">
-                Résumé
-              </a>
-            </li>
-          </ul>
-        </div>
-        <span className={styles.progressTrack} aria-hidden="true">
-          <ScrollProgress />
-        </span>
-      </nav>
+      <PrimaryNavigation />
 
       <main>
         <section id="work" className={`${styles.section} ${styles.workSection}`} aria-labelledby="work-title">

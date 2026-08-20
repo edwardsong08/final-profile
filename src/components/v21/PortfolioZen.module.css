@@ -300,22 +300,24 @@ a:hover .linkArrow {
   bottom: 0.4rem;
   content: '';
   height: 1px;
-  left: 0;
+  left: 50%;
+  opacity: 0;
   position: absolute;
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 180ms ease;
-  width: 100%;
+  transform: translateX(-50%);
+  width: min(1.15rem, 100%);
 }
 
-.navInner li a:hover {
+.navInner li a:hover,
+.navInner li a:focus-visible {
   color: var(--ink);
 }
 
-.navInner li a:hover::after,
-.navInner li a:focus-visible::after {
-  transform: scaleX(1);
-  transform-origin: left;
+.navInner li a[aria-current='location'] {
+  color: var(--accent-dark);
+}
+
+.navInner li a[aria-current='location']::after {
+  opacity: 1;
 }
 
 .progressTrack {
@@ -396,12 +398,36 @@ a:hover .linkArrow {
 }
 
 .workIndex ul {
+  --work-indicator-width: 0px;
+  --work-indicator-x: 0px;
+
   align-items: center;
   display: flex;
   gap: clamp(1.25rem, 2.8vw, 2.5rem);
   list-style: none;
   margin: 0;
   padding: 0;
+  position: relative;
+}
+
+.workIndex ul::after {
+  background: var(--accent);
+  bottom: -1px;
+  content: '';
+  height: 2px;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transform: translate3d(var(--work-indicator-x), 0, 0);
+  transition:
+    transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    width 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  width: var(--work-indicator-width);
+}
+
+.workIndex ul[data-indicator-ready='true']::after {
+  opacity: 1;
 }
 
 .workIndex a {
@@ -415,30 +441,13 @@ a:hover .linkArrow {
   transition: color 180ms ease;
 }
 
-.workIndex a::after {
-  background: var(--accent);
-  bottom: -1px;
-  content: '';
-  height: 2px;
-  left: 0;
-  position: absolute;
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 180ms ease;
-  width: 100%;
+.workIndex a:hover,
+.workIndex a:focus-visible {
+  color: var(--ink);
 }
 
-.workIndex a:hover,
-.workIndex a:focus-visible,
 .workIndex a[aria-current='location'] {
   color: var(--accent-dark);
-}
-
-.workIndex a:hover::after,
-.workIndex a:focus-visible::after,
-.workIndex a[aria-current='location']::after {
-  transform: scaleX(1);
-  transform-origin: left;
 }
 
 .project {
@@ -1102,9 +1111,8 @@ a:hover .linkArrow {
   .linkArrow,
   .heroMantra,
   .workIndex a,
-  .workIndex a::after,
+  .workIndex ul::after,
   .navInner li a,
-  .navInner li a::after,
   .projectImage {
     transition: none;
   }
@@ -1127,6 +1135,11 @@ a:hover .linkArrow {
   }
 
   .progressValue {
+    background: Highlight;
+  }
+
+  .navInner li a[aria-current='location']::after,
+  .workIndex ul::after {
     background: Highlight;
   }
 }
