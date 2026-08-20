@@ -24,18 +24,170 @@
   font-size: 0.68rem;
   justify-content: space-between;
   letter-spacing: 0.055em;
-  min-height: 2.6rem;
-  padding: 0.55rem 0.85rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.85rem;
   text-transform: uppercase;
 }
 
-.artifactHeader span {
+.artifactHeader > span {
   color: var(--artifact-muted);
 }
 
-.artifactHeader strong {
+.artifactHeader > strong {
   color: var(--artifact-accent);
   font-weight: 650;
+}
+
+.visuallyHidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.troaArtifact {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.troaHeader {
+  background: #f6f7f4;
+  gap: 0.75rem;
+  padding-block: 0;
+}
+
+.troaHeaderTitle {
+  flex: 0 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.troaControls {
+  align-items: center;
+  display: flex;
+  margin-left: auto;
+  min-width: 0;
+}
+
+.troaControls button,
+.troaControls select,
+.troaOpenLink {
+  color: var(--artifact-ink);
+  font: inherit;
+}
+
+.troaControls button,
+.troaOpenLink {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  font-size: 1.15rem;
+  justify-content: center;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  text-decoration: none;
+}
+
+.troaControls label {
+  min-width: 0;
+  position: relative;
+}
+
+.troaControls select {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 0.68rem;
+  font-weight: 620;
+  height: 2.75rem;
+  letter-spacing: 0.015em;
+  max-width: 10.5rem;
+  overflow: hidden;
+  padding: 0 1.25rem 0 0.35rem;
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: nowrap;
+  width: clamp(7rem, 13vw, 10.5rem);
+}
+
+.troaControls label::after {
+  color: var(--artifact-accent);
+  content: '⌄';
+  font-size: 0.76rem;
+  pointer-events: none;
+  position: absolute;
+  right: 0.2rem;
+  top: 50%;
+  transform: translateY(-55%);
+}
+
+.troaPageCount {
+  color: var(--artifact-muted);
+  flex: 0 0 auto;
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  margin-inline: 0.25rem 0.15rem;
+  min-width: 2rem;
+  text-align: center;
+}
+
+.troaOpenLink {
+  color: var(--artifact-accent);
+}
+
+.troaControls button:hover,
+.troaControls button:focus-visible,
+.troaControls select:hover,
+.troaControls select:focus-visible,
+.troaOpenLink:hover,
+.troaOpenLink:focus-visible {
+  background: rgb(49 92 114 / 8%);
+  color: var(--artifact-accent);
+}
+
+.troaControls button:focus-visible,
+.troaControls select:focus-visible,
+.troaOpenLink:focus-visible {
+  outline: 3px solid var(--artifact-accent);
+  outline-offset: -3px;
+}
+
+.troaFrameStage {
+  background: #e5e9e6;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.troaScroller {
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-color: var(--artifact-accent) var(--artifact-bg);
+  scrollbar-width: thin;
+}
+
+.troaScroller[data-engagement='keyboard'] {
+  outline: 3px solid var(--artifact-accent);
+  outline-offset: -3px;
+}
+
+.troaFrameStage:hover .scrollCue,
+.troaScroller[data-engagement='keyboard'] ~ .scrollCue,
+.troaScroller[data-engagement='touch'] ~ .scrollCue {
+  opacity: 0;
+}
+
+.troaLongScreenshot {
+  display: block;
+  height: auto;
+  width: 100%;
 }
 
 .screenshotViewport {
@@ -44,39 +196,74 @@
   position: relative;
 }
 
-.screenshot {
-  object-fit: cover;
-  object-position: center top;
-  transition: filter 280ms ease, transform 420ms cubic-bezier(0.2, 0.72, 0.25, 1);
+.ryuArtifact {
+  grid-template-rows: auto minmax(0, 1fr);
 }
 
-.artifact:hover .screenshot {
-  filter: saturate(0.92) contrast(1.02);
-  transform: scale(1.008);
+.ryuViewport {
+  height: auto;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
 }
 
-.scopeIndex {
-  background: #f6f7f4;
-  border-top: 1px solid var(--artifact-rule);
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+.ryuScroller {
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-color: var(--artifact-accent) var(--artifact-bg);
+  scrollbar-width: thin;
 }
 
-.scopeIndex > span {
-  min-width: 0;
-  padding: 0.7rem 0.75rem 0.8rem;
-}
-
-.scopeIndex > span + span {
-  border-left: 1px solid var(--artifact-rule);
-}
-
-.scopeIndex small,
-.scopeIndex strong {
+.ryuLongScreenshot {
   display: block;
+  height: auto;
+  width: 100%;
 }
 
-.scopeIndex small,
+.scrollCue {
+  background: rgb(246 247 244 / 92%);
+  border: 1px solid var(--artifact-rule);
+  color: var(--artifact-muted);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  padding: 0.38rem 0.5rem;
+  pointer-events: none;
+  position: absolute;
+  right: 0.7rem;
+  top: 0.7rem;
+  text-transform: uppercase;
+  transition: opacity 180ms ease;
+  z-index: 3;
+}
+
+.ryuScroller[data-engagement='keyboard'] {
+  outline: 3px solid var(--artifact-accent);
+  outline-offset: -3px;
+}
+
+.ryuViewport:hover .scrollCue,
+.ryuScroller[data-engagement='keyboard'] ~ .scrollCue,
+.ryuScroller[data-engagement='touch'] ~ .scrollCue {
+  opacity: 0;
+}
+
+.ryuScroller[data-engagement='keyboard'] ~ .interactiveCaption,
+.ryuScroller[data-engagement='touch'] ~ .interactiveCaption {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+.interactiveCaption {
+  background: rgb(246 247 244 / 94%);
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  transform: translateY(0);
+  transition: opacity 220ms ease, transform 240ms cubic-bezier(0.2, 0.9, 0.2, 1);
+  width: 100%;
+  z-index: 2;
+}
+
 .authorityBand small,
 .deliveryFlow small,
 .roleNode small {
@@ -87,11 +274,76 @@
   text-transform: uppercase;
 }
 
-.scopeIndex strong {
-  font-size: 0.66rem;
-  font-weight: 540;
-  line-height: 1.4;
-  margin-top: 0.28rem;
+.claimVideoArtifact {
+  background: #05090b;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.claimVideoArtifact .artifactHeader {
+  background: #f6f7f4;
+}
+
+.claimVideoStage {
+  align-items: center;
+  background: #05090b;
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.claimDemo {
+  background: #05090b;
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.claimDemo:focus-visible {
+  outline: 3px solid #8eafbd;
+  outline-offset: -3px;
+}
+
+.claimPlayButton {
+  align-items: center;
+  backdrop-filter: blur(0.5rem);
+  background: rgb(5 9 11 / 82%);
+  border: 1px solid rgb(238 241 237 / 38%);
+  border-radius: 999px;
+  color: #f3f5f1;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 650;
+  gap: 0.55rem;
+  left: 50%;
+  letter-spacing: 0.035em;
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  position: absolute;
+  text-transform: uppercase;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: background-color 160ms ease, border-color 160ms ease;
+  z-index: 2;
+}
+
+.claimPlayButton span {
+  color: #8eafbd;
+  font-size: 0.72rem;
+}
+
+.claimPlayButton:hover,
+.claimPlayButton:focus-visible {
+  background: rgb(20 35 42 / 94%);
+  border-color: #8eafbd;
+}
+
+.claimPlayButton:focus-visible {
+  outline: 3px solid #8eafbd;
+  outline-offset: 3px;
 }
 
 .claimArtifact {
@@ -210,19 +462,34 @@
     font-size: 0.62rem;
   }
 
-  .scopeIndex,
+  .troaHeader {
+    padding-inline: 0.35rem;
+  }
+
+  .troaHeaderTitle {
+    display: none;
+  }
+
+  .troaControls {
+    justify-content: space-between;
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .troaControls select {
+    max-width: 9.5rem;
+    width: min(41vw, 9.5rem);
+  }
+
   .deliveryFlow {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .scopeIndex > span:nth-child(3),
-  .scopeIndex > span:nth-child(4),
   .deliveryFlow span:nth-child(3),
   .deliveryFlow span:nth-child(4) {
     border-top: 1px solid var(--artifact-rule);
   }
 
-  .scopeIndex > span:nth-child(3),
   .deliveryFlow span:nth-child(3) {
     border-left: 0;
   }
@@ -304,20 +571,26 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .screenshot {
+  .claimPlayButton,
+  .interactiveCaption,
+  .scrollCue {
     transition: none;
   }
+}
 
-  .artifact:hover .screenshot {
-    transform: none;
+@media (hover: hover) and (pointer: fine) {
+  .ryuViewport:hover .interactiveCaption {
+    opacity: 0;
+    transform: translateY(100%);
   }
 }
 
 @media (forced-colors: active) {
   .artifact,
   .artifactHeader,
-  .scopeIndex,
-  .scopeIndex > span,
+  .claimPlayButton,
+  .troaControls button,
+  .troaOpenLink,
   .roleNode,
   .authorityBand,
   .deliveryFlow,

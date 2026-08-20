@@ -190,7 +190,11 @@ export default function CaseStudyZen({ project }: { project: ProjectId }) {
             </div>
           </div>
           <div className={styles.heroArtifact}>
-            <ProjectEvidence project={project} priority />
+            <ProjectEvidence
+              project={project}
+              priority
+              claimchainView={project === 'claimchain' ? 'diagram' : undefined}
+            />
           </div>
         </section>
 

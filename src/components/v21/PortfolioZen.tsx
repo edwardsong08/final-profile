@@ -249,13 +249,9 @@ export default function PortfolioZen() {
 
           <div className={styles.projectList}>
             <article id="project-troa" className={styles.project} aria-labelledby="troa-title">
-              <Link
-                className={styles.projectMedia}
-                href="/work/troa"
-                aria-label="Read the TROA case study"
-              >
+              <div className={styles.projectMedia}>
                 <ProjectEvidence project="troa" />
-              </Link>
+              </div>
 
               <div className={styles.projectCopy}>
                 <div className={styles.projectNarrative}>
@@ -298,13 +294,11 @@ export default function PortfolioZen() {
               className={`${styles.project} ${styles.projectReverse}`}
               aria-labelledby="claimchain-title"
             >
-              <Link
+              <div
                 className={`${styles.projectMedia} ${styles.claimchainMedia}`}
-                href="/work/claimchain"
-                aria-label="Read the ClaimChain case study"
               >
                 <ProjectEvidence project="claimchain" />
-              </Link>
+              </div>
 
               <div className={styles.projectCopy}>
                 <div className={styles.projectNarrative}>
@@ -332,7 +326,7 @@ export default function PortfolioZen() {
                     </div>
                   </dl>
                 </div>
-                  <div className={styles.projectLinks}>
+                <div className={styles.projectLinks}>
                   <Link href="/work/claimchain">
                     Read case study <Arrow />
                   </Link>
@@ -346,14 +340,14 @@ export default function PortfolioZen() {
               </div>
             </article>
 
-            <article id="project-ryu" className={styles.project} aria-labelledby="ryu-title">
-              <Link
-                className={styles.projectMedia}
-                href="/work/ryu-legal"
-                aria-label="Read the Ryu Legal case study"
-              >
+            <article
+              id="project-ryu"
+              className={styles.project}
+              aria-labelledby="ryu-title"
+            >
+              <div className={styles.projectMedia}>
                 <ProjectEvidence project="ryu-legal" />
-              </Link>
+              </div>
 
               <div className={styles.projectCopy}>
                 <div className={styles.projectNarrative}>
