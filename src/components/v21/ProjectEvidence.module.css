@@ -48,8 +48,21 @@
   width: 1px;
 }
 
+.troaEvidence {
+  --artifact-bg: #edf0ec;
+  --artifact-rule: #cfd5d1;
+  --artifact-ink: #171a18;
+  --artifact-muted: #626a65;
+  --artifact-accent: #315c72;
+
+  color: var(--artifact-ink);
+  margin: 0;
+  width: 100%;
+}
+
 .troaArtifact {
   grid-template-rows: auto minmax(0, 1fr);
+  height: auto;
 }
 
 .troaHeader {
@@ -65,67 +78,11 @@
   white-space: nowrap;
 }
 
-.troaControls {
+.troaHeaderMeta {
   align-items: center;
   display: flex;
+  gap: 0.15rem;
   margin-left: auto;
-  min-width: 0;
-}
-
-.troaControls button,
-.troaControls select,
-.troaOpenLink {
-  color: var(--artifact-ink);
-  font: inherit;
-}
-
-.troaControls button,
-.troaOpenLink {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  font-size: 1.15rem;
-  justify-content: center;
-  min-height: 2.75rem;
-  min-width: 2.75rem;
-  text-decoration: none;
-}
-
-.troaControls label {
-  min-width: 0;
-  position: relative;
-}
-
-.troaControls select {
-  appearance: none;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  font-size: 0.68rem;
-  font-weight: 620;
-  height: 2.75rem;
-  letter-spacing: 0.015em;
-  max-width: 10.5rem;
-  overflow: hidden;
-  padding: 0 1.25rem 0 0.35rem;
-  text-overflow: ellipsis;
-  text-transform: none;
-  white-space: nowrap;
-  width: clamp(7rem, 13vw, 10.5rem);
-}
-
-.troaControls label::after {
-  color: var(--artifact-accent);
-  content: '⌄';
-  font-size: 0.76rem;
-  pointer-events: none;
-  position: absolute;
-  right: 0.2rem;
-  top: 50%;
-  transform: translateY(-55%);
 }
 
 .troaPageCount {
@@ -133,27 +90,30 @@
   flex: 0 0 auto;
   font-size: 0.6rem;
   letter-spacing: 0.04em;
-  margin-inline: 0.25rem 0.15rem;
-  min-width: 2rem;
+  min-width: 2.5rem;
   text-align: center;
 }
 
 .troaOpenLink {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
   color: var(--artifact-accent);
+  display: flex;
+  font: inherit;
+  font-size: 0.82rem;
+  justify-content: center;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  text-decoration: none;
 }
 
-.troaControls button:hover,
-.troaControls button:focus-visible,
-.troaControls select:hover,
-.troaControls select:focus-visible,
 .troaOpenLink:hover,
 .troaOpenLink:focus-visible {
   background: rgb(49 92 114 / 8%);
-  color: var(--artifact-accent);
 }
 
-.troaControls button:focus-visible,
-.troaControls select:focus-visible,
 .troaOpenLink:focus-visible {
   outline: 3px solid var(--artifact-accent);
   outline-offset: -3px;
@@ -184,10 +144,113 @@
   opacity: 0;
 }
 
+.troaScroller[data-engagement='keyboard'] ~ .interactiveCaption,
+.troaScroller[data-engagement='touch'] ~ .interactiveCaption {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
 .troaLongScreenshot {
   display: block;
   height: auto;
   width: 100%;
+}
+
+.troaSurfaceCaption {
+  align-items: center;
+  border-top: 1px solid var(--artifact-rule);
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.72rem 0.85rem 0.78rem;
+}
+
+.troaSurfaceCaption small {
+  color: var(--artifact-accent);
+  font-size: 0.58rem;
+  font-weight: 680;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.troaSurfaceCaption strong {
+  color: var(--artifact-ink);
+  font-size: 0.67rem;
+  font-weight: 540;
+  line-height: 1.4;
+}
+
+.troaPager {
+  align-items: center;
+  background: transparent;
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
+  margin: 0.55rem auto 0;
+  min-height: 2.75rem;
+  width: min(17rem, 100%);
+}
+
+.troaPagerArrow,
+.troaDot {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--artifact-muted);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  justify-content: center;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+}
+
+.troaPagerArrow {
+  font-size: 0.82rem;
+  transition: color 160ms ease, transform 160ms ease;
+}
+
+.troaPagerArrow:first-child:hover {
+  transform: translateX(-2px);
+}
+
+.troaPagerArrow:last-child:hover {
+  transform: translateX(2px);
+}
+
+.troaDots {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.troaDot {
+  position: relative;
+}
+
+.troaDot span {
+  border: 1px solid var(--artifact-muted);
+  border-radius: 50%;
+  height: 0.38rem;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+  width: 0.38rem;
+}
+
+.troaDot[aria-current='true'] span {
+  background: var(--artifact-accent);
+  border-color: var(--artifact-accent);
+  transform: scale(1.25);
+}
+
+.troaPagerArrow:hover,
+.troaPagerArrow:focus-visible,
+.troaDot:hover,
+.troaDot:focus-visible {
+  color: var(--artifact-accent);
+}
+
+.troaPagerArrow:focus-visible,
+.troaDot:focus-visible {
+  outline: 3px solid var(--artifact-accent);
+  outline-offset: -3px;
 }
 
 .screenshotViewport {
@@ -463,22 +526,15 @@
   }
 
   .troaHeader {
-    padding-inline: 0.35rem;
+    padding-inline: 0.75rem 0.15rem;
   }
 
-  .troaHeaderTitle {
-    display: none;
+  .troaSurfaceCaption {
+    padding: 0.62rem 0.72rem 0.68rem;
   }
 
-  .troaControls {
-    justify-content: space-between;
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .troaControls select {
-    max-width: 9.5rem;
-    width: min(41vw, 9.5rem);
+  .troaSurfaceCaption strong {
+    font-size: 0.63rem;
   }
 
   .deliveryFlow {
@@ -573,12 +629,15 @@
 @media (prefers-reduced-motion: reduce) {
   .claimPlayButton,
   .interactiveCaption,
-  .scrollCue {
+  .scrollCue,
+  .troaDot span,
+  .troaPagerArrow {
     transition: none;
   }
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .troaFrameStage:hover .interactiveCaption,
   .ryuViewport:hover .interactiveCaption {
     opacity: 0;
     transform: translateY(100%);
@@ -589,8 +648,10 @@
   .artifact,
   .artifactHeader,
   .claimPlayButton,
-  .troaControls button,
   .troaOpenLink,
+  .troaPager,
+  .troaPagerArrow,
+  .troaDot,
   .roleNode,
   .authorityBand,
   .deliveryFlow,

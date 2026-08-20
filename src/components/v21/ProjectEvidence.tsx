@@ -7,55 +7,34 @@ type EvidenceProps = {
   priority?: boolean;
 };
 
-const troaPages = [
+const troaSites = [
   {
-    label: 'Home',
-    path: '/',
-    description: 'mission, support, community, and ways to participate',
-    image: '/case-studies/troa-pages/home-full.webp',
-    height: 2942,
+    label: 'V3 public platform',
+    url: 'https://v3-preview.therealmsofasgard.com/',
+    description: 'The upcoming public experience for community, advocacy, and service.',
+    image: '/case-studies/troa-sites/v3-home-full.webp',
+    height: 3274,
   },
   {
-    label: 'Gaming Hub',
-    path: '/gaming-hub',
-    description: 'game servers, streams, events, and community programs',
-    image: '/case-studies/troa-pages/gaming-hub-full.webp',
-    height: 5625,
+    label: 'Careers',
+    url: 'https://careers.therealmsofasgard.com/',
+    description: 'Open roles, organization context, applications, and applicant progress.',
+    image: '/case-studies/troa-sites/careers-home-full.webp',
+    height: 2665,
   },
   {
-    label: 'Events',
-    path: '/events',
-    description: 'the public community calendar and event information',
-    image: '/case-studies/troa-pages/events-full.webp',
-    height: 1905,
+    label: 'Ticketing',
+    url: 'https://tickets.therealmsofasgard.com/',
+    description: 'Member support, moderation, resolution, and administration workflows.',
+    image: '/case-studies/troa-sites/tickets-home-full.webp',
+    height: 1021,
   },
   {
-    label: 'Mental Health Resources',
-    path: '/mental-health/resources',
-    description: 'national and state mental-health support listings',
-    image: '/case-studies/troa-pages/resources-full.webp',
-    height: 2464,
-  },
-  {
-    label: 'Server Status',
-    path: '/server-stats',
-    description: 'public services and game-server availability',
-    image: '/case-studies/troa-pages/server-status-full.webp',
-    height: 2033,
-  },
-  {
-    label: 'Knowledge & Lore',
-    path: '/knowledge-lore',
-    description: 'the organization’s origins, history, and identity',
-    image: '/case-studies/troa-pages/knowledge-lore-full.webp',
-    height: 3491,
-  },
-  {
-    label: 'Meet the Teams',
-    path: '/meet-the-team',
-    description: 'leadership and multidisciplinary volunteer teams',
-    image: '/case-studies/troa-pages/teams-full.webp',
-    height: 6664,
+    label: 'Learning Center',
+    url: 'https://courses.therealmsofasgard.com/',
+    description: 'Training, courses, progress, credentials, and learning records.',
+    image: '/case-studies/troa-sites/courses-home-full.webp',
+    height: 1011,
   },
 ] as const;
 
@@ -64,7 +43,7 @@ export function TroaEvidence({ priority = false }: EvidenceProps) {
   const [engagement, setEngagement] = useState<'none' | 'keyboard' | 'touch'>('none');
   const pointerTypeRef = useRef<string | null>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const activePage = troaPages[activeIndex];
+  const activeSite = troaSites[activeIndex];
 
   const selectPage = (index: number) => {
     scrollerRef.current?.scrollTo({ top: 0 });
@@ -73,87 +52,110 @@ export function TroaEvidence({ priority = false }: EvidenceProps) {
   };
 
   const movePage = (direction: -1 | 1) => {
-    selectPage((activeIndex + direction + troaPages.length) % troaPages.length);
+    selectPage((activeIndex + direction + troaSites.length) % troaSites.length);
   };
 
   return (
-    <figure className={`${styles.artifact} ${styles.troaArtifact}`}>
-      <div className={`${styles.artifactHeader} ${styles.troaHeader}`}>
-        <span className={styles.troaHeaderTitle}>TROA public platform</span>
-        <div className={styles.troaControls}>
-          <button type="button" onClick={() => movePage(-1)} aria-label="Show previous TROA page">
-            <span aria-hidden="true">‹</span>
-          </button>
-          <label>
-            <span className={styles.visuallyHidden}>Choose a TROA public page</span>
-            <select
-              value={activeIndex}
-              onChange={(event) => selectPage(Number(event.target.value))}
+    <figure className={styles.troaEvidence}>
+      <div className={`${styles.artifact} ${styles.troaArtifact}`}>
+        <div className={`${styles.artifactHeader} ${styles.troaHeader}`}>
+          <span className={styles.troaHeaderTitle}>TROA ecosystem</span>
+          <div className={styles.troaHeaderMeta}>
+            <span className={styles.troaPageCount} aria-live="polite">
+              {activeIndex + 1} / {troaSites.length}
+            </span>
+            <a
+              className={styles.troaOpenLink}
+              href={activeSite.url}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`Open the live TROA ${activeSite.label} site in a new tab`}
             >
-              {troaPages.map((page, index) => (
-                <option value={index} key={page.path}>
-                  {page.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="button" onClick={() => movePage(1)} aria-label="Show next TROA page">
-            <span aria-hidden="true">›</span>
-          </button>
-          <span className={styles.troaPageCount} aria-live="polite">
-            {activeIndex + 1}/{troaPages.length}
-          </span>
-          <a
-            className={styles.troaOpenLink}
-            href={`https://therealmsofasgard.com${activePage.path}`}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={`Open the live TROA ${activePage.label} page in a new tab`}
+              <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
+        <div className={styles.troaFrameStage}>
+          <div
+            className={styles.troaScroller}
+            data-engagement={engagement}
+            role="region"
+            aria-label={`Scrollable preview of the TROA ${activeSite.label} homepage`}
+            tabIndex={0}
+            ref={scrollerRef}
+            onBlur={() => {
+              pointerTypeRef.current = null;
+              setEngagement('none');
+            }}
+            onFocus={() => {
+              const pointerType = pointerTypeRef.current;
+              setEngagement(pointerType ? (pointerType === 'mouse' ? 'none' : 'touch') : 'keyboard');
+              pointerTypeRef.current = null;
+            }}
+            onKeyDown={() => setEngagement('keyboard')}
+            onPointerDown={(event) => {
+              pointerTypeRef.current = event.pointerType;
+              setEngagement(event.pointerType === 'mouse' ? 'none' : 'touch');
+            }}
           >
-            <span aria-hidden="true">↗</span>
-          </a>
+            <Image
+              key={activeSite.url}
+              src={activeSite.image}
+              alt={`TROA ${activeSite.label} homepage showing ${activeSite.description}`}
+              width={1218}
+              height={activeSite.height}
+              loading={priority && activeIndex === 0 ? 'eager' : 'lazy'}
+              sizes="(max-width: 960px) 100vw, 58vw"
+              className={styles.troaLongScreenshot}
+            />
+          </div>
+          <span className={styles.scrollCue} aria-hidden="true">
+            Scroll preview
+          </span>
+          <div
+            className={`${styles.troaSurfaceCaption} ${styles.interactiveCaption}`}
+            aria-hidden="true"
+          >
+            <small>{activeSite.label}</small>
+            <strong>{activeSite.description}</strong>
+          </div>
         </div>
       </div>
-      <div className={styles.troaFrameStage}>
-        <div
-          className={styles.troaScroller}
-          data-engagement={engagement}
-          role="region"
-          aria-label={`Scrollable preview of the TROA ${activePage.label} public page`}
-          tabIndex={0}
-          ref={scrollerRef}
-          onBlur={() => {
-            pointerTypeRef.current = null;
-            setEngagement('none');
-          }}
-          onFocus={() => {
-            const pointerType = pointerTypeRef.current;
-            setEngagement(pointerType ? (pointerType === 'mouse' ? 'none' : 'touch') : 'keyboard');
-            pointerTypeRef.current = null;
-          }}
-          onKeyDown={() => setEngagement('keyboard')}
-          onPointerDown={(event) => {
-            pointerTypeRef.current = event.pointerType;
-            setEngagement(event.pointerType === 'mouse' ? 'none' : 'touch');
-          }}
+      <nav className={styles.troaPager} aria-label="TROA ecosystem previews">
+        <button
+          className={styles.troaPagerArrow}
+          type="button"
+          onClick={() => movePage(-1)}
+          aria-label="Show previous TROA site"
         >
-          <Image
-            key={activePage.path}
-            src={activePage.image}
-            alt={`TROA ${activePage.label} public page showing ${activePage.description}`}
-            width={1280}
-            height={activePage.height}
-            loading={priority && activeIndex === 0 ? 'eager' : 'lazy'}
-            sizes="(max-width: 960px) 100vw, 58vw"
-            className={styles.troaLongScreenshot}
-          />
+          <span aria-hidden="true">←</span>
+        </button>
+        <div className={styles.troaDots}>
+          {troaSites.map((site, index) => (
+            <button
+              className={styles.troaDot}
+              type="button"
+              key={site.url}
+              onClick={() => selectPage(index)}
+              aria-label={`Show TROA ${site.label}`}
+              aria-current={index === activeIndex ? 'true' : undefined}
+              title={site.label}
+            >
+              <span aria-hidden="true" />
+            </button>
+          ))}
         </div>
-        <span className={styles.scrollCue} aria-hidden="true">
-          Scroll preview
-        </span>
-      </div>
+        <button
+          className={styles.troaPagerArrow}
+          type="button"
+          onClick={() => movePage(1)}
+          aria-label="Show next TROA site"
+        >
+          <span aria-hidden="true">→</span>
+        </button>
+      </nav>
       <figcaption className={styles.visuallyHidden}>
-        TROA {activePage.label}: {activePage.description}.
+        TROA {activeSite.label}: {activeSite.description}
       </figcaption>
     </figure>
   );
@@ -290,8 +292,8 @@ export function RyuEvidence({ priority = false }: EvidenceProps) {
           <Image
             src="/case-studies/ryu-home-full.webp"
             alt="Full Ryu Legal production homepage, from the opening practice overview through services, office information, and contact form"
-            width={1248}
-            height={3238}
+            width={1218}
+            height={4386}
             loading={priority ? 'eager' : 'lazy'}
             sizes="(max-width: 960px) 100vw, 52vw"
             className={styles.ryuLongScreenshot}
