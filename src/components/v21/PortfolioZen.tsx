@@ -204,8 +204,14 @@ function ScrollProgress() {
   return <span ref={progressRef} className={styles.progressValue} aria-hidden="true" />;
 }
 
-function useActiveSection(sectionIds: readonly string[], viewportAnchor: number) {
-  const [activeSection, setActiveSection] = useState(sectionIds[0]);
+function useActiveSection(
+  sectionIds: readonly string[],
+  viewportAnchor: number,
+  activateBeforeFirst = true,
+) {
+  const [activeSection, setActiveSection] = useState(
+    activateBeforeFirst ? sectionIds[0] : '',
+  );
 
   useEffect(() => {
     let animationFrame = 0;
@@ -213,7 +219,7 @@ function useActiveSection(sectionIds: readonly string[], viewportAnchor: number)
 
     const update = () => {
       const anchor = window.innerHeight * viewportAnchor;
-      let nextSection = sectionIds[0];
+      let nextSection = activateBeforeFirst ? sectionIds[0] : '';
 
       for (const sectionId of sectionIds) {
         const section = document.getElementById(sectionId);
@@ -254,7 +260,7 @@ function useActiveSection(sectionIds: readonly string[], viewportAnchor: number)
       window.removeEventListener('resize', requestUpdate);
       window.removeEventListener('scroll', requestUpdate);
     };
-  }, [sectionIds, viewportAnchor]);
+  }, [activateBeforeFirst, sectionIds, viewportAnchor]);
 
   return [activeSection, setActiveSection] as const;
 }
@@ -466,6 +472,7 @@ export default function PortfolioZen() {
   const [activePrimarySection, setActivePrimarySection] = useActiveSection(
     primarySectionIds,
     0.32,
+    false,
   );
   const troaNarrative = troaSlideNarratives[activeTroaSlide];
 
@@ -803,18 +810,18 @@ export default function PortfolioZen() {
             <p className={`${styles.sectionLabel} ${styles.traceTitle}`}>
               About
             </p>
-            <h2 id="about-title">Writing and teaching shape the engineering approach.</h2>
+            <h2 id="about-title">Language, judgment, and systems.</h2>
             <p className={styles.aboutLead}>
-              Before and alongside software, I spent more than fifteen years teaching English and
-              preparing students for the SAT, LSAT, graduate-school exams, admissions, and
-              application writing. I also wrote professionally for a comedy club and platform. Both
-              taught the same discipline: understand the audience, find the real problem, and make
-              the next step clear.
+              Before software, my work moved between classrooms, writing rooms, and legal offices.
+              For more than fifteen years, I taught English and prepared students for the SAT, LSAT,
+              graduate admissions, and application writing. I also wrote comedy professionally and
+              worked in legal operations. Each required close reading, precise language, and
+              judgment about what matters.
             </p>
             <div className={styles.aboutClosing}>
               <p>
-                That experience still shapes discovery, requirements, documentation, and the
-                conversations where technical and nontechnical teams need to reach a decision.
+                Those habits now inform product discovery, requirements, documentation, and the
+                decisions that connect technical and nontechnical teams.
               </p>
               <p>
                 Based in Northern New Jersey. Korean and English. Away from work: hiking, guitar,
