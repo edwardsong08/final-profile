@@ -376,7 +376,7 @@ export default function SmokeField() {
         textContext.letterSpacing = '0.015em';
       }
       textContext.fillText(
-        'Learn. Teach. Grow.',
+        'Listen. Learn. Build.',
         textCanvas.width / 2,
         textCanvas.height * mantraPosition,
       );
@@ -633,7 +633,7 @@ export default function SmokeField() {
         aria-hidden="true"
         data-smoke-canvas
       />
-      <p className={styles.heroMantra}>Learn. Teach. Grow.</p>
+      <p className={styles.heroMantra}>Listen. Learn. Build.</p>
     </div>
   );
 }
