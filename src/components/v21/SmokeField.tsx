@@ -18,12 +18,15 @@ const updateShaderSource = `
   varying vec2 vUv;
   uniform sampler2D uPrevious;
   uniform vec2 uTexel;
-  uniform vec2 uPoint;
-  uniform vec2 uPreviousPoint;
+  uniform vec2 uPointA;
+  uniform vec2 uPreviousPointA;
+  uniform vec2 uPointB;
+  uniform vec2 uPreviousPointB;
   uniform float uAspect;
   uniform float uTime;
   uniform float uStep;
-  uniform float uEnergy;
+  uniform float uEnergyA;
+  uniform float uEnergyB;
   uniform float uIdleFade;
 
   float hash(vec2 point) {
@@ -47,6 +50,27 @@ const updateShaderSource = `
     float denominator = max(dot(segment, segment), 0.00001);
     float position = clamp(dot(point - start, segment) / denominator, 0.0, 1.0);
     return length(point - (start + segment * position));
+  }
+
+  float gestureInjection(
+    vec2 scaledUv,
+    vec2 point,
+    vec2 previousPoint,
+    float energy,
+    float phase
+  ) {
+    vec2 scaledPoint = vec2(point.x * uAspect, point.y);
+    vec2 scaledPreviousPoint = vec2(previousPoint.x * uAspect, previousPoint.y);
+    float distanceToGesture = segmentDistance(scaledUv, scaledPreviousPoint, scaledPoint);
+    float pockets = smoothstep(
+      0.22,
+      0.84,
+      noise(vUv * 27.0 + vec2(uTime * 0.12 + phase, phase * -0.73))
+    );
+    float turbulence = 0.34 + pockets * 1.24;
+    float core = exp(-distanceToGesture * distanceToGesture * 2300.0);
+    float haze = exp(-distanceToGesture * distanceToGesture * 390.0) * 0.11;
+    return (core * turbulence + haze) * energy;
   }
 
   void main() {
@@ -73,15 +97,21 @@ const updateShaderSource = `
     float dissipation = mix(0.9965, 0.974, uIdleFade);
     density *= pow(dissipation, uStep);
 
-    vec2 scaledPoint = vec2(uPoint.x * uAspect, uPoint.y);
-    vec2 scaledPreviousPoint = vec2(uPreviousPoint.x * uAspect, uPreviousPoint.y);
-    float distanceToGesture = segmentDistance(scaledUv, scaledPreviousPoint, scaledPoint);
-    float pockets = smoothstep(0.22, 0.84, noise(vUv * 27.0 + uTime * 0.12));
-    float turbulence = 0.34 + pockets * 1.24;
-    float core = exp(-distanceToGesture * distanceToGesture * 2300.0);
-    float haze = exp(-distanceToGesture * distanceToGesture * 390.0) * 0.11;
-    float injection = (core * turbulence + haze) * uEnergy;
-    density = min(1.0, density + injection * 0.42);
+    float injectionA = gestureInjection(
+      scaledUv,
+      uPointA,
+      uPreviousPointA,
+      uEnergyA,
+      0.0
+    );
+    float injectionB = gestureInjection(
+      scaledUv,
+      uPointB,
+      uPreviousPointB,
+      uEnergyB,
+      5.17
+    );
+    density = min(1.0, density + (injectionA + injectionB) * 0.42);
 
     gl_FragColor = vec4(vec3(density), 1.0);
   }
@@ -154,6 +184,38 @@ type RenderTarget = {
   framebuffer: WebGLFramebuffer;
   texture: WebGLTexture;
 };
+
+type SmokePoint = [number, number];
+
+type SmokeEmitter = {
+  active: boolean;
+  energy: number;
+  hasPoint: boolean;
+  input: 'mouse' | 'touch';
+  inside: boolean;
+  point: SmokePoint;
+  pointerId: number | null;
+  previousPoint: SmokePoint;
+};
+
+const createEmitter = (): SmokeEmitter => ({
+  active: false,
+  energy: 0,
+  hasPoint: false,
+  input: 'mouse',
+  inside: false,
+  point: [0.5, 0.5],
+  pointerId: null,
+  previousPoint: [0.5, 0.5],
+});
+
+const isInteractiveTarget = (target: EventTarget | null) =>
+  target instanceof Element
+  && Boolean(
+    target.closest(
+      'a, button, input, select, textarea, summary, [contenteditable="true"], [role="button"]',
+    ),
+  );
 
 function createShader(gl: WebGLRenderingContext, type: number, source: string) {
   const shader = gl.createShader(type);
@@ -248,11 +310,13 @@ export default function SmokeField() {
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const coarsePointer = window.matchMedia('(hover: none), (pointer: coarse)');
-    if (reducedMotion.matches || coarsePointer.matches) {
+    if (reducedMotion.matches) {
       canvas.dataset.motion = 'off';
       layer.dataset.mode = 'static';
       return;
     }
+
+    const touchOptimized = coarsePointer.matches;
 
     const gl = canvas.getContext('webgl', {
       alpha: true,
@@ -304,12 +368,15 @@ export default function SmokeField() {
     const updateUniforms = {
       previous: gl.getUniformLocation(updateProgram, 'uPrevious'),
       texel: gl.getUniformLocation(updateProgram, 'uTexel'),
-      point: gl.getUniformLocation(updateProgram, 'uPoint'),
-      previousPoint: gl.getUniformLocation(updateProgram, 'uPreviousPoint'),
+      pointA: gl.getUniformLocation(updateProgram, 'uPointA'),
+      previousPointA: gl.getUniformLocation(updateProgram, 'uPreviousPointA'),
+      pointB: gl.getUniformLocation(updateProgram, 'uPointB'),
+      previousPointB: gl.getUniformLocation(updateProgram, 'uPreviousPointB'),
       aspect: gl.getUniformLocation(updateProgram, 'uAspect'),
       time: gl.getUniformLocation(updateProgram, 'uTime'),
       step: gl.getUniformLocation(updateProgram, 'uStep'),
-      energy: gl.getUniformLocation(updateProgram, 'uEnergy'),
+      energyA: gl.getUniformLocation(updateProgram, 'uEnergyA'),
+      energyB: gl.getUniformLocation(updateProgram, 'uEnergyB'),
       idleFade: gl.getUniformLocation(updateProgram, 'uIdleFade'),
     };
     const displayUniforms = {
@@ -328,12 +395,10 @@ export default function SmokeField() {
     let lastFrame = performance.now();
     let startTime = lastFrame;
     let isVisible = true;
-    let hasPoint = false;
-    let energy = 0;
     let idleFrames = 0;
     let hasInteracted = false;
-    let point: [number, number] = [0.5, 0.5];
-    let previousPoint: [number, number] = point;
+    const emitters: [SmokeEmitter, SmokeEmitter] = [createEmitter(), createEmitter()];
+    const minimumFrameInterval = touchOptimized ? 1000 / 30 : 0;
 
     gl.bindTexture(gl.TEXTURE_2D, textTexture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -405,15 +470,22 @@ export default function SmokeField() {
 
     const resize = () => {
       const bounds = canvas.getBoundingClientRect();
-      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, touchOptimized ? 1.25 : 1.5);
       canvas.width = Math.max(1, Math.round(bounds.width * pixelRatio));
       canvas.height = Math.max(1, Math.round(bounds.height * pixelRatio));
       updateTextTexture(bounds, pixelRatio);
 
-      const maxSimulationWidth = bounds.width >= 900 ? 1280 : 760;
-      const scale = Math.min(0.86, maxSimulationWidth / Math.max(bounds.width * pixelRatio, 1));
-      simulationWidth = Math.max(384, Math.round(bounds.width * pixelRatio * scale));
-      simulationHeight = Math.max(240, Math.round(bounds.height * pixelRatio * scale));
+      const maxSimulationWidth = touchOptimized ? 520 : bounds.width >= 900 ? 1280 : 760;
+      const maxSimulationHeight = touchOptimized ? 720 : Number.POSITIVE_INFINITY;
+      const scaledWidth = Math.max(bounds.width * pixelRatio, 1);
+      const scaledHeight = Math.max(bounds.height * pixelRatio, 1);
+      const scale = Math.min(
+        touchOptimized ? 0.72 : 0.86,
+        maxSimulationWidth / scaledWidth,
+        maxSimulationHeight / scaledHeight,
+      );
+      simulationWidth = Math.max(touchOptimized ? 288 : 384, Math.round(scaledWidth * scale));
+      simulationHeight = Math.max(touchOptimized ? 360 : 240, Math.round(scaledHeight * scale));
       destroyTargets();
       targets = [
         createRenderTarget(gl, simulationWidth, simulationHeight),
@@ -457,6 +529,13 @@ export default function SmokeField() {
       animationFrame = 0;
       if (!targets) return;
 
+      if (minimumFrameInterval && now - lastFrame < minimumFrameInterval) {
+        if (isVisible && !document.hidden) {
+          animationFrame = window.requestAnimationFrame(render);
+        }
+        return;
+      }
+
       const elapsedStep = Math.min(2.2, Math.max(0.35, (now - lastFrame) / 16.667));
       lastFrame = now;
       const source = targets[frontIndex];
@@ -470,27 +549,64 @@ export default function SmokeField() {
       gl.bindTexture(gl.TEXTURE_2D, source.texture);
       gl.uniform1i(updateUniforms.previous, 0);
       gl.uniform2f(updateUniforms.texel, 1 / simulationWidth, 1 / simulationHeight);
-      gl.uniform2f(updateUniforms.point, point[0], point[1]);
-      gl.uniform2f(updateUniforms.previousPoint, previousPoint[0], previousPoint[1]);
+      gl.uniform2f(updateUniforms.pointA, emitters[0].point[0], emitters[0].point[1]);
+      gl.uniform2f(
+        updateUniforms.previousPointA,
+        emitters[0].previousPoint[0],
+        emitters[0].previousPoint[1],
+      );
+      gl.uniform2f(updateUniforms.pointB, emitters[1].point[0], emitters[1].point[1]);
+      gl.uniform2f(
+        updateUniforms.previousPointB,
+        emitters[1].previousPoint[0],
+        emitters[1].previousPoint[1],
+      );
       gl.uniform1f(updateUniforms.aspect, simulationWidth / simulationHeight);
       gl.uniform1f(updateUniforms.time, (now - startTime) / 1000);
       gl.uniform1f(updateUniforms.step, elapsedStep);
-      gl.uniform1f(updateUniforms.energy, energy);
+      const activeTouchCount = emitters.filter(
+        (emitter) => emitter.active && emitter.input === 'touch' && emitter.inside,
+      ).length;
+      const dualTouchBalance = activeTouchCount > 1 ? 0.68 : 1;
+      gl.uniform1f(
+        updateUniforms.energyA,
+        emitters[0].inside ? emitters[0].energy * dualTouchBalance : 0,
+      );
+      gl.uniform1f(
+        updateUniforms.energyB,
+        emitters[1].inside ? emitters[1].energy * dualTouchBalance : 0,
+      );
       gl.uniform1f(
         updateUniforms.idleFade,
-        Math.min(1, Math.max(0, (idleFrames - 210) / 360)),
+        Math.min(
+          1,
+          Math.max(
+            0,
+            (idleFrames - (touchOptimized ? 60 : 210)) / (touchOptimized ? 90 : 360),
+          ),
+        ),
       );
       drawFullscreen(updatePosition);
 
       frontIndex = 1 - frontIndex;
       drawDisplay(now);
 
-      previousPoint = point;
-      energy *= Math.pow(0.76, elapsedStep);
-      if (energy < 0.003) energy = 0;
-      idleFrames = energy > 0 ? 0 : idleFrames + 1;
+      emitters.forEach((emitter) => {
+        emitter.previousPoint = emitter.point;
+        emitter.energy *= Math.pow(0.76, elapsedStep);
+        if (emitter.active && emitter.input === 'touch' && emitter.inside) {
+          emitter.energy = Math.max(emitter.energy, activeTouchCount > 1 ? 0.006 : 0.008);
+        }
+        if (!emitter.active && emitter.energy < 0.003) emitter.energy = 0;
+      });
+      const hasActiveEnergy = emitters.some(
+        (emitter) => emitter.energy > 0 || (emitter.active && emitter.inside),
+      );
+      idleFrames = hasActiveEnergy ? 0 : idleFrames + 1;
 
-      const idleLimit = hasInteracted ? 720 : 150;
+      const idleLimit = hasInteracted
+        ? touchOptimized ? 180 : 720
+        : touchOptimized ? 75 : 150;
       if (isVisible && !document.hidden && idleFrames < idleLimit) {
         animationFrame = window.requestAnimationFrame(render);
       } else if (idleFrames >= idleLimit) {
@@ -519,55 +635,151 @@ export default function SmokeField() {
       animationFrame = 0;
     };
 
-    const handlePointerMove = (event: PointerEvent) => {
+    const pointWithinCanvas = (clientX: number, clientY: number) => {
       const bounds = canvas.getBoundingClientRect();
       if (
-        event.clientX < bounds.left ||
-        event.clientX > bounds.right ||
-        event.clientY < bounds.top ||
-        event.clientY > bounds.bottom
+        clientX < bounds.left ||
+        clientX > bounds.right ||
+        clientY < bounds.top ||
+        clientY > bounds.bottom ||
+        bounds.width <= 0 ||
+        bounds.height <= 0
       ) {
-        hasPoint = false;
-        return;
+        return null;
       }
 
-      const nextPoint: [number, number] = [
-        (event.clientX - bounds.left) / bounds.width,
-        1 - (event.clientY - bounds.top) / bounds.height,
-      ];
+      return {
+        bounds,
+        point: [
+          (clientX - bounds.left) / bounds.width,
+          1 - (clientY - bounds.top) / bounds.height,
+        ] as SmokePoint,
+      };
+    };
 
-      if (!hasPoint) {
-        point = nextPoint;
-        previousPoint = nextPoint;
-        hasPoint = true;
+    const moveEmitter = (
+      emitter: SmokeEmitter,
+      nextPoint: SmokePoint,
+      bounds: DOMRect,
+      initialEnergy: number,
+      baseEnergy: number,
+      velocityScale: number,
+    ) => {
+      emitter.inside = true;
+
+      if (!emitter.hasPoint) {
+        emitter.point = nextPoint;
+        emitter.previousPoint = nextPoint;
+        emitter.hasPoint = true;
         hasInteracted = true;
-        energy = Math.max(energy, 0.12);
+        emitter.energy = Math.max(emitter.energy, initialEnergy);
         idleFrames = 0;
         startRendering();
         return;
       }
 
-      const deltaX = (nextPoint[0] - point[0]) * (bounds.width / bounds.height);
-      const deltaY = nextPoint[1] - point[1];
+      const deltaX = (nextPoint[0] - emitter.point[0]) * (bounds.width / bounds.height);
+      const deltaY = nextPoint[1] - emitter.point[1];
       const velocity = Math.hypot(deltaX, deltaY);
-      previousPoint = point;
-      point = nextPoint;
+      emitter.previousPoint = emitter.point;
+      emitter.point = nextPoint;
       hasInteracted = true;
-      energy = Math.min(1, 0.26 + velocity * 16);
+      emitter.energy = Math.min(1, baseEnergy + velocity * velocityScale);
       idleFrames = 0;
       startRendering();
     };
 
+    const handlePointerMove = (event: PointerEvent) => {
+      if (event.pointerType === 'touch' || emitters.some((emitter) => emitter.active)) return;
+      const location = pointWithinCanvas(event.clientX, event.clientY);
+      const emitter = emitters[0];
+      emitter.input = 'mouse';
+      if (!location) {
+        emitter.hasPoint = false;
+        emitter.inside = false;
+        return;
+      }
+
+      moveEmitter(emitter, location.point, location.bounds, 0.12, 0.26, 16);
+    };
+
     const handlePointerLeave = (event: PointerEvent) => {
       if (event.relatedTarget) return;
-      hasPoint = false;
-      energy = 0;
+      emitters.forEach((emitter) => {
+        if (emitter.input !== 'mouse') return;
+        emitter.hasPoint = false;
+        emitter.inside = false;
+        emitter.energy = 0;
+      });
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      if (isInteractiveTarget(event.target)) return;
+
+      Array.from(event.changedTouches).forEach((touch) => {
+        if (emitters.some((emitter) => emitter.active && emitter.pointerId === touch.identifier)) {
+          return;
+        }
+
+        const location = pointWithinCanvas(touch.clientX, touch.clientY);
+        if (!location) return;
+
+        const availableEmitter = emitters
+          .filter((emitter) => !emitter.active)
+          .sort((first, second) => first.energy - second.energy)[0];
+        if (!availableEmitter) return;
+
+        availableEmitter.active = true;
+        availableEmitter.energy = Math.max(availableEmitter.energy, 0.18);
+        availableEmitter.hasPoint = true;
+        availableEmitter.input = 'touch';
+        availableEmitter.inside = true;
+        availableEmitter.point = location.point;
+        availableEmitter.pointerId = touch.identifier;
+        availableEmitter.previousPoint = location.point;
+        hasInteracted = true;
+        idleFrames = 0;
+        startRendering();
+      });
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      Array.from(event.changedTouches).forEach((touch) => {
+        const emitter = emitters.find(
+          (candidate) => candidate.active && candidate.pointerId === touch.identifier,
+        );
+        if (!emitter) return;
+
+        const location = pointWithinCanvas(touch.clientX, touch.clientY);
+        if (!location) {
+          emitter.inside = false;
+          return;
+        }
+
+        moveEmitter(emitter, location.point, location.bounds, 0.18, 0.22, 13);
+      });
+    };
+
+    const releaseTouches = (event: TouchEvent) => {
+      Array.from(event.changedTouches).forEach((touch) => {
+        const emitter = emitters.find(
+          (candidate) => candidate.active && candidate.pointerId === touch.identifier,
+        );
+        if (!emitter) return;
+        emitter.active = false;
+        emitter.pointerId = null;
+      });
     };
 
     const handleVisibility = () => {
       if (document.hidden) stopRendering();
       else {
-        hasPoint = false;
+        emitters.forEach((emitter) => {
+          emitter.active = false;
+          emitter.hasPoint = false;
+          emitter.inside = false;
+          emitter.pointerId = null;
+        });
         idleFrames = Math.min(idleFrames, 719);
         startRendering();
       }
@@ -603,6 +815,10 @@ export default function SmokeField() {
     visibilityObserver.observe(canvas);
     window.addEventListener('pointermove', handlePointerMove, { passive: true });
     window.addEventListener('pointerout', handlePointerLeave, { passive: true });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchend', releaseTouches, { passive: true });
+    window.addEventListener('touchcancel', releaseTouches, { passive: true });
     document.addEventListener('visibilitychange', handleVisibility);
     canvas.addEventListener('webglcontextlost', handleContextLost);
     canvas.addEventListener('webglcontextrestored', handleContextRestored);
@@ -614,6 +830,10 @@ export default function SmokeField() {
       visibilityObserver.disconnect();
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerout', handlePointerLeave);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', releaseTouches);
+      window.removeEventListener('touchcancel', releaseTouches);
       document.removeEventListener('visibilitychange', handleVisibility);
       canvas.removeEventListener('webglcontextlost', handleContextLost);
       canvas.removeEventListener('webglcontextrestored', handleContextRestored);
