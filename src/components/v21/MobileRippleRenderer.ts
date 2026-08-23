@@ -123,6 +123,7 @@ const displayFragmentShader = `
   uniform vec2 uTexel;
   uniform float uAspect;
   uniform float uEncoded;
+  uniform float uEffectStrength;
   uniform float uTextReveal;
 
   float hash(vec2 point) {
@@ -142,7 +143,8 @@ const displayFragmentShader = `
     vec2 slope = vec2(right - left, above - below);
     vec3 normal = normalize(vec3(-slope.x * 30.0, -slope.y * 30.0, 1.0));
     vec3 lightDirection = normalize(vec3(-0.42, 0.56, 0.72));
-    vec2 refraction = vec2(slope.x / uAspect, slope.y) * 0.82;
+    vec2 refraction = vec2(slope.x / uAspect, slope.y)
+      * 0.82 * uEffectStrength;
     vec2 textUv = clamp(vUv + refraction, vec2(0.001), vec2(0.999));
     float textMask = texture2D(tText, textUv).a;
     float textAlpha = textMask * uTextReveal * 0.76;
@@ -159,7 +161,7 @@ const displayFragmentShader = `
         + microTexture,
       0.0,
       0.15
-    );
+    ) * uEffectStrength;
     vec3 clearWater = vec3(0.34, 0.47, 0.52);
     vec3 mineralShadow = vec3(0.13, 0.25, 0.31);
     vec3 surfaceColor = mix(
@@ -336,6 +338,7 @@ export function setupMobileRipple({
       uTexel: { value: simulationTexel },
       uAspect: { value: readTarget.width / readTarget.height },
       uEncoded: { value: encodedState ? 1 : 0 },
+      uEffectStrength: { value: 0 },
       uTextReveal: { value: 0 },
     },
     cullFace: false,
@@ -366,7 +369,8 @@ export function setupMobileRipple({
 
   const pendingImpulses: RippleImpulse[] = [];
   const minimumFrameInterval = 1000 / 45;
-  const rippleLifetime = 4200;
+  const rippleLifetime = 6000;
+  const rippleFadeDuration = 1800;
   let activeUntil = 0;
   let animationFrame = 0;
   let isVisible = true;
@@ -481,6 +485,10 @@ export function setupMobileRipple({
   };
 
   const drawDisplay = (now: number) => {
+    const remainingLifetime = Math.max(0, activeUntil - now);
+    const fadeStrength = Math.min(1, remainingLifetime / rippleFadeDuration);
+    displayProgram.uniforms.uEffectStrength.value = fadeStrength
+      * fadeStrength * (3 - 2 * fadeStrength);
     displayProgram.uniforms.uTextReveal.value = Math.min(
       1,
       Math.max(0, ((now - startTime) / 1000 - 0.28) / 1.35),
