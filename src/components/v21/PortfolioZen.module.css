@@ -501,6 +501,10 @@ a:hover .linkArrow {
   display: none;
 }
 
+.mobileProjectHandoff {
+  display: none;
+}
+
 .project {
   align-items: center;
   display: grid;
@@ -1223,15 +1227,31 @@ a:hover .linkArrow {
   }
 
   .mobileWorkSelector {
+    align-items: stretch;
     background: rgb(246 247 244 / 95%);
     border-bottom: 1px solid var(--rule);
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: auto minmax(0, 1fr);
     margin-top: 1.8rem;
     padding-inline: 1.25rem;
     position: sticky;
     top: 4rem;
     z-index: 40;
+  }
+
+  .mobileWorkCount {
+    align-items: center;
+    color: var(--muted);
+    display: flex;
+    font-size: 0.64rem;
+    letter-spacing: 0.06em;
+    padding-right: 0.9rem;
+    white-space: nowrap;
+  }
+
+  .mobileWorkOptions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .mobileWorkSelector button {
@@ -1278,6 +1298,46 @@ a:hover .linkArrow {
 
   .project[data-mobile-active='true'] {
     display: flex;
+  }
+
+  .mobileProjectHandoff {
+    align-items: end;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--rule);
+    color: var(--ink);
+    cursor: pointer;
+    display: grid;
+    font: inherit;
+    grid-template-columns: minmax(0, 1fr) auto;
+    margin-top: 2.75rem;
+    order: 5;
+    padding: 1.15rem 0 0.2rem;
+    text-align: left;
+    width: 100%;
+  }
+
+  .mobileProjectHandoffCopy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .mobileProjectHandoffKicker {
+    color: var(--muted);
+    font-size: 0.67rem;
+    letter-spacing: 0.075em;
+    text-transform: uppercase;
+  }
+
+  .mobileProjectHandoff strong {
+    color: var(--accent-dark);
+    font-size: 1rem;
+    font-weight: 610;
+  }
+
+  .mobileProjectHandoff .linkArrow {
+    align-self: center;
   }
 
   .projectList {

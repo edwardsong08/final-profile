@@ -324,19 +324,60 @@ function MobileWorkSelector({
   activeProject: ProjectId;
   onSelect: (projectId: ProjectId) => void;
 }) {
+  const activeIndex = projects.findIndex((project) => project.id === activeProject);
+
   return (
     <nav className={styles.mobileWorkSelector} aria-label="Choose a selected project">
-      {projects.map((project) => (
-        <button
-          type="button"
-          key={project.id}
-          aria-pressed={activeProject === project.id}
-          onClick={() => onSelect(project.id)}
-        >
-          {project.label}
-        </button>
-      ))}
+      <span
+        className={styles.mobileWorkCount}
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {activeIndex + 1} / {projects.length}
+      </span>
+      <div className={styles.mobileWorkOptions}>
+        {projects.map((project, index) => (
+          <button
+            type="button"
+            key={project.id}
+            aria-label={`${project.label}, project ${index + 1} of ${projects.length}`}
+            aria-pressed={activeProject === project.id}
+            onClick={() => onSelect(project.id)}
+          >
+            {project.label}
+          </button>
+        ))}
+      </div>
     </nav>
+  );
+}
+
+function MobileProjectHandoff({
+  currentProject,
+  onSelect,
+}: {
+  currentProject: ProjectId;
+  onSelect: (projectId: ProjectId, focusProjectHeading: boolean) => void;
+}) {
+  const currentIndex = projects.findIndex((project) => project.id === currentProject);
+  const nextProject = projects[(currentIndex + 1) % projects.length];
+  const returnsToFirst = currentIndex === projects.length - 1;
+
+  return (
+    <button
+      className={styles.mobileProjectHandoff}
+      type="button"
+      onClick={(event) => onSelect(nextProject.id, event.detail === 0)}
+      aria-label={`${returnsToFirst ? 'Back to first project' : 'Next project'}: ${nextProject.label}`}
+    >
+      <span className={styles.mobileProjectHandoffCopy}>
+        <span className={styles.mobileProjectHandoffKicker}>
+          {returnsToFirst ? 'Back to first project' : 'Next project'}
+        </span>
+        <strong>{nextProject.label}</strong>
+      </span>
+      <Arrow />
+    </button>
   );
 }
 
@@ -495,13 +536,22 @@ export default function PortfolioZen() {
     };
   }, []);
 
-  const selectMobileProject = (projectId: ProjectId) => {
+  const selectMobileProject = (
+    projectId: ProjectId,
+    focusProjectHeading = false,
+  ) => {
     setActiveMobileProject(projectId);
     window.history.replaceState(null, '', `#${projectId}`);
     window.requestAnimationFrame(() => {
-      document.getElementById(projectId)?.scrollIntoView({
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-        block: 'start',
+      window.requestAnimationFrame(() => {
+        const project = document.getElementById(projectId);
+        project?.scrollIntoView({
+          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+          block: 'start',
+        });
+        if (focusProjectHeading) {
+          project?.querySelector<HTMLElement>('h3')?.focus({ preventScroll: true });
+        }
       });
     });
   };
@@ -593,7 +643,7 @@ export default function PortfolioZen() {
               <div className={styles.projectCopy}>
                 <div className={styles.projectNarrative}>
                   <p className={styles.projectMeta}>Volunteer CTO · Active since 2026</p>
-                  <h3 id="troa-title">TROA</h3>
+                  <h3 id="troa-title" tabIndex={-1}>TROA</h3>
                   <p className={styles.projectLead}>
                     TROA’s technology supports more than 50 volunteers and a community of more than
                     800 members. The CTO role combines board-level direction, product engineering,
@@ -645,6 +695,10 @@ export default function PortfolioZen() {
                     Visit main site <Arrow external />
                   </a>
                 </div>
+                <MobileProjectHandoff
+                  currentProject="project-troa"
+                  onSelect={selectMobileProject}
+                />
               </div>
             </article>
 
@@ -663,7 +717,7 @@ export default function PortfolioZen() {
               <div className={styles.projectCopy}>
                 <div className={styles.projectNarrative}>
                   <p className={styles.projectMeta}>Independent product engineering · 2025–2026</p>
-                  <h3 id="claimchain-title">ClaimChain</h3>
+                  <h3 id="claimchain-title" tabIndex={-1}>ClaimChain</h3>
                   <p className={styles.projectLead}>
                     An independent test-data prototype for a three-role claims workflow: providers
                     submit claims, administrators review and package them, and buyers purchase
@@ -694,6 +748,10 @@ export default function PortfolioZen() {
                     View repository <Arrow external />
                   </a>
                 </div>
+                <MobileProjectHandoff
+                  currentProject="project-claimchain"
+                  onSelect={selectMobileProject}
+                />
               </div>
             </article>
 
@@ -710,7 +768,7 @@ export default function PortfolioZen() {
               <div className={styles.projectCopy}>
                 <div className={styles.projectNarrative}>
                   <p className={styles.projectMeta}>Contract engineering · Ongoing since 2022</p>
-                  <h3 id="ryu-title">Ryu Legal</h3>
+                  <h3 id="ryu-title" tabIndex={-1}>Ryu Legal</h3>
                   <p className={styles.projectLead}>
                     Ongoing product and engineering work for a live NJ/NY law-firm site, from
                     information architecture and interface design through deployment, SEO, and
@@ -741,6 +799,10 @@ export default function PortfolioZen() {
                     Visit live site <Arrow external />
                   </a>
                 </div>
+                <MobileProjectHandoff
+                  currentProject="project-ryu"
+                  onSelect={selectMobileProject}
+                />
               </div>
             </article>
           </div>
