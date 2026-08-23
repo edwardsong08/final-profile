@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { setupMobileRipple } from './MobileRippleRenderer';
 import styles from './PortfolioZen.module.css';
 
 const vertexShaderSource = `
@@ -325,6 +326,19 @@ export default function SmokeField() {
     }
 
     const touchOptimized = coarsePointer.matches;
+    const localRipplePreview = window.location.hostname === 'localhost'
+      && new URLSearchParams(window.location.search).has('ripple-preview');
+    const useMobileRipple = localRipplePreview || (
+      touchOptimized || navigator.maxTouchPoints > 0
+    ) && window.matchMedia('(max-width: 64rem)').matches;
+
+    if (useMobileRipple) {
+      return setupMobileRipple({
+        canvas,
+        layer,
+        onContextRestored: () => setContextVersion((version) => version + 1),
+      });
+    }
 
     const gl = canvas.getContext('webgl', {
       alpha: true,
