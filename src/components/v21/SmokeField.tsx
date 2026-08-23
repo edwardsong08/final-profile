@@ -199,6 +199,7 @@ type SmokeEmitter = {
   pointerId: number | null;
   previousPoint: SmokePoint;
   scrollLinkedUntil: number;
+  touchId: number | null;
 };
 
 const createEmitter = (): SmokeEmitter => ({
@@ -213,6 +214,7 @@ const createEmitter = (): SmokeEmitter => ({
   pointerId: null,
   previousPoint: [0.5, 0.5],
   scrollLinkedUntil: 0,
+  touchId: null,
 });
 
 const isInteractiveTarget = (target: EventTarget | null) =>
@@ -714,6 +716,49 @@ export default function SmokeField() {
       startRendering(immediate);
     };
 
+    const findTouchEmitterAwaiting = (
+      identifier: 'pointerId' | 'touchId',
+      clientX: number,
+      clientY: number,
+    ) => {
+      const candidates = emitters
+        .filter(
+          (emitter) => emitter.active
+            && emitter.input === 'touch'
+            && emitter[identifier] === null
+            && emitter.clientX !== null
+            && emitter.clientY !== null,
+        )
+        .map((emitter) => ({
+          distance: Math.hypot(clientX - emitter.clientX!, clientY - emitter.clientY!),
+          emitter,
+        }))
+        .sort((first, second) => first.distance - second.distance);
+
+      return candidates[0]?.distance <= 80 ? candidates[0].emitter : null;
+    };
+
+    const initializeTouchEmitter = (
+      emitter: SmokeEmitter,
+      clientX: number,
+      clientY: number,
+      point: SmokePoint,
+    ) => {
+      emitter.active = true;
+      emitter.clientX = clientX;
+      emitter.clientY = clientY;
+      emitter.energy = Math.max(emitter.energy, 0.28);
+      emitter.hasPoint = true;
+      emitter.input = 'touch';
+      emitter.inside = true;
+      emitter.point = point;
+      emitter.previousPoint = point;
+      emitter.scrollLinkedUntil = performance.now() + touchReleaseGrace;
+      hasInteracted = true;
+      idleFrames = 0;
+      startRendering(true);
+    };
+
     const handlePointerMove = (event: PointerEvent) => {
       if (event.pointerType === 'touch') {
         const emitter = emitters.find(
@@ -753,25 +798,73 @@ export default function SmokeField() {
       const location = pointWithinCanvas(event.clientX, event.clientY, touchVisualOffset);
       if (!location) return;
 
-      const availableEmitter = emitters
+      const availableEmitter = findTouchEmitterAwaiting(
+        'pointerId',
+        event.clientX,
+        event.clientY,
+      ) ?? emitters
         .filter((emitter) => !emitter.active)
         .sort((first, second) => first.energy - second.energy)[0];
       if (!availableEmitter) return;
 
-      availableEmitter.active = true;
-      availableEmitter.clientX = event.clientX;
-      availableEmitter.clientY = event.clientY;
-      availableEmitter.energy = Math.max(availableEmitter.energy, 0.28);
-      availableEmitter.hasPoint = true;
-      availableEmitter.input = 'touch';
-      availableEmitter.inside = true;
-      availableEmitter.point = location.point;
+      if (!availableEmitter.active) {
+        initializeTouchEmitter(
+          availableEmitter,
+          event.clientX,
+          event.clientY,
+          location.point,
+        );
+      }
       availableEmitter.pointerId = event.pointerId;
-      availableEmitter.previousPoint = location.point;
-      availableEmitter.scrollLinkedUntil = performance.now() + touchReleaseGrace;
-      hasInteracted = true;
-      idleFrames = 0;
-      startRendering(true);
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      if (isInteractiveTarget(event.target)) return;
+
+      Array.from(event.changedTouches).forEach((touch) => {
+        if (emitters.some((emitter) => emitter.touchId === touch.identifier)) return;
+
+        const location = pointWithinCanvas(touch.clientX, touch.clientY, touchVisualOffset);
+        if (!location) return;
+
+        const availableEmitter = findTouchEmitterAwaiting(
+          'touchId',
+          touch.clientX,
+          touch.clientY,
+        ) ?? emitters
+          .filter((emitter) => !emitter.active)
+          .sort((first, second) => first.energy - second.energy)[0];
+        if (!availableEmitter) return;
+
+        if (!availableEmitter.active) {
+          initializeTouchEmitter(
+            availableEmitter,
+            touch.clientX,
+            touch.clientY,
+            location.point,
+          );
+        }
+        availableEmitter.touchId = touch.identifier;
+      });
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      Array.from(event.changedTouches).forEach((touch) => {
+        const emitter = emitters.find(
+          (candidate) => candidate.active && candidate.touchId === touch.identifier,
+        );
+        if (!emitter) return;
+
+        emitter.clientX = touch.clientX;
+        emitter.clientY = touch.clientY;
+        const location = pointWithinCanvas(touch.clientX, touch.clientY, touchVisualOffset);
+        if (!location) {
+          emitter.inside = false;
+          return;
+        }
+
+        moveEmitter(emitter, location.point, location.bounds, 0.28, 0.3, 13, true);
+      });
     };
 
     const handlePointerLeave = (event: PointerEvent) => {
@@ -791,9 +884,23 @@ export default function SmokeField() {
       );
       if (!emitter) return;
 
-      emitter.active = false;
       emitter.pointerId = null;
       emitter.scrollLinkedUntil = performance.now() + touchReleaseGrace;
+      if (emitter.touchId === null) emitter.active = false;
+    };
+
+    const releaseTouches = (event: TouchEvent) => {
+      Array.from(event.changedTouches).forEach((touch) => {
+        const emitter = emitters.find(
+          (candidate) => candidate.active && candidate.touchId === touch.identifier,
+        );
+        if (!emitter) return;
+
+        emitter.active = false;
+        emitter.pointerId = null;
+        emitter.scrollLinkedUntil = performance.now() + touchReleaseGrace;
+        emitter.touchId = null;
+      });
     };
 
     const handleScroll = () => {
@@ -862,6 +969,7 @@ export default function SmokeField() {
           emitter.inside = false;
           emitter.pointerId = null;
           emitter.scrollLinkedUntil = 0;
+          emitter.touchId = null;
         });
         idleFrames = Math.min(idleFrames, 719);
         startRendering();
@@ -901,6 +1009,10 @@ export default function SmokeField() {
     window.addEventListener('pointerup', releasePointer, { passive: true });
     window.addEventListener('pointercancel', releasePointer, { passive: true });
     window.addEventListener('pointerout', handlePointerLeave, { passive: true });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchend', releaseTouches, { passive: true });
+    window.addEventListener('touchcancel', releaseTouches, { passive: true });
     window.addEventListener('scroll', handleScroll, { passive: true });
     window.visualViewport?.addEventListener('scroll', handleScroll, { passive: true });
     document.addEventListener('visibilitychange', handleVisibility);
@@ -918,6 +1030,10 @@ export default function SmokeField() {
       window.removeEventListener('pointerup', releasePointer);
       window.removeEventListener('pointercancel', releasePointer);
       window.removeEventListener('pointerout', handlePointerLeave);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', releaseTouches);
+      window.removeEventListener('touchcancel', releaseTouches);
       window.removeEventListener('scroll', handleScroll);
       window.visualViewport?.removeEventListener('scroll', handleScroll);
       document.removeEventListener('visibilitychange', handleVisibility);
