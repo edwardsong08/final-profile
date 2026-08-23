@@ -209,22 +209,31 @@
   margin: 0.8rem 0 0;
 }
 
-.narrative {
-  column-gap: clamp(1.25rem, 2.5vw, 2.5rem);
+.story {
+  padding: clamp(5rem, 9vw, 9rem) 0;
+}
+
+.storySection {
+  column-gap: clamp(1.25rem, 4vw, 5rem);
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  padding: clamp(7rem, 12vw, 12rem) 0;
+  padding: clamp(4.5rem, 8vw, 8rem) 0;
 }
 
-.narrative section:first-child {
-  grid-column: 1 / span 5;
+.storySection + .storySection {
+  border-top: 1px solid var(--rule);
 }
 
-.narrative section:last-child {
-  grid-column: 7 / -1;
+.storySection h2 {
+  grid-column: 1 / span 4;
 }
 
-.narrative h2,
+.storyBody {
+  grid-column: 6 / -1;
+  max-width: 54rem;
+}
+
+.storySection h2,
 .currentState h2 {
   font-size: clamp(1.8rem, 3.2vw, 3.25rem);
   font-weight: 500;
@@ -233,41 +242,54 @@
   margin: 0;
 }
 
-.narrative section > p:last-child,
+.storyBody > p,
 .currentState > div > p:last-child {
   color: var(--muted);
   font-size: 1rem;
   line-height: 1.75;
+}
+
+.storyBody > p {
+  margin: 0;
+  max-width: 48rem;
+}
+
+.storyBody > p + p {
+  margin-top: 1.2rem;
+}
+
+.currentState > div > p:last-child {
   margin: 1.6rem 0 0;
 }
 
-.narrative ol {
+.storyPoints {
   border-top: 1px solid var(--rule);
-  counter-reset: decision;
-  list-style: none;
-  margin: 2rem 0 0;
-  padding: 0;
+  margin: 2.2rem 0 0;
 }
 
-.narrative li {
+.storyBody > .storyPoints:first-child {
+  margin-top: 0;
+}
+
+.storyPoints > div {
   border-bottom: 1px solid var(--rule);
-  color: var(--muted);
-  counter-increment: decision;
-  font-size: 0.94rem;
-  line-height: 1.65;
-  padding: 1rem 0 1rem 2.4rem;
-  position: relative;
+  column-gap: clamp(1.5rem, 3vw, 3rem);
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.7fr) minmax(0, 1.3fr);
+  padding: 1.4rem 0;
 }
 
-.narrative li::before {
+.storyPoints dt {
   color: var(--accent-dark);
-  content: counter(decision, decimal-leading-zero);
-  font-size: 0.65rem;
   font-weight: 650;
-  left: 0;
-  letter-spacing: 0.05em;
-  position: absolute;
-  top: 1.2rem;
+  line-height: 1.45;
+}
+
+.storyPoints dd {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.68;
+  margin: 0;
 }
 
 .currentState {
@@ -336,7 +358,7 @@
     width: 100%;
   }
 
-  .narrative {
+  .storySection {
     column-gap: 2rem;
   }
 }
@@ -369,7 +391,7 @@
   }
 
   .facts,
-  .narrative,
+  .storySection,
   .currentState {
     display: block;
   }
@@ -383,8 +405,24 @@
     border-top: 1px solid var(--rule);
   }
 
-  .narrative section + section {
-    margin-top: 6rem;
+  .story {
+    padding: 2rem 0 5rem;
+  }
+
+  .storySection {
+    padding: 5rem 0;
+  }
+
+  .storyBody {
+    margin-top: 2rem;
+  }
+
+  .storyPoints > div {
+    display: block;
+  }
+
+  .storyPoints dd {
+    margin-top: 0.65rem;
   }
 
   .currentState aside {
@@ -418,8 +456,9 @@
   .header,
   .facts,
   .facts > div,
-  .narrative ol,
-  .narrative li,
+  .storySection,
+  .storyPoints,
+  .storyPoints > div,
   .currentState,
   .currentState aside,
   .moreWork,

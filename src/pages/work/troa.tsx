@@ -4,16 +4,16 @@ import CaseStudyZen from '../../components/v21/CaseStudyZen';
 
 export default function TroaCaseStudy() {
   const description =
-    'Edward Song’s Volunteer CTO work across board-level technical direction, hands-on product engineering, and leadership of TROA’s multidisciplinary technology team.';
+    'How Edward Song is building TROA’s technology function through board-level direction, hands-on product engineering, and leadership of a growing multidisciplinary team.';
 
   return (
     <>
       <NextSeo
-        title="TROA Product & Technical Leadership Case Study"
+        title="TROA Technology Leadership Case Study"
         description={description}
         canonical="https://www.edsong.xyz/work/troa"
         openGraph={{
-          title: 'TROA Product & Technical Leadership — Edward Song',
+          title: 'TROA Technology Leadership Case Study — Edward Song',
           description,
           type: 'article',
           url: 'https://www.edsong.xyz/work/troa',
@@ -22,7 +22,7 @@ export default function TroaCaseStudy() {
       <WebPageJsonLd
         id="https://www.edsong.xyz/work/troa#webpage"
         url="https://www.edsong.xyz/work/troa"
-        name="TROA Product and Technical Leadership — Edward Song"
+        name="TROA Technology Leadership Case Study — Edward Song"
         description={description}
       />
       <BreadcrumbJsonLd itemListElements={[

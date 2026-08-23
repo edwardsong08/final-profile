@@ -11,50 +11,110 @@ type ProjectLink = {
   label: string;
 };
 
+type ProjectSection = {
+  heading: string;
+  paragraphs?: string[];
+  points?: Array<{
+    body: string;
+    title: string;
+  }>;
+};
+
 const projects: Record<ProjectId, {
-  decisions: string[];
   eyebrow: string;
   facts: Array<{ label: string; value: string }>;
   intro: string;
   links: ProjectLink[];
   next: { href: string; label: string };
   note: string;
-  problem: string;
+  sections: ProjectSection[];
   state: string;
+  stateHeading: string;
   status: string;
   title: string;
 }> = {
   troa: {
     eyebrow: 'TROA · Volunteer CTO · Active since 2026',
     status: 'Active',
-    title: 'Building TROA’s technology function as the organization grows.',
+    title: 'Building TROA’s technology function.',
     intro:
-      'The Volunteer CTO role spans technical direction with the board, product engineering, and leadership across software development, UI/UX design, Network Engineering, and IT Operations. The ecosystem supports both public services and internal work.',
+      'TROA’s technology mandate extends beyond shipping software: set direction with the board, turn departmental needs into a coherent portfolio, and build the team that can sustain it. The initial software foundation was built hands-on; the work now combines continued product engineering with leadership across software, design, Network Engineering, and IT Operations.',
     facts: [
       {
-        label: 'Organization',
-        value: 'More than 50 volunteers and an 800-plus-member Discord community supported by public products, internal operations, training, support, and game services.',
+        label: 'Organization served',
+        value: 'More than 50 volunteers and an 800-plus-member community, with technology supporting public programs and the people who operate them.',
       },
       {
-        label: 'Product scope',
-        value: 'Public platform and identity; hiring and training; member support; administration and reporting; mapping, assistant, infrastructure, and game services.',
+        label: 'Portfolio',
+        value: 'Public platform and identity, recruitment, learning, member support, administration and reporting, mapping, assistant, infrastructure, and game services.',
       },
       {
-        label: 'Technical organization',
-        value: 'A group of roughly ten: two developers, two UI/UX designers, three to four network engineers, and two IT Operations specialists.',
+        label: 'Technology group',
+        value: 'Two developers, two UI/UX designers, three to four network engineers, and two IT Operations specialists.',
       },
     ],
-    problem:
-      'Finance, HR, legal, IT, gaming, and program teams need distinct workflows, while identity, permissions, reporting, and compliance cross them. The challenge is coherence without a single trust boundary or routine work that depends on a developer.',
-    decisions: [
-      'Build a connected ecosystem rather than treating each public or internal request as an isolated site.',
-      'Share Supabase identity while keeping privileged access server-side and restricting administrative areas by role.',
-      'Give non-engineer administrators purpose-built workflows for recurring work.',
-      'Keep product engineering hands-on while Network Engineering and IT Operations own specialist work.',
-      'Set direction with the board and resolve compliance, scope, timeline, and departmental tradeoffs early.',
+    sections: [
+      {
+        heading: 'A portfolio, not a collection of sites',
+        paragraphs: [
+          'Public services, volunteer recruitment, learning, member support, administration, reporting, and game services serve different audiences and carry different risks. The work is to give them a coherent foundation without forcing them into one application or one trust boundary.',
+        ],
+        points: [
+          {
+            title: 'Shared foundation',
+            body: 'Identity, access patterns, content, and audit history connect the ecosystem where consistency reduces friction.',
+          },
+          {
+            title: 'Purpose-built products',
+            body: 'Each product keeps the workflow and interface its users need, from applicants and learners to members seeking support.',
+          },
+          {
+            title: 'Private operations',
+            body: 'Role-scoped tools give HR, finance, legal, IT, program, and support administrators direct control of recurring work.',
+          },
+        ],
+      },
+      {
+        heading: 'An operating model for shared ownership',
+        paragraphs: [
+          'Technical leadership spans organizational direction and implementation. Board and departmental priorities are translated into scope, controls, and delivery decisions; hands-on product work continues while specialist teams own their disciplines.',
+        ],
+        points: [
+          {
+            title: 'Direction and tradeoffs',
+            body: 'Set priorities with the board and resolve compliance, policy, timeline, capacity, and cross-department compromises before they become implementation problems.',
+          },
+          {
+            title: 'Hands-on delivery',
+            body: 'Remain hands-on from product and interface design through application architecture, data, security, deployment, and ongoing operation.',
+          },
+          {
+            title: 'Specialist ownership',
+            body: 'Network Engineering and IT Operations own specialist execution while remaining part of one accountable technology function.',
+          },
+        ],
+      },
+      {
+        heading: 'Decisions that make the portfolio durable',
+        points: [
+          {
+            title: 'One identity, several trust boundaries',
+            body: 'Products share Supabase identity where appropriate, while privileged operations stay server-side and administrative areas remain separately authorized.',
+          },
+          {
+            title: 'Operators should not need a developer for routine work',
+            body: 'Admin workflows turn repeated requests into governed self-service for content, people, tickets, reporting, hiring, and learning.',
+          },
+          {
+            title: 'Live state must survive change',
+            body: 'Versioned course content, controlled publishing, private resources, and transactional revision workflows preserve the learner experience as training evolves.',
+          },
+        ],
+      },
     ],
+    stateHeading: 'The current phase',
     state:
-      'The ecosystem is active and expanding. Current work focuses on product evolution, operational controls, and greater delivery capacity without stepping away from engineering.',
+      'The portfolio is active and expanding. The current phase is increasing engineering capacity and formalizing ownership, review, and delivery across the team, while the CTO role remains hands-on in product and engineering decisions.',
     note:
       'The public platform is shown here. Administrative, reporting, volunteer, and support tools contain private operational information and are described without exposing their interfaces or data.',
     links: [
@@ -65,35 +125,70 @@ const projects: Record<ProjectId, {
   claimchain: {
     eyebrow: 'ClaimChain · Independent product engineering · 2025–2026',
     status: 'Working prototype',
-    title: 'A governed workflow for claims review, purchase, and export.',
+    title: 'A claims workflow with explicit authority.',
     intro:
-      'ClaimChain is an independent three-role prototype. Providers submit unpaid claims, administrators review and package them, and buyers purchase anonymized inventory. The application, data model, advisory service, and staging workflow validate the complete path.',
+      'ClaimChain tests a product premise: providers, administrators, and buyers should be able to move a claim from intake to purchase without treating interface state, payment redirects, or model output as proof. The working test-data prototype implements the complete path while keeping consequential decisions explicit, versioned, and enforceable.',
     facts: [
       {
-        label: 'Workflow',
-        value: 'Provider intake, administrator approval and packaging, buyer purchase, and entitled PDF export.',
+        label: 'Product flow',
+        value: 'Provider intake, administrator review and governed packaging, buyer purchase, and entitled export.',
       },
       {
-        label: 'Built across',
-        value: 'Next.js, Spring Boot, PostgreSQL, FastAPI, Stripe test payments, and an AWS staging deployment workflow.',
+        label: 'Governing principle',
+        value: 'The backend remains authoritative for eligibility, lifecycle, payment state, ownership, and export access.',
       },
       {
-        label: 'Prototype stage',
-        value: 'Working portfolio prototype with test data—not an operating claims marketplace.',
+        label: 'Evidence',
+        value: 'A working three-role prototype with test payments, audit history, versioned rules, advisory ML, and an AWS staging workflow.',
       },
     ],
-    problem:
-      'Interface state, payment redirects, and model output cannot prove eligibility, ownership, payment, or export access. Those decisions must remain authoritative even when a request is retried, a webhook arrives later, or an advisory model returns an incorrect suggestion.',
-    decisions: [
-      'Enforce eligibility, lifecycle changes, record ownership, and export access in the backend.',
-      'Version scoring and package rules so an administrator can understand which rule set produced a result.',
-      'Reconcile Stripe webhooks before recording sold state or granting entitled exports.',
-      'Allow ML to suggest packages only after deterministic eligibility checks; it cannot approve claims or grant access.',
+    sections: [
+      {
+        heading: 'The product question',
+        paragraphs: [
+          'The core difficulty is preserving eligibility, ownership, payment, and export rights when requests are retried, webhooks arrive later, and an advisory service may return an incomplete or incorrect suggestion.',
+          'The product therefore treats authority as part of the user experience: every consequential state should have an explainable source and a bounded path to change.',
+        ],
+      },
+      {
+        heading: 'Where authority lives',
+        points: [
+          {
+            title: 'Rules and human review',
+            body: 'Versioned scoring and packaging rules establish eligibility and explain each result; administrators retain the approval and override responsibilities that require judgment.',
+          },
+          {
+            title: 'Payment and entitlement',
+            body: 'A browser redirect cannot mark inventory sold. Stripe webhook reconciliation establishes payment before the backend grants the buyer access to an export.',
+          },
+          {
+            title: 'Machine learning',
+            body: 'ML can propose package compositions only after deterministic eligibility checks. It cannot approve claims, bypass constraints, finalize a package, or grant access.',
+          },
+        ],
+      },
+      {
+        heading: 'What the prototype proves',
+        paragraphs: [
+          'The implemented path connects account approval, structured claim intake, document handling, administrative review, explainable scoring, governed packaging, an anonymized buyer view, test purchase, audit activity, and entitled PDF export.',
+        ],
+        points: [
+          {
+            title: 'Explainable under change',
+            body: 'Ruleset versions and recorded decisions make it possible to identify which policy produced a score or package after the rules evolve.',
+          },
+          {
+            title: 'Safe degradation',
+            body: 'The advisory layer can be unavailable without weakening the authoritative workflow or its deterministic fallback.',
+          },
+        ],
+      },
     ],
+    stateHeading: 'The boundary of the work',
     state:
-      'The prototype implements account approval, claim intake, administrative review, scoring, packaging, Stripe test purchase, audit activity, and entitled PDF export across the three roles.',
+      'ClaimChain is a working portfolio prototype, not an operating claims marketplace. It demonstrates the product flow and authority model; production operation would be a separate phase requiring domain validation, legal and compliance review, privacy controls, security hardening, and an operating organization.',
     note:
-      'This is a portfolio prototype using test data. Production operation would require additional legal, compliance, privacy, security, and operational review.',
+      'All portfolio material uses test data. The demo and repository are evidence of implementation, not evidence of commercial operation or production suitability.',
     links: [
       { label: 'View repository', href: 'https://github.com/edwardsong08/ClaimChain', external: true },
       { label: 'Watch walkthrough', href: '/ClaimChain_Demo.mp4', external: true },
@@ -103,33 +198,71 @@ const projects: Record<ProjectId, {
   'ryu-legal': {
     eyebrow: 'Ryu Legal · Contract engineering · 2022–now',
     status: 'Live and maintained',
-    title: 'A live NJ/NY law-firm site with a clear service-to-contact path.',
+    title: 'Long-term stewardship of a law firm’s public front door.',
     intro:
-      'Since 2022, the engagement has covered requirements, UX and visual design, Next.js implementation, SEO, deployment, and ongoing maintenance. The site presents the firm’s services, NJ/NY scope, disclosures, and contact path.',
+      'Since 2022, the engagement has grown from requirements and interface design into ongoing stewardship of a live production experience. The product has a clear responsibility: help prospective clients understand the firm, its NJ/NY scope, and the next step without overstating what a website visit or inquiry means.',
     facts: [
       {
-        label: 'Client path',
-        value: 'Service information and NJ/NY scope lead to a direct contact workflow with visible legal disclosures.',
+        label: 'Relationship',
+        value: 'An ongoing engagement from initial product definition and design through production maintenance and continued refinement.',
       },
       {
-        label: 'Engagement scope',
-        value: 'Requirements, information architecture, interface design, implementation, SEO, deployment, and maintenance.',
+        label: 'Responsibility',
+        value: 'Requirements, information architecture, interface design, engineering, search visibility, deployment, and maintenance.',
       },
       {
-        label: 'Production safeguards',
-        value: '16 KB request limit, server validation, honeypot, per-instance rate limit, generic errors, and Resend delivery.',
+        label: 'Product standard',
+        value: 'Clear service information, visible legal boundaries, a direct contact path, and restrained handling of production failures.',
       },
     ],
-    problem:
-      'The site must help a prospective client understand the firm without implying that browsing or submitting a form creates an attorney-client relationship. Contact delivery also has to keep provider credentials server-side and return bounded information when validation or delivery fails.',
-    decisions: [
-      'Organize service information around the questions a prospective client needs answered before making contact.',
-      'Keep attorney-advertising, privacy, and attorney-client disclosures visible in the public experience.',
-      'Normalize and validate contact requests on the server while keeping provider credentials outside the client bundle.',
-      'Bound the endpoint with a 16 KB request limit, honeypot, per-instance rate limit, and generic delivery errors.',
+    sections: [
+      {
+        heading: 'The product problem',
+        paragraphs: [
+          'A law-firm website has to make a professional service understandable while preserving appropriate expectations. Prospective clients need enough context to decide whether to make contact; the interface should not imply that browsing, submitting a form, or reading general information creates an attorney-client relationship.',
+        ],
+      },
+      {
+        heading: 'Trust is part of the interface',
+        points: [
+          {
+            title: 'Organize around client questions',
+            body: 'Service information and NJ/NY scope are structured around what a prospective client needs to understand before deciding to contact the firm.',
+          },
+          {
+            title: 'Keep legal boundaries visible',
+            body: 'Attorney-advertising, privacy, and attorney-client disclosures remain part of the public experience rather than being treated as an afterthought.',
+          },
+          {
+            title: 'Make contact direct but bounded',
+            body: 'The form creates a clear handoff to the firm while server-side validation, protected provider credentials, and restrained error responses limit unnecessary exposure.',
+          },
+        ],
+      },
+      {
+        heading: 'Stewardship after launch',
+        paragraphs: [
+          'The engagement did not end at deployment. Ongoing work keeps the experience coherent as content, design expectations, search requirements, dependencies, and production safeguards change.',
+        ],
+        points: [
+          {
+            title: 'Product continuity',
+            body: 'Requirements, design, implementation, and maintenance remain connected so product decisions stay aligned as the live site evolves.',
+          },
+          {
+            title: 'Discoverability and performance',
+            body: 'Search metadata, responsive presentation, dependency maintenance, and production verification are treated as part of the product rather than launch tasks.',
+          },
+          {
+            title: 'Proportionate safeguards',
+            body: 'The contact endpoint normalizes and validates input, limits abuse and request size, keeps delivery credentials server-side, and fails without disclosing provider details.',
+          },
+        ],
+      },
     ],
+    stateHeading: 'Current state',
     state:
-      'The maintained production site provides NJ/NY service information, visible disclosures, search metadata, and a server endpoint that sends validated contact requests through Resend.',
+      'The site is live and maintained. Its current version combines a responsive service presentation, visible legal disclosures, search metadata, and server-validated contact delivery in a production experience that continues to evolve with the firm.',
     note:
       'The case study is limited to the public experience and implemented safeguards; no client data or contact submissions are shown.',
     links: [
@@ -204,22 +337,32 @@ export default function CaseStudyZen({ project }: { project: ProjectId }) {
             ))}
           </dl>
 
-          <div className={styles.narrative}>
-            <section>
-              <h2>Operating context</h2>
-              <p>{content.problem}</p>
-            </section>
-            <section>
-              <h2>Key decisions</h2>
-              <ol>
-                {content.decisions.map((decision) => <li key={decision}>{decision}</li>)}
-              </ol>
-            </section>
+          <div className={styles.story}>
+            {content.sections.map((section) => (
+              <section className={styles.storySection} key={section.heading}>
+                <h2>{section.heading}</h2>
+                <div className={styles.storyBody}>
+                  {section.paragraphs?.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
+                  {section.points ? (
+                    <dl className={styles.storyPoints}>
+                      {section.points.map((point) => (
+                        <div key={point.title}>
+                          <dt>{point.title}</dt>
+                          <dd>{point.body}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  ) : null}
+                </div>
+              </section>
+            ))}
           </div>
 
           <section className={styles.currentState}>
             <div>
-              <h2>Current state</h2>
+              <h2>{content.stateHeading}</h2>
               <p>{content.state}</p>
             </div>
             <aside aria-label="Scope note">

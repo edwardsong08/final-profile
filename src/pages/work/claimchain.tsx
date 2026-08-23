@@ -4,7 +4,7 @@ import CaseStudyZen from '../../components/v21/CaseStudyZen';
 
 export default function ClaimChainCaseStudy() {
   const description =
-    'An independent three-role prototype with backend-enforced lifecycle, payment, and export controls, plus advisory-only ML.';
+    'A three-role product prototype that keeps claims eligibility, payment, ownership, and export authority explicit while using machine learning only as an advisory layer.';
 
   return (
     <>

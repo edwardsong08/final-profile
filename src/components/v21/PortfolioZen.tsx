@@ -645,9 +645,9 @@ export default function PortfolioZen() {
                   <p className={styles.projectMeta}>Volunteer CTO · Active since 2026</p>
                   <h3 id="troa-title" tabIndex={-1}>TROA</h3>
                   <p className={styles.projectLead}>
-                    TROA’s technology supports more than 50 volunteers and a community of more than
-                    800 members. The CTO role combines board-level direction, product engineering,
-                    and leadership of a multidisciplinary team.
+                    A connected technology portfolio for more than 50 volunteers and an
+                    800-plus-member community—shaped through board-level direction, hands-on
+                    product engineering, and leadership of a growing multidisciplinary team.
                   </p>
                 </div>
                 <div
@@ -719,9 +719,9 @@ export default function PortfolioZen() {
                   <p className={styles.projectMeta}>Independent product engineering · 2025–2026</p>
                   <h3 id="claimchain-title" tabIndex={-1}>ClaimChain</h3>
                   <p className={styles.projectLead}>
-                    An independent test-data prototype for a three-role claims workflow: providers
-                    submit claims, administrators review and package them, and buyers purchase
-                    anonymized inventory.
+                    An independent prototype examining how providers, administrators, and buyers
+                    can move claims through review, governed packaging, purchase, and entitled
+                    export without losing a clear source of authority.
                   </p>
                 </div>
                 <dl className={`${styles.projectFacts} ${styles.projectDetailFacts}`}>
@@ -770,24 +770,23 @@ export default function PortfolioZen() {
                   <p className={styles.projectMeta}>Contract engineering · Ongoing since 2022</p>
                   <h3 id="ryu-title" tabIndex={-1}>Ryu Legal</h3>
                   <p className={styles.projectLead}>
-                    Ongoing product and engineering work for a live NJ/NY law-firm site, from
-                    information architecture and interface design through deployment, SEO, and
-                    maintenance.
+                    Long-term product stewardship for a live NJ/NY law-firm site, translating
+                    legal services into a clear and credible path from first visit to contact.
                   </p>
                 </div>
                 <dl className={`${styles.projectFacts} ${styles.projectDetailFacts}`}>
                   <div>
-                    <dt>Client path</dt>
+                    <dt>Engagement</dt>
                     <dd>
-                      Clear service information, visible legal disclosures, and a direct contact
-                      workflow.
+                      Requirements, information architecture, interface design, engineering,
+                      search visibility, deployment, and maintenance since 2022.
                     </dd>
                   </div>
                   <div>
-                    <dt>Safeguards</dt>
+                    <dt>Trust</dt>
                     <dd>
-                      Server validation and bounded failure handling protect the contact workflow
-                      while provider credentials remain outside the browser.
+                      Clear service information, visible legal boundaries, and a direct contact
+                      workflow supported by proportionate server-side safeguards.
                     </dd>
                   </div>
                 </dl>
