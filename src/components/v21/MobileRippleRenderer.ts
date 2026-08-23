@@ -97,7 +97,7 @@ const simulationFragmentShader = `
     float medium = 0.955 + noise(vUv * vec2(7.1, 9.3) + vec2(2.7, 5.1)) * 0.09;
     float height = centerState.x;
     float velocity = centerState.y;
-    velocity += (neighborhood - height) * 0.43 * medium;
+    velocity += (neighborhood - height) * 0.48 * medium;
     velocity += (touchImpulse(uTouchA) + touchImpulse(uTouchB)) * 0.021;
     velocity *= 0.992;
     height = (height + velocity) * 0.9994;
@@ -142,7 +142,7 @@ const displayFragmentShader = `
     vec2 slope = vec2(right - left, above - below);
     vec3 normal = normalize(vec3(-slope.x * 30.0, -slope.y * 30.0, 1.0));
     vec3 lightDirection = normalize(vec3(-0.42, 0.56, 0.72));
-    vec2 refraction = vec2(slope.x / uAspect, slope.y) * 1.34;
+    vec2 refraction = vec2(slope.x / uAspect, slope.y) * 1.16;
     vec2 textUv = clamp(vUv + refraction, vec2(0.001), vec2(0.999));
     float textMask = texture2D(tText, textUv).a;
     float textAlpha = textMask * uTextReveal * 0.76;
@@ -155,10 +155,10 @@ const displayFragmentShader = `
     float specular = pow(max(dot(normal, lightDirection), 0.0), 22.0);
     float microTexture = (hash(gl_FragCoord.xy) - 0.5) * disturbance * 0.006;
     float surfaceAlpha = clamp(
-      waveFront * 0.078 + specular * disturbance * 0.025
+      waveFront * 0.067 + specular * disturbance * 0.022
         + microTexture,
       0.0,
-      0.17
+      0.15
     );
     vec3 clearWater = vec3(0.34, 0.47, 0.52);
     vec3 mineralShadow = vec3(0.13, 0.25, 0.31);
@@ -366,11 +366,11 @@ export function setupMobileRipple({
 
   const pendingImpulses: RippleImpulse[] = [];
   const minimumFrameInterval = 1000 / 45;
+  const rippleLifetime = 4200;
   let activeUntil = 0;
   let animationFrame = 0;
   let isVisible = true;
   let lastFrame = performance.now();
-  let lastImpulseAt = 0;
   let needsReset = false;
   let startTime = lastFrame;
 
@@ -551,9 +551,8 @@ export function setupMobileRipple({
     }
 
     const now = performance.now();
-    if (now - lastImpulseAt > 2400) clearStateTargets();
-    lastImpulseAt = now;
-    activeUntil = now + 2300;
+    if (needsReset && now >= activeUntil) clearStateTargets();
+    activeUntil = now + rippleLifetime;
     needsReset = true;
     if (pendingImpulses.length >= 6) pendingImpulses.shift();
     pendingImpulses.push({
