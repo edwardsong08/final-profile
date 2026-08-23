@@ -142,7 +142,7 @@ const displayFragmentShader = `
     vec2 slope = vec2(right - left, above - below);
     vec3 normal = normalize(vec3(-slope.x * 30.0, -slope.y * 30.0, 1.0));
     vec3 lightDirection = normalize(vec3(-0.42, 0.56, 0.72));
-    vec2 refraction = vec2(slope.x / uAspect, slope.y) * 1.16;
+    vec2 refraction = vec2(slope.x / uAspect, slope.y) * 0.82;
     vec2 textUv = clamp(vUv + refraction, vec2(0.001), vec2(0.999));
     float textMask = texture2D(tText, textUv).a;
     float textAlpha = textMask * uTextReveal * 0.76;
@@ -570,7 +570,11 @@ export function setupMobileRipple({
   const activeTouches = new Map<number, TrackedTouch>();
 
   const handlePointerDown = (event: PointerEvent) => {
-    if (event.button !== 0 || isInteractiveTarget(event.target)) return;
+    if (
+      event.pointerType === 'touch'
+      || event.button !== 0
+      || isInteractiveTarget(event.target)
+    ) return;
     activePointers.set(event.pointerId, {
       x: event.clientX,
       y: event.clientY,
@@ -580,6 +584,7 @@ export function setupMobileRipple({
   };
 
   const handlePointerMove = (event: PointerEvent) => {
+    if (event.pointerType === 'touch') return;
     const previous = activePointers.get(event.pointerId);
     if (!previous) return;
 
@@ -602,6 +607,7 @@ export function setupMobileRipple({
   };
 
   const releasePointer = (event: PointerEvent) => {
+    if (event.pointerType === 'touch') return;
     activePointers.delete(event.pointerId);
   };
 
@@ -676,8 +682,6 @@ export function setupMobileRipple({
     },
     { rootMargin: '80px' },
   );
-  const supportsPointerEvents = 'PointerEvent' in window;
-
   resize();
   clearStateTargets();
   startTime = performance.now();
@@ -686,17 +690,16 @@ export function setupMobileRipple({
   layer.dataset.mode = 'enhanced';
   resizeObserver.observe(canvas);
   visibilityObserver.observe(canvas);
-  if (supportsPointerEvents) {
+  if ('PointerEvent' in window) {
     window.addEventListener('pointerdown', handlePointerDown, { passive: true });
     window.addEventListener('pointermove', handlePointerMove, { passive: true });
     window.addEventListener('pointerup', releasePointer, { passive: true });
     window.addEventListener('pointercancel', releasePointer, { passive: true });
-  } else {
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: true });
-    window.addEventListener('touchend', releaseTouches, { passive: true });
-    window.addEventListener('touchcancel', releaseTouches, { passive: true });
   }
+  window.addEventListener('touchstart', handleTouchStart, { passive: true });
+  window.addEventListener('touchmove', handleTouchMove, { passive: true });
+  window.addEventListener('touchend', releaseTouches, { passive: true });
+  window.addEventListener('touchcancel', releaseTouches, { passive: true });
   document.addEventListener('visibilitychange', handleVisibility);
   canvas.addEventListener('webglcontextlost', handleContextLost);
   canvas.addEventListener('webglcontextrestored', handleContextRestored);
@@ -706,17 +709,16 @@ export function setupMobileRipple({
     stopRendering();
     resizeObserver.disconnect();
     visibilityObserver.disconnect();
-    if (supportsPointerEvents) {
+    if ('PointerEvent' in window) {
       window.removeEventListener('pointerdown', handlePointerDown);
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', releasePointer);
       window.removeEventListener('pointercancel', releasePointer);
-    } else {
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', releaseTouches);
-      window.removeEventListener('touchcancel', releaseTouches);
     }
+    window.removeEventListener('touchstart', handleTouchStart);
+    window.removeEventListener('touchmove', handleTouchMove);
+    window.removeEventListener('touchend', releaseTouches);
+    window.removeEventListener('touchcancel', releaseTouches);
     document.removeEventListener('visibilitychange', handleVisibility);
     canvas.removeEventListener('webglcontextlost', handleContextLost);
     canvas.removeEventListener('webglcontextrestored', handleContextRestored);
