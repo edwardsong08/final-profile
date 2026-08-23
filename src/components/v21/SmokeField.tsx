@@ -189,6 +189,8 @@ type SmokePoint = [number, number];
 
 type SmokeEmitter = {
   active: boolean;
+  clientX: number | null;
+  clientY: number | null;
   energy: number;
   hasPoint: boolean;
   input: 'mouse' | 'touch';
@@ -196,10 +198,13 @@ type SmokeEmitter = {
   point: SmokePoint;
   pointerId: number | null;
   previousPoint: SmokePoint;
+  scrollLinkedUntil: number;
 };
 
 const createEmitter = (): SmokeEmitter => ({
   active: false,
+  clientX: null,
+  clientY: null,
   energy: 0,
   hasPoint: false,
   input: 'mouse',
@@ -207,6 +212,7 @@ const createEmitter = (): SmokeEmitter => ({
   point: [0.5, 0.5],
   pointerId: null,
   previousPoint: [0.5, 0.5],
+  scrollLinkedUntil: 0,
 });
 
 const isInteractiveTarget = (target: EventTarget | null) =>
@@ -399,6 +405,12 @@ export default function SmokeField() {
     let hasInteracted = false;
     const emitters: [SmokeEmitter, SmokeEmitter] = [createEmitter(), createEmitter()];
     const minimumFrameInterval = touchOptimized ? 1000 / 30 : 0;
+    const touchVisualOffset = 22;
+    const touchReleaseGrace = 700;
+    let scrollFrame = 0;
+    let pendingScrollDelta = 0;
+    let lastScrollPosition = window.scrollY + (window.visualViewport?.offsetTop ?? 0);
+    let lastScrollSample = performance.now();
 
     gl.bindTexture(gl.TEXTURE_2D, textTexture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -567,7 +579,7 @@ export default function SmokeField() {
       const activeTouchCount = emitters.filter(
         (emitter) => emitter.active && emitter.input === 'touch' && emitter.inside,
       ).length;
-      const dualTouchBalance = activeTouchCount > 1 ? 0.68 : 1;
+      const dualTouchBalance = activeTouchCount > 1 ? 0.72 : 1;
       gl.uniform1f(
         updateUniforms.energyA,
         emitters[0].inside ? emitters[0].energy * dualTouchBalance : 0,
@@ -595,7 +607,7 @@ export default function SmokeField() {
         emitter.previousPoint = emitter.point;
         emitter.energy *= Math.pow(0.76, elapsedStep);
         if (emitter.active && emitter.input === 'touch' && emitter.inside) {
-          emitter.energy = Math.max(emitter.energy, activeTouchCount > 1 ? 0.006 : 0.008);
+          emitter.energy = Math.max(emitter.energy, activeTouchCount > 1 ? 0.009 : 0.012);
         }
         if (!emitter.active && emitter.energy < 0.003) emitter.energy = 0;
       });
@@ -620,9 +632,12 @@ export default function SmokeField() {
       }
     };
 
-    const startRendering = () => {
+    const startRendering = (immediate = false) => {
       if (animationFrame || !isVisible || document.hidden) return;
-      lastFrame = performance.now();
+      const now = performance.now();
+      lastFrame = immediate
+        ? now - Math.max(minimumFrameInterval, 16.667)
+        : now;
       animationFrame = window.requestAnimationFrame((now) => {
         animationFrame = 0;
         render(now);
@@ -635,7 +650,11 @@ export default function SmokeField() {
       animationFrame = 0;
     };
 
-    const pointWithinCanvas = (clientX: number, clientY: number) => {
+    const pointWithinCanvas = (
+      clientX: number,
+      clientY: number,
+      visualOffsetY = 0,
+    ) => {
       const bounds = canvas.getBoundingClientRect();
       if (
         clientX < bounds.left ||
@@ -648,11 +667,16 @@ export default function SmokeField() {
         return null;
       }
 
+      const visualClientY = Math.min(
+        bounds.bottom,
+        Math.max(bounds.top, clientY - visualOffsetY),
+      );
+
       return {
         bounds,
         point: [
           (clientX - bounds.left) / bounds.width,
-          1 - (clientY - bounds.top) / bounds.height,
+          1 - (visualClientY - bounds.top) / bounds.height,
         ] as SmokePoint,
       };
     };
@@ -664,6 +688,7 @@ export default function SmokeField() {
       initialEnergy: number,
       baseEnergy: number,
       velocityScale: number,
+      immediate = false,
     ) => {
       emitter.inside = true;
 
@@ -674,7 +699,7 @@ export default function SmokeField() {
         hasInteracted = true;
         emitter.energy = Math.max(emitter.energy, initialEnergy);
         idleFrames = 0;
-        startRendering();
+        startRendering(immediate);
         return;
       }
 
@@ -686,11 +711,29 @@ export default function SmokeField() {
       hasInteracted = true;
       emitter.energy = Math.min(1, baseEnergy + velocity * velocityScale);
       idleFrames = 0;
-      startRendering();
+      startRendering(immediate);
     };
 
     const handlePointerMove = (event: PointerEvent) => {
-      if (event.pointerType === 'touch' || emitters.some((emitter) => emitter.active)) return;
+      if (event.pointerType === 'touch') {
+        const emitter = emitters.find(
+          (candidate) => candidate.active && candidate.pointerId === event.pointerId,
+        );
+        if (!emitter) return;
+
+        emitter.clientX = event.clientX;
+        emitter.clientY = event.clientY;
+        const location = pointWithinCanvas(event.clientX, event.clientY, touchVisualOffset);
+        if (!location) {
+          emitter.inside = false;
+          return;
+        }
+
+        moveEmitter(emitter, location.point, location.bounds, 0.28, 0.28, 12, true);
+        return;
+      }
+
+      if (emitters.some((emitter) => emitter.active)) return;
       const location = pointWithinCanvas(event.clientX, event.clientY);
       const emitter = emitters[0];
       emitter.input = 'mouse';
@@ -703,6 +746,34 @@ export default function SmokeField() {
       moveEmitter(emitter, location.point, location.bounds, 0.12, 0.26, 16);
     };
 
+    const handlePointerDown = (event: PointerEvent) => {
+      if (event.pointerType !== 'touch' || isInteractiveTarget(event.target)) return;
+      if (emitters.some((emitter) => emitter.pointerId === event.pointerId)) return;
+
+      const location = pointWithinCanvas(event.clientX, event.clientY, touchVisualOffset);
+      if (!location) return;
+
+      const availableEmitter = emitters
+        .filter((emitter) => !emitter.active)
+        .sort((first, second) => first.energy - second.energy)[0];
+      if (!availableEmitter) return;
+
+      availableEmitter.active = true;
+      availableEmitter.clientX = event.clientX;
+      availableEmitter.clientY = event.clientY;
+      availableEmitter.energy = Math.max(availableEmitter.energy, 0.28);
+      availableEmitter.hasPoint = true;
+      availableEmitter.input = 'touch';
+      availableEmitter.inside = true;
+      availableEmitter.point = location.point;
+      availableEmitter.pointerId = event.pointerId;
+      availableEmitter.previousPoint = location.point;
+      availableEmitter.scrollLinkedUntil = performance.now() + touchReleaseGrace;
+      hasInteracted = true;
+      idleFrames = 0;
+      startRendering(true);
+    };
+
     const handlePointerLeave = (event: PointerEvent) => {
       if (event.relatedTarget) return;
       emitters.forEach((emitter) => {
@@ -713,61 +784,70 @@ export default function SmokeField() {
       });
     };
 
-    const handleTouchStart = (event: TouchEvent) => {
-      if (isInteractiveTarget(event.target)) return;
+    const releasePointer = (event: PointerEvent) => {
+      if (event.pointerType !== 'touch') return;
+      const emitter = emitters.find(
+        (candidate) => candidate.active && candidate.pointerId === event.pointerId,
+      );
+      if (!emitter) return;
 
-      Array.from(event.changedTouches).forEach((touch) => {
-        if (emitters.some((emitter) => emitter.active && emitter.pointerId === touch.identifier)) {
-          return;
-        }
-
-        const location = pointWithinCanvas(touch.clientX, touch.clientY);
-        if (!location) return;
-
-        const availableEmitter = emitters
-          .filter((emitter) => !emitter.active)
-          .sort((first, second) => first.energy - second.energy)[0];
-        if (!availableEmitter) return;
-
-        availableEmitter.active = true;
-        availableEmitter.energy = Math.max(availableEmitter.energy, 0.18);
-        availableEmitter.hasPoint = true;
-        availableEmitter.input = 'touch';
-        availableEmitter.inside = true;
-        availableEmitter.point = location.point;
-        availableEmitter.pointerId = touch.identifier;
-        availableEmitter.previousPoint = location.point;
-        hasInteracted = true;
-        idleFrames = 0;
-        startRendering();
-      });
+      emitter.active = false;
+      emitter.pointerId = null;
+      emitter.scrollLinkedUntil = performance.now() + touchReleaseGrace;
     };
 
-    const handleTouchMove = (event: TouchEvent) => {
-      Array.from(event.changedTouches).forEach((touch) => {
-        const emitter = emitters.find(
-          (candidate) => candidate.active && candidate.pointerId === touch.identifier,
-        );
-        if (!emitter) return;
+    const handleScroll = () => {
+      const nextScrollPosition = window.scrollY + (window.visualViewport?.offsetTop ?? 0);
+      pendingScrollDelta += nextScrollPosition - lastScrollPosition;
+      lastScrollPosition = nextScrollPosition;
+      if (scrollFrame) return;
 
-        const location = pointWithinCanvas(touch.clientX, touch.clientY);
-        if (!location) {
-          emitter.inside = false;
-          return;
-        }
+      scrollFrame = window.requestAnimationFrame((now) => {
+        scrollFrame = 0;
+        const scrollDelta = pendingScrollDelta;
+        pendingScrollDelta = 0;
+        const elapsed = Math.max(16, now - lastScrollSample);
+        lastScrollSample = now;
+        if (Math.abs(scrollDelta) < 0.25 || !isVisible || document.hidden) return;
 
-        moveEmitter(emitter, location.point, location.bounds, 0.18, 0.22, 13);
-      });
-    };
+        const normalizedVelocity = Math.min(1, Math.abs(scrollDelta) / elapsed);
+        emitters.forEach((emitter) => {
+          if (
+            emitter.input !== 'touch'
+            || emitter.clientX === null
+            || emitter.clientY === null
+            || (!emitter.active && now > emitter.scrollLinkedUntil)
+          ) {
+            return;
+          }
 
-    const releaseTouches = (event: TouchEvent) => {
-      Array.from(event.changedTouches).forEach((touch) => {
-        const emitter = emitters.find(
-          (candidate) => candidate.active && candidate.pointerId === touch.identifier,
-        );
-        if (!emitter) return;
-        emitter.active = false;
-        emitter.pointerId = null;
+          const location = pointWithinCanvas(
+            emitter.clientX,
+            emitter.clientY,
+            touchVisualOffset,
+          );
+          if (!location) {
+            emitter.inside = false;
+            return;
+          }
+
+          emitter.scrollLinkedUntil = now + 260;
+          const scrollEnergy = Math.min(
+            0.72,
+            0.22
+              + (Math.abs(scrollDelta) / Math.max(location.bounds.height, 1)) * 7
+              + normalizedVelocity * 0.24,
+          );
+          moveEmitter(
+            emitter,
+            location.point,
+            location.bounds,
+            scrollEnergy,
+            scrollEnergy,
+            9,
+            true,
+          );
+        });
       });
     };
 
@@ -776,9 +856,12 @@ export default function SmokeField() {
       else {
         emitters.forEach((emitter) => {
           emitter.active = false;
+          emitter.clientX = null;
+          emitter.clientY = null;
           emitter.hasPoint = false;
           emitter.inside = false;
           emitter.pointerId = null;
+          emitter.scrollLinkedUntil = 0;
         });
         idleFrames = Math.min(idleFrames, 719);
         startRendering();
@@ -813,12 +896,13 @@ export default function SmokeField() {
     layer.dataset.mode = 'enhanced';
     resizeObserver.observe(canvas);
     visibilityObserver.observe(canvas);
+    window.addEventListener('pointerdown', handlePointerDown, { passive: true });
     window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    window.addEventListener('pointerup', releasePointer, { passive: true });
+    window.addEventListener('pointercancel', releasePointer, { passive: true });
     window.addEventListener('pointerout', handlePointerLeave, { passive: true });
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: true });
-    window.addEventListener('touchend', releaseTouches, { passive: true });
-    window.addEventListener('touchcancel', releaseTouches, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.visualViewport?.addEventListener('scroll', handleScroll, { passive: true });
     document.addEventListener('visibilitychange', handleVisibility);
     canvas.addEventListener('webglcontextlost', handleContextLost);
     canvas.addEventListener('webglcontextrestored', handleContextRestored);
@@ -826,14 +910,16 @@ export default function SmokeField() {
 
     return () => {
       stopRendering();
+      if (scrollFrame) window.cancelAnimationFrame(scrollFrame);
       resizeObserver.disconnect();
       visibilityObserver.disconnect();
+      window.removeEventListener('pointerdown', handlePointerDown);
       window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', releasePointer);
+      window.removeEventListener('pointercancel', releasePointer);
       window.removeEventListener('pointerout', handlePointerLeave);
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', releaseTouches);
-      window.removeEventListener('touchcancel', releaseTouches);
+      window.removeEventListener('scroll', handleScroll);
+      window.visualViewport?.removeEventListener('scroll', handleScroll);
       document.removeEventListener('visibilitychange', handleVisibility);
       canvas.removeEventListener('webglcontextlost', handleContextLost);
       canvas.removeEventListener('webglcontextrestored', handleContextRestored);
