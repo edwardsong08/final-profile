@@ -190,7 +190,7 @@ const projects: Record<ProjectId, {
     note:
       'All portfolio material uses test data. The demo and repository are evidence of implementation, not evidence of commercial operation or production suitability.',
     links: [
-      { label: 'View repository', href: 'https://github.com/edwardsong08/ClaimChain', external: true },
+      { label: 'View repository', href: 'https://github.com/edwardsong08/claimchain-platform', external: true },
       { label: 'Watch walkthrough', href: '/ClaimChain_Demo.mp4', external: true },
     ],
     next: { label: 'Ryu Legal', href: '/work/ryu-legal' },

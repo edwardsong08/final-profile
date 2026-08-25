@@ -37,7 +37,7 @@ ClaimChain also includes an advisory ML layer designed with safe boundaries. The
 
 Tech stack: Java 17, Spring Boot, PostgreSQL, Flyway, JWT auth with RBAC, Docker, Next.js, TypeScript, Tailwind CSS, FastAPI, Python 3.12, GitHub Actions, AWS deployment patterns, and PDF export workflows.`,
     icon: '/icons/claimchain.png',
-    link: 'https://github.com/edwardsong08/ClaimChain',
+    link: 'https://github.com/edwardsong08/claimchain-platform',
     liveDemoLink: 'https://claimchain-tan.vercel.app',
     demoVideoSrc: '/ClaimChain_Demo.mp4',
     demoDuration: '3:30',

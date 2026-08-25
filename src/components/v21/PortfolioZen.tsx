@@ -744,7 +744,7 @@ export default function PortfolioZen() {
                   <Link href="/work/claimchain">
                     Read case study <Arrow />
                   </Link>
-                  <a href="https://github.com/edwardsong08/ClaimChain" target="_blank" rel="noreferrer">
+                  <a href="https://github.com/edwardsong08/claimchain-platform" target="_blank" rel="noreferrer">
                     View repository <Arrow external />
                   </a>
                 </div>

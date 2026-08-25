@@ -1,11 +1,29 @@
-# Edward Song Portfolio
+# Edward Song — Product Engineering Portfolio
 
-Source for [www.edsong.xyz](https://www.edsong.xyz), a Next.js portfolio featuring selected engineering work, skills, and a contact form.
+![Edward Song portfolio preview](./public/og/edward-song-zen.png)
+
+Source for [Edward Song's portfolio](https://final-profile-chi.vercel.app/), presenting selected product engineering, systems work, technical leadership, and production delivery.
+
+## What this portfolio demonstrates
+
+- Product and systems direction across ambiguous, workflow-heavy problems
+- Hands-on application engineering spanning interfaces, services, data, and integrations
+- Security and operational controls including validation, server authority, RBAC/RLS, and audit history
+- Technical leadership across software, UI/UX, network engineering, and IT operations
+
+## Selected case studies
+
+| Work | Scope | Evidence |
+| --- | --- | --- |
+| TROA | Board-level direction, product engineering, and multidisciplinary leadership for a 50-plus-volunteer, 800-plus-member community | [Read case study](https://final-profile-chi.vercel.app/work/troa) |
+| ClaimChain | Governed multi-role workflows, deterministic scoring, advisory ML, test payments, and entitled export | [Read case study](https://final-profile-chi.vercel.app/work/claimchain) |
+| Ryu Legal | Long-term requirements, design, engineering, deployment, search visibility, and maintenance for a production client site | [Read case study](https://final-profile-chi.vercel.app/work/ryu-legal) |
 
 ## Stack
 
 - Next.js Pages Router, React, TypeScript, and Tailwind CSS
 - Framer Motion and next-themes
+- OGL-powered interactive visual treatment
 - Resend for contact-form delivery
 - Vercel deployment
 
