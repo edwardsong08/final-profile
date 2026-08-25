@@ -39,13 +39,13 @@
     "@types/react-dom": "^19.2.4",
     "autoprefixer": "^10.5.4",
     "eslint": "^9.39.5",
-    "eslint-config-next": "^16.3.1",
+    "eslint-config-next": "^16.3.2",
     "postcss": "^8.5.26",
     "stylelint": "^16.26.1",
     "stylelint-config-standard": "^38.0.0",
     "stylelint-config-tailwindcss": "^1.0.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   }
 }
