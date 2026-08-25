@@ -8,3 +8,29 @@ updates:
     groups:
       development-dependencies:
         dependency-type: development
+        update-types:
+          - minor
+          - patch
+    ignore:
+      # next-seo 7 replaces the Pages Router component API used throughout
+      # this portfolio. Keep 6.x current until that migration is planned.
+      - dependency-name: next-seo
+        update-types:
+          - version-update:semver-major
+      # Toolchain majors must move with Next.js and typescript-eslint support,
+      # rather than as an automatically merged grouped update.
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
+      - dependency-name: eslint
+        update-types:
+          - version-update:semver-major
+      - dependency-name: stylelint
+        update-types:
+          - version-update:semver-major
+      - dependency-name: stylelint-config-standard
+        update-types:
+          - version-update:semver-major
+      - dependency-name: "@types/node"
+        update-types:
+          - version-update:semver-major
