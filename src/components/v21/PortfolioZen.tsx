@@ -1,50 +1,24 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type RefObject, useEffect, useRef, useState } from 'react';
 
-import { ProjectEvidence, type TroaSlideId } from './ProjectEvidence';
+import { ProjectEvidence } from './ProjectEvidence';
 import SmokeField from './SmokeField';
 import styles from './PortfolioZen.module.css';
 
 const EMAIL = 'edwardsong08@gmail.com';
-
-const capabilities = [
-  {
-    annotation: 'Applied across',
-    title: 'Product and systems direction',
-    description:
-      'Define workflows and scope with users, department leads, and executives.',
-    evidence: 'TROA · ClaimChain · Ryu Legal',
-  },
-  {
-    annotation: 'Selected stack',
-    title: 'Application engineering',
-    description:
-      'Build and maintain interfaces, services, data models, integrations, and deployments.',
-    evidence: 'Next.js · Laravel · Spring Boot · PostgreSQL',
-  },
-  {
-    annotation: 'Controls',
-    title: 'Security and operational controls',
-    description:
-      'Turn compliance and policy into permissions, validation, server authority, and audit history.',
-    evidence: 'RBAC · RLS · validation · audit trails',
-  },
-  {
-    annotation: 'Environments',
-    title: 'Delivery and operations',
-    description:
-      'Set production standards across cloud, on-premises, and vendor services.',
-    evidence: 'AWS · Cloudflare · containers · CI/CD',
-  },
-  {
-    annotation: 'Leadership scope',
-    title: 'Technical leadership',
-    description:
-      'Set direction and lead delivery across software, UI/UX, network engineering, and IT operations.',
-    evidence: 'Board collaboration · team direction · compliance',
-  },
-];
+type StewardshipSlide = 'troa-nonprofit' | 'troa-gaming' | 'ryu';
+const stewardshipSlides: StewardshipSlide[] = ['troa-nonprofit', 'troa-gaming', 'ryu'];
+const REALM_MAP_ORIGIN = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:5173'
+  : 'https://troa-realms.therealmsofasgard.com';
+const REALM_MAP_ORB_ID = '90d6eedd-56dd-448f-a6d5-8b830af0bb1f';
+const realmMapObjects = [
+  { id: 'ce6461bc-6e7a-4275-b932-93e9f086e89b', label: 'Earth' },
+  { id: 'b003b255-e9ae-4edb-9e17-2f9131a95ba3', label: 'Mars' },
+  { id: '58cb6069-4bda-4925-9a23-765c2851bbd2', label: 'Pertam' },
+  { id: 'cfb01b42-53da-4777-a7e5-bec89e479910', label: 'TROA Trade Station' },
+] as const;
 
 const experience = [
   {
@@ -64,105 +38,49 @@ const experience = [
   },
 ];
 
-const projects = [
-  { id: 'project-troa', label: 'TROA' },
-  { id: 'project-claimchain', label: 'ClaimChain' },
-  { id: 'project-ryu', label: 'Ryu Legal' },
-] as const;
-
 const primarySections = [
   { id: 'work', label: 'Work' },
+  { id: 'systems', label: 'Independent' },
+  { id: 'hub', label: 'Hub' },
   { id: 'experience', label: 'Experience' },
-  { id: 'capabilities', label: 'Capabilities' },
   { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact' },
 ] as const;
 
-const projectIds = projects.map((project) => project.id);
-type ProjectId = (typeof projectIds)[number];
 const primarySectionIds = primarySections.map((section) => section.id);
 
-const troaSlideNarratives: Record<TroaSlideId, {
-  facts: Array<{ label: string; value: string }>;
-  heading: string;
-  summary: string;
-}> = {
-  'public-platform': {
-    heading: 'Public platform',
-    summary:
-      'A shared public entry point for TROA’s services, volunteer programs, advocacy, and community.',
+const stewardshipStories = [
+  {
+    id: 'troa-nonprofit', label: 'TROA Nonprofit',
+    meta: 'Volunteer CTO · Since 2026',
+    summary: 'I lead the technology behind a volunteer-run community, connecting its public services with recruitment, learning, and day-to-day operations.',
     facts: [
-      {
-        label: 'Responsibility',
-        value: 'Product direction and delivery from information architecture through deployment.',
-      },
-      {
-        label: 'Design choice',
-        value: 'One accessible content structure connects the ecosystem without flattening its distinct programs.',
-      },
+      { label: 'Responsibility', value: 'Board-level planning, hands-on product engineering, and direction across software, design, network engineering, and IT.' },
+      { label: 'In practice', value: 'Public information, volunteer applications, training, and staff workflows for 50+ volunteers and an 800-plus-member community.' },
     ],
+    caseStudy: '/work/troa', liveUrl: 'https://therealmsofasgard.com', liveLabel: 'Visit main site',
   },
-  careers: {
-    heading: 'Volunteer recruitment',
-    summary:
-      'A dedicated recruitment path gives candidates context, a focused application flow, and visibility after submission.',
+  {
+    id: 'troa-gaming', label: 'TROA Gaming',
+    meta: 'Interactive 3D map · Community infrastructure',
+    summary: 'A live map for a persistent Space Engineers community. Explore planets, stations, and connected routes in the world its members share.',
     facts: [
-      {
-        label: 'Candidate path',
-        value: 'Role discovery, application, confirmation, and applicant progress.',
-      },
-      {
-        label: 'Operating boundary',
-        value: 'Public applications connect to role-gated review and administration.',
-      },
+      { label: 'My work', value: 'Map engineering, systems design, and the infrastructure connecting the game world with its community tools.' },
+      { label: 'Try it', value: 'Choose a destination below the map to move between objects. Open the full map for navigation and community features.' },
     ],
+    caseStudy: '/work/troa', liveUrl: 'https://troa-realms.therealmsofasgard.com/map', liveLabel: 'Open full map',
   },
-  ticketing: {
-    heading: 'Member support',
-    summary:
-      'A single request path helps members seek support while giving staff a structured record from intake through resolution.',
+  {
+    id: 'ryu', label: 'Ryu Legal',
+    meta: 'Client technology ownership · Since 2022',
+    summary: 'Long-term responsibility for a law firm’s website and supporting technology—from understanding the practice to building, deploying, and maintaining the systems it uses.',
     facts: [
-      {
-        label: 'Member experience',
-        value: 'Focused intake and clear status through resolution.',
-      },
-      {
-        label: 'Staff workflow',
-        value: 'Role-aware handling, relevant context, and accountable records.',
-      },
+      { label: 'Responsibility', value: 'Requirements, interface design, application engineering, deployment, ongoing maintenance, and wider IT needs.' },
+      { label: 'Shown here', value: 'The public NJ/NY site: clear service information and a contact flow with server-side validation and delivery safeguards.' },
     ],
+    caseStudy: '/work/ryu-legal', liveUrl: 'https://www.ryu-legal.com', liveLabel: 'Visit live site',
   },
-  'learning-center': {
-    heading: 'Training and development',
-    summary:
-      'Structured training, progress, and credentials connect learning with volunteer onboarding and organizational requirements.',
-    facts: [
-      {
-        label: 'Learner path',
-        value: 'Courses, progress, completion, and learning records.',
-      },
-      {
-        label: 'Operating boundary',
-        value: 'Learner records remain within the broader identity and access model.',
-      },
-    ],
-  },
-  'private-operations': {
-    heading: 'Private operations',
-    summary:
-      'Internal systems support people, finance, legal, IT, reporting, support, and governance without exposing private interfaces or operational data.',
-    facts: [
-      {
-        label: 'Operator experience',
-        value: 'Purpose-built workflows let non-engineer administrators manage recurring work.',
-      },
-      {
-        label: 'Control model',
-        value: 'Shared identity, role-scoped access, server-side privileges, separate trust boundaries, and audit history.',
-      },
-    ],
-  },
-};
+] as const;
 
 function Arrow({ external = false }: { external?: boolean }) {
   return (
@@ -265,119 +183,105 @@ function useActiveSection(
   return [activeSection, setActiveSection] as const;
 }
 
-function WorkIndex() {
-  const [activeProject, setActiveProject] = useActiveSection(projectIds, 0.36);
-  const indexRef = useRef<HTMLUListElement>(null);
-  const linkRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
+function LiveRealmMapEmbed({
+  active,
+  objectId,
+  onObjectChange,
+  frameRef,
+}: {
+  active: boolean;
+  objectId: string;
+  onObjectChange: (objectId: string) => void;
+  frameRef: RefObject<HTMLIFrameElement | null>;
+}) {
+  const [hasLoaded, setHasLoaded] = useState(active);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const [mapScale, setMapScale] = useState(0.5);
+  const mapUrl = `${REALM_MAP_ORIGIN}/map?embed=profile&mode=object-detail&orb=${REALM_MAP_ORB_ID}&object=${realmMapObjects[0].id}`;
 
   useEffect(() => {
-    const index = indexRef.current;
-    const activeLink = linkRefs.current[activeProject];
-    if (!index || !activeLink) return;
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const observer = new ResizeObserver(([entry]) => setMapScale(entry.contentRect.width / 1440));
+    observer.observe(viewport);
+    return () => observer.disconnect();
+  }, []);
 
-    const positionIndicator = () => {
-      const indexBounds = index.getBoundingClientRect();
-      const linkBounds = activeLink.getBoundingClientRect();
-      index.style.setProperty('--work-indicator-x', `${linkBounds.left - indexBounds.left}px`);
-      index.style.setProperty('--work-indicator-width', `${linkBounds.width}px`);
-    };
-
-    positionIndicator();
-    const resizeObserver = new ResizeObserver(positionIndicator);
-    resizeObserver.observe(index);
-    const readyFrame = window.requestAnimationFrame(() => {
-      index.dataset.indicatorReady = 'true';
-    });
-
-    return () => {
-      window.cancelAnimationFrame(readyFrame);
-      resizeObserver.disconnect();
-    };
-  }, [activeProject]);
+  // Keep the renderer mounted after the first visit so camera moves do not reload assets.
+  if (active && !hasLoaded) setHasLoaded(true);
 
   return (
-    <nav className={styles.workIndex} aria-label="Selected project index">
-      <ul ref={indexRef}>
-        {projects.map((project) => (
-          <li key={project.id}>
-            <a
-              ref={(link) => {
-                linkRefs.current[project.id] = link;
-              }}
-              href={`#${project.id}`}
-              aria-current={activeProject === project.id ? 'location' : undefined}
-              onClick={() => setActiveProject(project.id)}
-            >
-              {project.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
-}
-
-function MobileWorkSelector({
-  activeProject,
-  onSelect,
-}: {
-  activeProject: ProjectId;
-  onSelect: (projectId: ProjectId) => void;
-}) {
-  const activeIndex = projects.findIndex((project) => project.id === activeProject);
-
-  return (
-    <nav className={styles.mobileWorkSelector} aria-label="Choose a selected project">
-      <span
-        className={styles.mobileWorkCount}
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        {activeIndex + 1} / {projects.length}
-      </span>
-      <div className={styles.mobileWorkOptions}>
-        {projects.map((project, index) => (
-          <button
-            type="button"
-            key={project.id}
-            aria-label={`${project.label}, project ${index + 1} of ${projects.length}`}
-            aria-pressed={activeProject === project.id}
-            onClick={() => onSelect(project.id)}
-          >
-            {project.label}
-          </button>
-        ))}
+    <section className={styles.realmMapEmbed} aria-label="Interactive TROA Space Engineers realm map">
+      <div ref={viewportRef} className={styles.realmMapViewport}>
+        {hasLoaded ? (
+          <iframe
+            className={styles.realmMapFrame}
+            style={{ width: 1440, height: 900, transform: `scale(${mapScale})`, transformOrigin: 'top left' }}
+            src={mapUrl}
+            title="The End World interactive Space Engineers map"
+            loading="eager"
+            ref={frameRef}
+            referrerPolicy="strict-origin-when-cross-origin"
+            onLoad={() => onObjectChange(objectId)}
+          />
+        ) : (
+          <div className={styles.realmMapStandby}>Open the gaming slide to load the live map.</div>
+        )}
       </div>
-    </nav>
+    </section>
   );
 }
 
-function MobileProjectHandoff({
-  currentProject,
-  onSelect,
-}: {
-  currentProject: ProjectId;
-  onSelect: (projectId: ProjectId, focusProjectHeading: boolean) => void;
-}) {
-  const currentIndex = projects.findIndex((project) => project.id === currentProject);
-  const nextProject = projects[(currentIndex + 1) % projects.length];
-  const returnsToFirst = currentIndex === projects.length - 1;
+function HubEmbed() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    let restoreScroll: (() => void) | undefined;
+    const unlock = () => {
+      restoreScroll?.();
+      restoreScroll = undefined;
+    };
+    const lock = (event: PointerEvent) => {
+      if (event.pointerType === 'touch' || restoreScroll) return;
+      // Wheel events inside this cross-origin iframe do not bubble to React.
+      // Hold the parent scroll container while the pointer is over the map.
+      const root = document.documentElement;
+      const overflow = root.style.overflow;
+      const gutter = root.style.scrollbarGutter;
+      // Preserve an existing scrollbar without adding one on overlay systems.
+      if (root.clientWidth < window.innerWidth) root.style.scrollbarGutter = 'stable';
+      root.style.overflow = 'hidden';
+      restoreScroll = () => {
+        root.style.overflow = overflow;
+        root.style.scrollbarGutter = gutter;
+      };
+    };
+    container.addEventListener('pointerenter', lock);
+    container.addEventListener('pointerleave', unlock);
+    container.addEventListener('pointercancel', unlock);
+    window.addEventListener('pagehide', unlock);
+    return () => {
+      unlock();
+      container.removeEventListener('pointerenter', lock);
+      container.removeEventListener('pointerleave', unlock);
+      container.removeEventListener('pointercancel', unlock);
+      window.removeEventListener('pagehide', unlock);
+    };
+  }, []);
 
   return (
-    <button
-      className={styles.mobileProjectHandoff}
-      type="button"
-      onClick={(event) => onSelect(nextProject.id, event.detail === 0)}
-      aria-label={`${returnsToFirst ? 'Back to first project' : 'Next project'}: ${nextProject.label}`}
-    >
-      <span className={styles.mobileProjectHandoffCopy}>
-        <span className={styles.mobileProjectHandoffKicker}>
-          {returnsToFirst ? 'Back to first project' : 'Next project'}
-        </span>
-        <strong>{nextProject.label}</strong>
-      </span>
-      <Arrow />
-    </button>
+    <div ref={containerRef} className={styles.hubEmbed}>
+      <iframe
+        className={styles.hubFrame}
+        src="https://hub.edsong.xyz/?embed=profile"
+        title="ES/HUB living systems map"
+        loading="lazy"
+        referrerPolicy="strict-origin-when-cross-origin"
+      />
+      <span className={styles.hubEmbedLabel}>LIVE SYSTEMS MAP</span>
+    </div>
   );
 }
 
@@ -508,53 +412,76 @@ function PrimaryNavigation({
 }
 
 export default function PortfolioZen() {
-  const [activeTroaSlide, setActiveTroaSlide] = useState<TroaSlideId>('public-platform');
-  const [activeMobileProject, setActiveMobileProject] = useState<ProjectId>('project-troa');
+  const [activeStewardship, setActiveStewardship] = useState<StewardshipSlide>('troa-nonprofit');
+  const [selectedRealmObject, setSelectedRealmObject] = useState<string>(realmMapObjects[0].id);
+  const realmMapFrameRef = useRef<HTMLIFrameElement>(null);
   const [activePrimarySection, setActivePrimarySection] = useActiveSection(
     primarySectionIds,
     0.32,
     false,
   );
-  const troaNarrative = troaSlideNarratives[activeTroaSlide];
+  const stewardshipPointerStart = useRef<{ x: number; y: number } | null>(null);
+  const activeStewardshipIndex = stewardshipSlides.indexOf(activeStewardship);
+
+  const handleRealmObjectChange = (objectId: string) => {
+    setSelectedRealmObject(objectId);
+    realmMapFrameRef.current?.contentWindow?.postMessage(
+      { type: 'troa-profile-map-select', objectId },
+      REALM_MAP_ORIGIN,
+    );
+  };
+
+  const handleStewardshipPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    if ((event.target as Element).closest('button, a')) return;
+    stewardshipPointerStart.current = { x: event.clientX, y: event.clientY };
+  };
+
+  const handleStewardshipPointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const start = stewardshipPointerStart.current;
+    stewardshipPointerStart.current = null;
+    if (start === null) return;
+    const deltaX = event.clientX - start.x;
+    const deltaY = event.clientY - start.y;
+    if (Math.abs(deltaX) < 48 || Math.abs(deltaX) <= Math.abs(deltaY) * 1.2) return;
+    const nextIndex = deltaX < 0
+      ? Math.min(activeStewardshipIndex + 1, stewardshipSlides.length - 1)
+      : Math.max(activeStewardshipIndex - 1, 0);
+    selectStewardship(stewardshipSlides[nextIndex]);
+  };
+  const selectStewardship = (slide: StewardshipSlide) => {
+    setActiveStewardship(slide);
+    window.history.replaceState(null, '', `#project-${slide}`);
+  };
+
+  const handleStewardshipKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    const current = stewardshipSlides.indexOf(activeStewardship);
+    const next = event.key === 'Home' ? 0
+      : event.key === 'End' ? stewardshipSlides.length - 1
+      : event.key === 'ArrowRight' ? (current + 1) % stewardshipSlides.length
+      : event.key === 'ArrowLeft' ? (current + stewardshipSlides.length - 1) % stewardshipSlides.length
+      : null;
+    if (next === null) return;
+    event.preventDefault();
+    const slide = stewardshipSlides[next];
+    selectStewardship(slide);
+    document.getElementById(`tab-${slide}`)?.focus({ preventScroll: true });
+  };
 
   useEffect(() => {
-    const syncProjectFromHash = () => {
-      if (!window.matchMedia('(max-width: 51.25rem)').matches) return;
-      const projectId = window.location.hash.slice(1) as ProjectId;
-      if (!projectIds.includes(projectId)) return;
-      setActiveMobileProject(projectId);
-      window.requestAnimationFrame(() => {
-        document.getElementById(projectId)?.scrollIntoView({ block: 'start' });
-      });
+    const syncSlide = () => {
+      const slide = stewardshipSlides.find(id => window.location.hash === `#project-${id}`);
+      if (!slide) return;
+      setActiveStewardship(slide);
+      document.getElementById('project-troa')?.scrollIntoView({ block: 'start' });
     };
-
-    const initialSyncFrame = window.requestAnimationFrame(syncProjectFromHash);
-    window.addEventListener('hashchange', syncProjectFromHash);
+    const frame = window.requestAnimationFrame(syncSlide);
+    window.addEventListener('hashchange', syncSlide);
     return () => {
-      window.cancelAnimationFrame(initialSyncFrame);
-      window.removeEventListener('hashchange', syncProjectFromHash);
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('hashchange', syncSlide);
     };
   }, []);
-
-  const selectMobileProject = (
-    projectId: ProjectId,
-    focusProjectHeading = false,
-  ) => {
-    setActiveMobileProject(projectId);
-    window.history.replaceState(null, '', `#${projectId}`);
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        const project = document.getElementById(projectId);
-        project?.scrollIntoView({
-          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-          block: 'start',
-        });
-        if (focusProjectHeading) {
-          project?.querySelector<HTMLElement>('h3')?.focus({ preventScroll: true });
-        }
-      });
-    });
-  };
 
   return (
     <div className={styles.page}>
@@ -581,9 +508,8 @@ export default function PortfolioZen() {
             <div className={styles.heroIntro}>
             <p className={styles.heroKicker}>Current work · Volunteer CTO at TROA</p>
             <p className={styles.heroSummary}>
-              Setting technical direction with the board while remaining hands-on in product
-              engineering and leading teams across software, UI/UX, network engineering, and IT
-              operations.
+              I turn complex needs into useful software—and stay responsible for the systems
+              behind it. Hands-on engineering, from the first conversation to ongoing operation.
             </p>
           </div>
 
@@ -616,195 +542,189 @@ export default function PortfolioZen() {
         >
           <div className={styles.sectionHeading}>
             <h2 id="work-title" className={styles.traceTitle}>
-              Selected work
+              Technology ownership
             </h2>
+            <p>
+              I lead technology end to end—from product direction and application development to
+              infrastructure, security, and ongoing operations.
+            </p>
           </div>
-
-          <WorkIndex />
-          <MobileWorkSelector
-            activeProject={activeMobileProject}
-            onSelect={selectMobileProject}
-          />
 
           <div className={styles.projectList}>
             <article
               id="project-troa"
-              className={`${styles.project} ${styles.troaProject}`}
-              aria-labelledby="troa-title"
-              data-mobile-active={activeMobileProject === 'project-troa' ? 'true' : 'false'}
+              className={`${styles.project} ${styles.troaProject} ${styles.stewardshipArticle}`}
+              aria-label="Nonprofit and client technology projects"
             >
-              <div className={styles.projectMedia}>
-                <ProjectEvidence
-                  project="troa"
-                  onTroaSlideChange={setActiveTroaSlide}
-                />
+              <div className={styles.stewardshipSwitcher} role="tablist" aria-label="Choose a project" onKeyDown={handleStewardshipKeyDown}>
+                {stewardshipStories.map(story => (
+                  <button key={story.id} id={`tab-${story.id}`} type="button" role="tab"
+                    aria-selected={activeStewardship === story.id}
+                    aria-controls={`project-${story.id}`}
+                    tabIndex={activeStewardship === story.id ? 0 : -1}
+                    onClick={() => selectStewardship(story.id)}>
+                    {story.label}
+                  </button>
+                ))}
               </div>
-
-              <div className={styles.projectCopy}>
-                <div className={styles.projectNarrative}>
-                  <p className={styles.projectMeta}>Volunteer CTO · Active since 2026</p>
-                  <h3 id="troa-title" tabIndex={-1}>TROA</h3>
-                  <p className={styles.projectLead}>
-                    A connected technology portfolio for more than 50 volunteers and an
-                    800-plus-member community—shaped through board-level direction, hands-on
-                    product engineering, and leadership of a growing multidisciplinary team.
-                  </p>
-                </div>
-                <div
-                  className={styles.troaSlideNarrative}
-                >
-                  {(Object.entries(troaSlideNarratives) as Array<[
-                    TroaSlideId,
-                    (typeof troaSlideNarratives)[TroaSlideId],
-                  ]>).map(([slideId, narrative]) => {
-                    const isActive = slideId === activeTroaSlide;
-
-                    return (
-                      <div
-                        className={styles.troaNarrativePanel}
-                        data-active={isActive ? 'true' : 'false'}
-                        aria-hidden={isActive ? undefined : 'true'}
-                        key={slideId}
-                      >
-                        <h4>{narrative.heading}</h4>
-                        <p>{narrative.summary}</p>
-                        <dl className={styles.projectFacts}>
-                          {narrative.facts.map((fact) => (
-                            <div key={fact.label}>
-                              <dt>{fact.label}</dt>
-                              <dd>{fact.value}</dd>
-                            </div>
-                          ))}
-                        </dl>
-                      </div>
-                    );
-                  })}
-                  <span
-                    className={styles.visuallyHidden}
-                    aria-live="polite"
-                    aria-atomic="true"
-                  >
-                    {troaNarrative.heading}. {troaNarrative.summary}
-                  </span>
-                </div>
-                <div className={styles.projectLinks}>
-                  <Link href="/work/troa">
-                    Read case study <Arrow />
-                  </Link>
-                  <a href="https://therealmsofasgard.com" target="_blank" rel="noreferrer">
-                    Visit main site <Arrow external />
-                  </a>
-                </div>
-                <MobileProjectHandoff
-                  currentProject="project-troa"
-                  onSelect={selectMobileProject}
-                />
-              </div>
-            </article>
-
-            <article
-              id="project-claimchain"
-              className={`${styles.project} ${styles.projectReverse}`}
-              aria-labelledby="claimchain-title"
-              data-mobile-active={activeMobileProject === 'project-claimchain' ? 'true' : 'false'}
-            >
               <div
-                className={`${styles.projectMedia} ${styles.claimchainMedia}`}
+                className={styles.projectMedia}
+                onPointerDown={handleStewardshipPointerDown}
+                onPointerUp={handleStewardshipPointerUp}
+                onPointerCancel={() => { stewardshipPointerStart.current = null; }}
               >
-                <ProjectEvidence project="claimchain" />
+                <div className={styles.stewardshipPrimaryMedia} aria-live="polite">
+                  <div
+                    className={styles.stewardshipMediaTrack}
+                    style={{ transform: `translateX(-${activeStewardshipIndex * (100 / 3)}%)` }}
+                  >
+                    <div className={styles.stewardshipMediaSlide} aria-hidden={activeStewardship !== 'troa-nonprofit'} inert={activeStewardship !== 'troa-nonprofit'}>
+                      <ProjectEvidence project="troa" staticTroa />
+                    </div>
+                    <div className={styles.stewardshipMediaSlide} aria-hidden={activeStewardship !== 'troa-gaming'} inert={activeStewardship !== 'troa-gaming'}>
+                      <LiveRealmMapEmbed
+                        active={activeStewardship === 'troa-gaming'}
+                        objectId={selectedRealmObject}
+                        onObjectChange={handleRealmObjectChange}
+                        frameRef={realmMapFrameRef}
+                      />
+                    </div>
+                    <div className={styles.stewardshipMediaSlide} aria-hidden={activeStewardship !== 'ryu'} inert={activeStewardship !== 'ryu'}>
+                      <ProjectEvidence project="ryu-legal" />
+                    </div>
+                  </div>
+                </div>
+                <div className={styles.realmControls} data-visible={activeStewardship === 'troa-gaming'} inert={activeStewardship !== 'troa-gaming'}>
+                  <span className={styles.realmControlsLabel}>Explore the realm</span>
+                  <div className={styles.realmDestinations} role="group" aria-label="Map destinations">
+                    {realmMapObjects.map((object, index) => (
+                      <button key={object.id} type="button" aria-pressed={selectedRealmObject === object.id} onClick={() => handleRealmObjectChange(object.id)}>
+                        <svg viewBox="0 0 40 40" aria-hidden="true" className={styles.realmDestinationIcon} data-world={index}>
+                          {index === 3 ? <><path d="M16 12h8v16h-8zM5 15h8v10H5zM27 15h8v10h-8zM13 20h3m8 0h3M20 6v6m0 16v6" /><path d="M9 15v10m22-10v10" /></> : <>
+                            <circle cx="20" cy="20" r="13" />
+                            {index === 0 ? <path d="m13 10 6 5-2 4 5 3-2 8m4-20-2 6 7 2 3 4" /> : index === 1 ? <path d="m10 16 9 3 5-3 7 4M12 25l7-3 7 5" /> : <><ellipse cx="20" cy="20" rx="17" ry="5" transform="rotate(-25 20 20)" /><path d="m16 10 6 4m-7 13 6 3" /></>}
+                          </>}
+                        </svg>
+                        <span>{index === 3 ? 'Trade Station' : object.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              <div className={styles.projectCopy}>
-                <div className={styles.projectNarrative}>
-                  <p className={styles.projectMeta}>Independent product engineering · 2025–2026</p>
-                  <h3 id="claimchain-title" tabIndex={-1}>ClaimChain</h3>
-                  <p className={styles.projectLead}>
-                    An independent prototype examining how providers, administrators, and buyers
-                    can move claims through review, governed packaging, purchase, and entitled
-                    export without losing a clear source of authority.
-                  </p>
-                </div>
-                <dl className={`${styles.projectFacts} ${styles.projectDetailFacts}`}>
-                  <div>
-                    <dt>Authority</dt>
-                    <dd>
-                      The backend controls eligibility, lifecycle, payment state, and export
-                      access; ML remains advisory.
-                    </dd>
+              <div className={styles.stewardshipPanels}>
+                {stewardshipStories.map(story => (
+                  <div key={story.id} id={`project-${story.id}`} role="tabpanel"
+                    aria-labelledby={`tab-${story.id}`}
+                    aria-hidden={activeStewardship !== story.id}
+                    inert={activeStewardship !== story.id}
+                    tabIndex={activeStewardship === story.id ? 0 : -1}
+                    className={styles.stewardshipPanel}>
+                    <p className={styles.projectMeta}>{story.meta}</p>
+                    <h3>{story.label}</h3>
+                    <p className={styles.projectLead}>{story.summary}</p>
+                    <dl className={styles.projectFacts}>
+                      {story.facts.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}
+                    </dl>
+                    <div className={styles.projectLinks}>
+                      <Link href={story.caseStudy}>Read case study <Arrow /></Link>
+                      <a href={story.liveUrl} target="_blank" rel="noreferrer">{story.liveLabel} <Arrow external /></a>
+                    </div>
                   </div>
-                  <div>
-                    <dt>Implemented flow</dt>
-                    <dd>
-                      Administrative review, Stripe test-payment reconciliation, and entitled PDF
-                      export across three roles.
-                    </dd>
-                  </div>
-                </dl>
-                <div className={styles.projectLinks}>
-                  <Link href="/work/claimchain">
-                    Read case study <Arrow />
-                  </Link>
-                  <a href="https://github.com/edwardsong08/claimchain-platform" target="_blank" rel="noreferrer">
-                    View repository <Arrow external />
-                  </a>
-                </div>
-                <MobileProjectHandoff
-                  currentProject="project-claimchain"
-                  onSelect={selectMobileProject}
-                />
-              </div>
-            </article>
-
-            <article
-              id="project-ryu"
-              className={styles.project}
-              aria-labelledby="ryu-title"
-              data-mobile-active={activeMobileProject === 'project-ryu' ? 'true' : 'false'}
-            >
-              <div className={styles.projectMedia}>
-                <ProjectEvidence project="ryu-legal" />
-              </div>
-
-              <div className={styles.projectCopy}>
-                <div className={styles.projectNarrative}>
-                  <p className={styles.projectMeta}>Contract engineering · Ongoing since 2022</p>
-                  <h3 id="ryu-title" tabIndex={-1}>Ryu Legal</h3>
-                  <p className={styles.projectLead}>
-                    Long-term product stewardship for a live NJ/NY law-firm site, translating
-                    legal services into a clear and credible path from first visit to contact.
-                  </p>
-                </div>
-                <dl className={`${styles.projectFacts} ${styles.projectDetailFacts}`}>
-                  <div>
-                    <dt>Engagement</dt>
-                    <dd>
-                      Requirements, information architecture, interface design, engineering,
-                      search visibility, deployment, and maintenance since 2022.
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Trust</dt>
-                    <dd>
-                      Clear service information, visible legal boundaries, and a direct contact
-                      workflow supported by proportionate server-side safeguards.
-                    </dd>
-                  </div>
-                </dl>
-                <div className={styles.projectLinks}>
-                  <Link href="/work/ryu-legal">
-                    Read case study <Arrow />
-                  </Link>
-                  <a href="https://www.ryu-legal.com" target="_blank" rel="noreferrer">
-                    Visit live site <Arrow external />
-                  </a>
-                </div>
-                <MobileProjectHandoff
-                  currentProject="project-ryu"
-                  onSelect={selectMobileProject}
-                />
+                ))}
               </div>
             </article>
           </div>
+        </section>
+
+        <section
+          id="systems"
+          className={`${styles.section} ${styles.systemsSection} ${styles.traceSection}`}
+          aria-labelledby="systems-title"
+          data-trace-active={activePrimarySection === 'systems' ? 'true' : 'false'}
+        >
+          <div className={styles.sectionHeading}>
+            <h2 id="systems-title" className={styles.traceTitle}>Independent work</h2>
+            <p>
+              Two ongoing projects: one explores how AI uses context; the other makes room
+              for writing, editorial design, and thinking in public.
+            </p>
+          </div>
+
+          <div className={styles.systemsGrid}>
+            <article className={styles.systemCard}>
+              <figure className={styles.systemPreview}>
+                <Image src="/fourme-showcase.jpg" alt="4ME OS public research page with an illustrative, synthetic context manifest" width={1440} height={900} sizes="(max-width: 820px) 100vw, 46vw" />
+                <figcaption>Public research preview · Synthetic context example</figcaption>
+              </figure>
+              <p className={styles.projectMeta}>Personal knowledge platform · Research build</p>
+              <h3>4ME OS</h3>
+              <p>
+                A self-hosted system for giving AI tools the right approved project context—without
+                making any one assistant the source of truth.
+              </p>
+              <dl className={styles.systemFacts}>
+                <div><dt>Working core</dt><dd>Permission-scoped context previews and review-only change proposals, tested with synthetic data.</dd></div>
+                <div><dt>Still being tested</dt><dd>Whether reviewed context handoffs improve on simpler tools. Broad personal ingestion remains restricted.</dd></div>
+              </dl>
+              <div className={styles.projectLinks}>
+                <a href="https://4me.edsong.xyz" target="_blank" rel="noreferrer">Visit 4ME OS <Arrow external /></a>
+                <a href="https://github.com/edwardsong08/4me-os" target="_blank" rel="noreferrer">View repository <Arrow external /></a>
+              </div>
+            </article>
+
+            <article className={styles.systemCard}>
+              <figure className={styles.systemPreview}>
+                <Image src="/newsroom-showcase.jpg" alt="The Newsroom front page with its broadsheet masthead, original illustration, and editor’s note" width={1440} height={900} sizes="(max-width: 820px) 100vw, 46vw" />
+                <figcaption>The live front page · Original editorial design</figcaption>
+              </figure>
+              <p className={styles.projectMeta}>Editorial application · Live publication</p>
+              <h3>Newsroom</h3>
+              <p>
+                A personal publication about technology, changing careers, and everyday life.
+                A newspaper on the surface; a deliberate editorial workflow underneath.
+              </p>
+              <dl className={styles.systemFacts}>
+                <div><dt>My work</dt><dd>Editorial design, application engineering, and a source-controlled publishing workflow.</dd></div>
+                <div><dt>In practice</dt><dd>Articles organized into desks, with explicit placement rules, review, and author approval before publication.</dd></div>
+              </dl>
+              <div className={styles.projectLinks}>
+                <a href="https://news.edsong.xyz" target="_blank" rel="noreferrer">Visit Newsroom <Arrow external /></a>
+                <a href="https://github.com/edwardsong08/newsroom" target="_blank" rel="noreferrer">View repository <Arrow external /></a>
+              </div>
+            </article>
+          </div>
+          <aside id="project-claimchain" className={styles.earlierWork} aria-labelledby="earlier-work-title">
+            <div>
+              <p className={styles.sectionLabel}>Earlier work · Independent prototype</p>
+              <h3 id="earlier-work-title">ClaimChain</h3>
+            </div>
+            <p>A three-role prototype for reviewing claims, testing purchases, and controlling document access. A focused study in backend authority and payment workflows.</p>
+            <div className={styles.projectLinks}>
+              <Link href="/work/claimchain">Read case study <Arrow /></Link>
+              <a href="https://github.com/edwardsong08/claimchain-platform" target="_blank" rel="noreferrer">View repository <Arrow external /></a>
+            </div>
+          </aside>
+        </section>
+
+        <section
+          id="hub"
+          className={`${styles.section} ${styles.hubSection} ${styles.traceSection}`}
+          aria-labelledby="hub-title"
+          data-trace-active={activePrimarySection === 'hub' ? 'true' : 'false'}
+        >
+          <div className={styles.hubCopy}>
+            <p className={`${styles.sectionLabel} ${styles.traceTitle}`}>The map behind the work</p>
+            <h2 id="hub-title">The work, connected.</h2>
+            <p>
+              An interactive map of my projects and the infrastructure behind them.
+              Follow a connection to see how the public sites, private tools, and services fit together.
+            </p>
+            <a className={styles.textLink} href="https://hub.edsong.xyz" target="_blank" rel="noreferrer">
+              Explore the Hub <Arrow external />
+            </a>
+          </div>
+          <HubEmbed />
         </section>
 
         <section
@@ -831,34 +751,6 @@ export default function PortfolioZen() {
               </li>
             ))}
           </ol>
-        </section>
-
-        <section
-          id="capabilities"
-          className={`${styles.section} ${styles.capabilitySection} ${styles.traceSection}`}
-          aria-labelledby="capabilities-title"
-          data-trace-active={activePrimarySection === 'capabilities' ? 'true' : 'false'}
-        >
-          <div className={styles.sectionHeading}>
-            <h2 id="capabilities-title" className={styles.traceTitle}>
-              Capabilities
-            </h2>
-          </div>
-
-          <ul className={styles.capabilityList}>
-            {capabilities.map((capability) => (
-              <li key={capability.title}>
-                <h3>{capability.title}</h3>
-                <div>
-                  <p>{capability.description}</p>
-                  <p className={styles.capabilityEvidence}>
-                    <span>{capability.annotation}:</span>{' '}
-                    <span>{capability.evidence}</span>
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
         </section>
 
         <section
@@ -914,8 +806,9 @@ export default function PortfolioZen() {
               Contact
             </p>
             <h2 id="contact-title">
-              Interested in senior product engineering, forward-deployed engineering, and technical lead roles.
+              Let’s build something useful.
             </h2>
+            <p className={styles.contactNote}>Open to senior product engineering, forward-deployed engineering, and technical lead roles.</p>
           </div>
           <div className={styles.contactLinks}>
             <a className={styles.primaryLink} href={`mailto:${EMAIL}`}>

@@ -62,7 +62,7 @@
 
 .troaArtifact {
   grid-template-rows: minmax(0, 1fr);
-  height: auto;
+  height: 100%;
   position: relative;
 }
 
@@ -93,6 +93,12 @@
   height: 100%;
   transform: translateX(-33.3333%);
   width: 300%;
+}
+
+.troaSlideTrack[data-static='true'] {
+  grid-template-columns: 1fr;
+  transform: none;
+  width: 100%;
 }
 
 .troaSlidePanel {

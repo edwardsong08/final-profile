@@ -11,7 +11,7 @@ export default function Home() {
         openGraph={{
           title: 'Edward Song — Product Engineer & Technical Lead',
           description:
-            'Product direction, hands-on engineering, and technical leadership across TROA, ClaimChain, and Ryu Legal.',
+            'Technology ownership at TROA and Ryu Legal, independent work on 4ME OS and Newsroom, and the systems connecting it all.',
           url: 'https://www.edsong.xyz/',
           type: 'website',
           images: [

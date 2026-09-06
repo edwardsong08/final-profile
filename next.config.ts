@@ -1,5 +1,9 @@
 import type { NextConfig } from "next";
 
+const realmMapFrameSource = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:5173'
+  : 'https://troa-realms.therealmsofasgard.com';
+
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -12,7 +16,7 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob:",
   "font-src 'self'",
   "connect-src 'self'",
-  "frame-src 'none'",
+  `frame-src ${realmMapFrameSource} https://hub.edsong.xyz`,
   "manifest-src 'self'",
   "media-src 'self'",
   "worker-src 'self' blob:",

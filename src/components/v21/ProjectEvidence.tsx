@@ -272,11 +272,13 @@ const troaSites = [
 export type TroaSlideId = (typeof troaSites)[number]['id'];
 
 type TroaEvidenceProps = EvidenceProps & {
+  staticView?: boolean;
   onActiveSlideChange?: (slide: TroaSlideId) => void;
 };
 
 export function TroaEvidence({
   priority = false,
+  staticView = false,
   onActiveSlideChange,
 }: TroaEvidenceProps) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -291,11 +293,13 @@ export function TroaEvidence({
   const activeSite = troaSites[activeIndex];
   const previousIndex = (activeIndex - 1 + troaSites.length) % troaSites.length;
   const nextIndex = (activeIndex + 1) % troaSites.length;
-  const visibleSites = [
-    { site: troaSites[previousIndex], position: 'previous' },
-    { site: activeSite, position: 'current' },
-    { site: troaSites[nextIndex], position: 'next' },
-  ] as const;
+  const visibleSites = staticView
+    ? [{ site: activeSite, position: 'current' as const }]
+    : [
+      { site: troaSites[previousIndex], position: 'previous' as const },
+      { site: activeSite, position: 'current' as const },
+      { site: troaSites[nextIndex], position: 'next' as const },
+    ];
 
   useEffect(() => {
     onActiveSlideChange?.(activeSite.id);
@@ -370,7 +374,7 @@ export function TroaEvidence({
   };
 
   const verticalDragScroll = useVerticalDragScroll(scrollerRef, {
-    allowTouchHorizontal: true,
+    allowTouchHorizontal: !staticView,
     onHorizontalCancel: () => {
       setIsDragging(false);
       returnToCenter();
@@ -424,7 +428,7 @@ export function TroaEvidence({
             className={styles.troaDragSurface}
             style={{ x: dragX }}
           >
-            <div className={styles.troaSlideTrack}>
+            <div className={styles.troaSlideTrack} data-static={staticView ? 'true' : 'false'}>
               {visibleSites.map(({ site, position }) => {
                 const isCurrent = position === 'current';
 
@@ -439,9 +443,13 @@ export function TroaEvidence({
                       data-engagement={isCurrent ? engagement : 'none'}
                       role={isCurrent ? 'region' : undefined}
                       aria-label={isCurrent
-                        ? activeSite.kind === 'image'
-                          ? `Scrollable preview of the TROA ${activeSite.label} homepage. Scroll or drag vertically to explore; drag horizontally or use Left and Right Arrow keys to change sites.`
-                          : 'Overview of TROA private operating systems. Drag horizontally or use Left and Right Arrow keys to change sites.'
+                        ? staticView
+                          ? activeSite.kind === 'image'
+                            ? `Scrollable preview of the TROA ${activeSite.label} homepage. Scroll vertically to explore.`
+                            : 'Overview of TROA private operating systems.'
+                          : activeSite.kind === 'image'
+                            ? `Scrollable preview of the TROA ${activeSite.label} homepage. Scroll or drag vertically to explore; drag horizontally or use Left and Right Arrow keys to change sites.`
+                            : 'Overview of TROA private operating systems. Drag horizontally or use Left and Right Arrow keys to change sites.'
                         : undefined}
                       tabIndex={isCurrent ? 0 : -1}
                       ref={isCurrent ? scrollerRef : undefined}
@@ -552,7 +560,7 @@ export function TroaEvidence({
           </div>
         )}
       </div>
-      <nav className={styles.troaPager} aria-label="TROA ecosystem previews">
+      {!staticView && <nav className={styles.troaPager} aria-label="TROA ecosystem previews">
         <button
           className={styles.troaPagerArrow}
           type="button"
@@ -584,7 +592,7 @@ export function TroaEvidence({
         >
           <span aria-hidden="true">→</span>
         </button>
-      </nav>
+      </nav>}
       <figcaption className={styles.visuallyHidden}>
         TROA {activeSite.label}: {activeSite.description}
       </figcaption>
@@ -762,15 +770,18 @@ export function ProjectEvidence({
   priority = false,
   claimchainView = 'demo',
   onTroaSlideChange,
+  staticTroa = false,
 }: EvidenceProps & {
   claimchainView?: 'demo' | 'diagram';
   onTroaSlideChange?: (slide: TroaSlideId) => void;
   project: 'troa' | 'claimchain' | 'ryu-legal';
+  staticTroa?: boolean;
 }) {
   if (project === 'troa') {
     return (
       <TroaEvidence
         priority={priority}
+        staticView={staticTroa}
         onActiveSlideChange={onTroaSlideChange}
       />
     );
