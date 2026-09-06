@@ -24,16 +24,23 @@ s = s.replace('    gl.uniform1i(advectionProgram.uniforms.uSource, dye.read.atta
   '    gl.uniform1i(advectionProgram.uniforms.uSource, dye.read.attach(1));\n    gl.uniform1f(advectionProgram.uniforms.dt, dt * .52);');
 // Apply pointer forces exclusively to velocity. Never inject random colors.
 s = s.replace(/    gl.uniform1i\(splatProgram.uniforms.uTarget, dye.read.attach\(0\)\);[\s\S]*?    dye.swap\(\);/, '');
-s = s.replace("canvas.addEventListener('mousemove', e => {", "canvas.addEventListener('mousemove', e => {\n    lastGesture = performance.now();");
+s = s.replace("canvas.addEventListener('mousemove', e => {", "canvas.addEventListener('mousemove', e => {\n    noteGesture(performance.now());");
 s = s.replace('    if (!pointer.down) return;', '    // Hover moves pigment too.');
 // Bound a sparse/fast pointer event so it cannot fling the whole painting.
 s = s.replace('    splat(pointer.texcoordX, pointer.texcoordY, dx, dy, pointer.color);',
   '    const speed = Math.hypot(dx, dy);\n    const scale = Math.min(1, 18 / Math.max(speed, .001));\n    splat(pointer.texcoordX, pointer.texcoordY, dx * scale, dy * scale, pointer.color);');
 s = s.replace("canvas.addEventListener('mousedown', e => {", "canvas.addEventListener('mouseenter', e => { updatePointerDownData(pointers[0], -1, scaleByPixelRatio(e.offsetX), scaleByPixelRatio(e.offsetY)); });\ncanvas.addEventListener('mousedown', e => {");
-s = s.replace("canvas.addEventListener('touchmove', e => {", "canvas.addEventListener('touchmove', e => {\n    lastGesture = performance.now();");
+s = s.replace("canvas.addEventListener('touchmove', e => {", "canvas.addEventListener('touchmove', e => {\n    noteGesture(performance.now());");
 s += `
 // The dye stores pigment absorption, so white paper contributes no dye.
 let lastGesture = -10000;
+let gestureStart = -10000;
+let lastGestureEvent = -10000;
+function noteGesture(now){
+ if(now-lastGestureEvent>220)gestureStart=now;
+ lastGestureEvent=now;
+ lastGesture=gestureStart;
+}
 let embedVisible=true;
 let lastEmbeddedPointer=0;
 let paintCoverage=null;
@@ -57,7 +64,7 @@ window.addEventListener('message',event=>{
  const x=data.x*canvas.width,y=data.y*canvas.height;
  if(now-lastEmbeddedPointer>150)updatePointerDownData(pointer,-1,x,y);
  else updatePointerMoveData(pointer,x,y);
- lastEmbeddedPointer=now;lastGesture=now;
+ lastEmbeddedPointer=now;noteGesture(now);
 });
 const sourceTexture = gl.createTexture();
 const smokeTexture = gl.createTexture();
@@ -98,6 +105,11 @@ const restoreProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_S
    float localAge=max(0.,recoveryAge-recoveryPattern*.22);
    float gathering=smoothstep(0.,.7,localAge);
    float detail=smoothstep(.25,1.25,localAge);
+   vec2 motion=texture2D(flow,vUv).xy;
+   // Recovery is local: areas the pointer has already passed may settle while
+   // the active stroke continues, but moving pigment stays out of the way.
+   float quiet=1.-smoothstep(.12,1.8,length(motion));
+   gathering*=quiet;
    float resilience=1.-pow(1.-amount,gathering*mix(.9,1.3,structure));
    // Rebuild only disturbed pigment; intact areas retain their crispness.
    float disturbed=smoothstep(.008,.09,length(texture2D(current,vUv).rgb-target));
@@ -108,7 +120,6 @@ const restoreProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_S
      +originalPigment(vUv+vec2(0.,softRadius.y))
      +originalPigment(vUv-vec2(0.,softRadius.y)))/8.;
    target=mix(broad,target,detail);
-   vec2 motion=texture2D(flow,vUv).xy;
    float stirred=smoothstep(.15,4.,length(motion));
    // Smooth multiscale eddies open uneven gaps in the pigment itself.
    // The result is persisted in the dye buffer, not drawn as a fading overlay.

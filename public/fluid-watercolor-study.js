@@ -1447,7 +1447,7 @@ canvas.addEventListener('mousedown', e => {
 });
 
 canvas.addEventListener('mousemove', e => {
-    lastGesture = performance.now();
+    noteGesture(performance.now());
     let pointer = pointers[0];
     // Hover moves pigment too.
     let posX = scaleByPixelRatio(e.offsetX);
@@ -1472,7 +1472,7 @@ canvas.addEventListener('touchstart', e => {
 });
 
 canvas.addEventListener('touchmove', e => {
-    lastGesture = performance.now();
+    noteGesture(performance.now());
     e.preventDefault();
     const touches = e.targetTouches;
     for (let i = 0; i < touches.length; i++) {
@@ -1624,6 +1624,13 @@ function hashCode (s) {
 };
 // The dye stores pigment absorption, so white paper contributes no dye.
 let lastGesture = -10000;
+let gestureStart = -10000;
+let lastGestureEvent = -10000;
+function noteGesture(now){
+ if(now-lastGestureEvent>220)gestureStart=now;
+ lastGestureEvent=now;
+ lastGesture=gestureStart;
+}
 let embedVisible=true;
 let lastEmbeddedPointer=0;
 let paintCoverage=null;
@@ -1647,7 +1654,7 @@ window.addEventListener('message',event=>{
  const x=data.x*canvas.width,y=data.y*canvas.height;
  if(now-lastEmbeddedPointer>150)updatePointerDownData(pointer,-1,x,y);
  else updatePointerMoveData(pointer,x,y);
- lastEmbeddedPointer=now;lastGesture=now;
+ lastEmbeddedPointer=now;noteGesture(now);
 });
 const sourceTexture = gl.createTexture();
 const smokeTexture = gl.createTexture();
@@ -1688,6 +1695,11 @@ const restoreProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_S
    float localAge=max(0.,recoveryAge-recoveryPattern*.22);
    float gathering=smoothstep(0.,.7,localAge);
    float detail=smoothstep(.25,1.25,localAge);
+   vec2 motion=texture2D(flow,vUv).xy;
+   // Recovery is local: areas the pointer has already passed may settle while
+   // the active stroke continues, but moving pigment stays out of the way.
+   float quiet=1.-smoothstep(.12,1.8,length(motion));
+   gathering*=quiet;
    float resilience=1.-pow(1.-amount,gathering*mix(.9,1.3,structure));
    // Rebuild only disturbed pigment; intact areas retain their crispness.
    float disturbed=smoothstep(.008,.09,length(texture2D(current,vUv).rgb-target));
@@ -1698,7 +1710,6 @@ const restoreProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_S
      +originalPigment(vUv+vec2(0.,softRadius.y))
      +originalPigment(vUv-vec2(0.,softRadius.y)))/8.;
    target=mix(broad,target,detail);
-   vec2 motion=texture2D(flow,vUv).xy;
    float stirred=smoothstep(.15,4.,length(motion));
    // Smooth multiscale eddies open uneven gaps in the pigment itself.
    // The result is persisted in the dye buffer, not drawn as a fading overlay.
