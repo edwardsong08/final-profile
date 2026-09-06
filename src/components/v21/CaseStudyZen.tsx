@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { ProjectEvidence } from './ProjectEvidence';
+import { ClaimChainEvidence, ProjectEvidence } from './ProjectEvidence';
 import styles from './CaseStudyZen.module.css';
 
 export type ProjectId = 'troa' | 'claimchain' | 'ryu-legal';
@@ -191,7 +191,7 @@ const projects: Record<ProjectId, {
       'All portfolio material uses test data. The demo and repository are evidence of implementation, not evidence of commercial operation or production suitability.',
     links: [
       { label: 'View repository', href: 'https://github.com/edwardsong08/claimchain-platform', external: true },
-      { label: 'Watch walkthrough', href: '/ClaimChain_Demo.mp4', external: true },
+      { label: 'Watch demo · 3:30', href: '#demo' },
     ],
     next: { label: 'Ryu Legal', href: '/work/ryu-legal' },
   },
@@ -338,6 +338,18 @@ export default function CaseStudyZen({ project }: { project: ProjectId }) {
           </dl>
 
           <div className={styles.story}>
+            {project === 'claimchain' ? (
+              <section id="demo" className={styles.storySection} aria-labelledby="demo-title">
+                <h2 id="demo-title">See the prototype in action.</h2>
+                <div className={styles.storyBody}>
+                  <p>A 3½-minute walkthrough of the provider, administrator, and buyer workflows, using test data.</p>
+                  <ClaimChainEvidence />
+                  <div className={styles.links}>
+                    <a href="/ClaimChain_Demo.mp4" target="_blank" rel="noreferrer">Open video separately <Arrow external /></a>
+                  </div>
+                </div>
+              </section>
+            ) : null}
             {content.sections.map((section) => (
               <section className={styles.storySection} key={section.heading}>
                 <h2>{section.heading}</h2>

@@ -7,6 +7,7 @@ import {
   Triangle,
   Vec2,
 } from 'ogl';
+import { advanceRippleClock, RIPPLE_STEP_MS } from './rippleTiming';
 
 const fullscreenVertexShader = `
   attribute vec2 uv;
@@ -46,12 +47,12 @@ const simulationFragmentShader = `
   }
 
   vec2 decodeState(vec4 state) {
-    vec2 encoded = vec2((state.r - 0.5) * 0.5, (state.g - 0.5) * 0.06);
+    vec2 encoded = (state.rg - vec2(128.0 / 255.0)) * vec2(0.5, 0.06);
     return mix(state.rg, encoded, uEncoded);
   }
 
   vec2 encodeState(vec2 state) {
-    vec2 encoded = vec2(state.x / 0.5 + 0.5, state.y / 0.06 + 0.5);
+    vec2 encoded = state / vec2(0.5, 0.06) + vec2(128.0 / 255.0);
     return mix(state, clamp(encoded, 0.0, 1.0), uEncoded);
   }
 
@@ -97,9 +98,9 @@ const simulationFragmentShader = `
     float medium = 0.955 + noise(vUv * vec2(7.1, 9.3) + vec2(2.7, 5.1)) * 0.09;
     float height = centerState.x;
     float velocity = centerState.y;
-    velocity += (neighborhood - height) * 0.48 * medium;
-    velocity += (touchImpulse(uTouchA) + touchImpulse(uTouchB)) * 0.021;
-    velocity *= 0.992;
+    velocity += (neighborhood - height) * 0.62 * medium;
+    velocity += (touchImpulse(uTouchA) + touchImpulse(uTouchB)) * 0.018;
+    velocity *= 0.989;
     height = (height + velocity) * 0.9994;
 
     float edge = smoothstep(0.0, 0.045, vUv.x)
@@ -126,12 +127,8 @@ const displayFragmentShader = `
   uniform float uEffectStrength;
   uniform float uTextReveal;
 
-  float hash(vec2 point) {
-    return fract(sin(dot(point, vec2(127.1, 311.7))) * 43758.5453123);
-  }
-
   float decodeHeight(vec4 state) {
-    return mix(state.r, (state.r - 0.5) * 0.5, uEncoded);
+    return mix(state.r, (state.r - 128.0 / 255.0) * 0.5, uEncoded);
   }
 
   void main() {
@@ -155,10 +152,8 @@ const displayFragmentShader = `
     float waveFront = smoothstep(0.00016, 0.0034, abs(curvature));
     float directionalShadow = max(0.0, dot(slope, vec2(0.68, -0.74))) * 58.0;
     float specular = pow(max(dot(normal, lightDirection), 0.0), 22.0);
-    float microTexture = (hash(gl_FragCoord.xy) - 0.5) * disturbance * 0.006;
     float surfaceAlpha = clamp(
-      waveFront * 0.067 + specular * disturbance * 0.022
-        + microTexture,
+      waveFront * 0.058 + specular * disturbance * 0.022,
       0.0,
       0.15
     ) * uEffectStrength;
@@ -368,9 +363,9 @@ export function setupMobileRipple({
   }
 
   const pendingImpulses: RippleImpulse[] = [];
-  const minimumFrameInterval = 1000 / 45;
-  const rippleLifetime = 6000;
-  const rippleFadeDuration = 1800;
+  const rippleLifetime = 4200;
+  const rippleFadeDuration = 1200;
+  let simulationRemainder = 0;
   let activeUntil = 0;
   let animationFrame = 0;
   let isVisible = true;
@@ -379,7 +374,7 @@ export function setupMobileRipple({
   let startTime = lastFrame;
 
   const clearStateTargets = () => {
-    const flatValue = encodedState ? 0.5 : 0;
+    const flatValue = encodedState ? 128 / 255 : 0;
     gl.clearColor(flatValue, flatValue, 0, 1);
     renderer.bindFramebuffer(readTarget);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -420,11 +415,12 @@ export function setupMobileRipple({
 
   const resize = () => {
     const bounds = canvas.getBoundingClientRect();
-    const requestedRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+    const requestedRatio = Math.min(window.devicePixelRatio || 1, 2);
     const pixelRatio = Math.min(
       requestedRatio,
-      620 / Math.max(bounds.width, 1),
-      900 / Math.max(bounds.height, 1),
+      900 / Math.max(bounds.width, 1),
+      1400 / Math.max(bounds.height, 1),
+      Math.sqrt(1_200_000 / Math.max(1, bounds.width * bounds.height)),
     );
     renderer.dpr = pixelRatio;
     renderer.setSize(bounds.width, bounds.height);
@@ -465,11 +461,11 @@ export function setupMobileRipple({
     ]);
   };
 
-  const simulate = () => {
-    const impulses = pendingImpulses.splice(0, 2);
-    for (let step = 0; step < 2; step += 1) {
-      setTouchUniform(touchA, step === 0 ? impulses[0] : undefined);
-      setTouchUniform(touchB, step === 0 ? impulses[1] : undefined);
+  const simulate = (steps: number) => {
+    for (let step = 0; step < steps; step += 1) {
+      const impulses = pendingImpulses.splice(0, 2);
+      setTouchUniform(touchA, impulses[0]);
+      setTouchUniform(touchB, impulses[1]);
       simulationProgram.uniforms.tState.value = readTarget.texture;
       renderer.render({
         scene: simulationMesh,
@@ -505,16 +501,14 @@ export function setupMobileRipple({
 
   const render = (now: number) => {
     animationFrame = 0;
-    if (now - lastFrame < minimumFrameInterval) {
-      if (isVisible && !document.hidden) {
-        animationFrame = window.requestAnimationFrame(render);
-      }
-      return;
-    }
-
+    const elapsed = now - lastFrame;
     lastFrame = now;
     const simulationIsActive = now < activeUntil || pendingImpulses.length > 0;
-    if (simulationIsActive) simulate();
+    if (simulationIsActive) {
+      const timing = advanceRippleClock(simulationRemainder, elapsed);
+      simulationRemainder = timing.remainder;
+      simulate(timing.steps);
+    }
     else if (needsReset) {
       clearStateTargets();
       displayProgram.uniforms.tState.value = readTarget.texture;
@@ -531,7 +525,8 @@ export function setupMobileRipple({
   const startRendering = (immediate = false) => {
     if (animationFrame || !isVisible || document.hidden) return;
     const now = performance.now();
-    lastFrame = immediate ? now - minimumFrameInterval : now;
+    simulationRemainder = 0;
+    lastFrame = immediate ? now - RIPPLE_STEP_MS : now;
     animationFrame = window.requestAnimationFrame(render);
   };
 
@@ -600,7 +595,7 @@ export function setupMobileRipple({
       event.clientX - previous.x,
       event.clientY - previous.y,
     );
-    if (distance < 8 && event.timeStamp - previous.sampledAt < 56) return;
+    if (distance < 8 && event.timeStamp - previous.sampledAt < 32) return;
 
     activePointers.set(event.pointerId, {
       x: event.clientX,
@@ -640,7 +635,7 @@ export function setupMobileRipple({
         touch.clientX - previous.x,
         touch.clientY - previous.y,
       );
-      if (distance < 8 && event.timeStamp - previous.sampledAt < 56) return;
+      if (distance < 8 && event.timeStamp - previous.sampledAt < 32) return;
 
       activeTouches.set(touch.identifier, {
         x: touch.clientX,

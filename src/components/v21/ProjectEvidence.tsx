@@ -88,6 +88,7 @@ function handleVerticalScrollKey(
 function useVerticalDragScroll(
   scrollerRef: RefObject<HTMLDivElement | null>,
   {
+    allowHorizontalDrag = true,
     allowTouchHorizontal = false,
     allowVerticalScroll = true,
     onHorizontalCancel,
@@ -96,6 +97,7 @@ function useVerticalDragScroll(
     onHorizontalStart,
     preserveHorizontalGesture = false,
   }: {
+    allowHorizontalDrag?: boolean;
     allowTouchHorizontal?: boolean;
     allowVerticalScroll?: boolean;
     onHorizontalCancel?: () => void;
@@ -160,6 +162,11 @@ function useVerticalDragScroll(
           ? absoluteY > absoluteX * 1.15
           : absoluteY >= absoluteX * 0.8
       );
+      if (!isVerticalIntent && !allowHorizontalDrag) {
+        // The containing project showcase owns sideways navigation.
+        sessionRef.current = null;
+        return;
+      }
       session.axis = isVerticalIntent ? 'vertical' : 'horizontal';
 
       if (session.axis === 'vertical') {
@@ -271,14 +278,86 @@ const troaSites = [
 
 export type TroaSlideId = (typeof troaSites)[number]['id'];
 
+const pageScreenshots = {
+  troa: {
+    src: troaSites[0].image,
+    width: 1218,
+    height: troaSites[0].height,
+    label: 'TROA V3 public platform',
+    alt: 'Full TROA V3 public platform homepage, from its opening introduction through the footer',
+  },
+  'ryu-legal': {
+    src: '/case-studies/ryu-home-full.webp',
+    width: 1218,
+    height: 4386,
+    label: 'Ryu Legal production website',
+    alt: 'Full Ryu Legal production homepage, from the opening practice overview through services, office information, and contact form',
+  },
+  fourme: {
+    src: '/case-studies/fourme-home-full.webp',
+    width: 1119,
+    height: 8254,
+    label: '4ME OS public landing page',
+    alt: 'Full 4ME OS public landing page, including its context workflow, trust contract, research status, and footer',
+  },
+  newsroom: {
+    src: '/case-studies/newsroom-home-full.webp',
+    width: 1424,
+    height: 3216,
+    label: 'Newsroom front page',
+    alt: 'Full Newsroom front page, from the masthead and original illustration through its editorial desks, field guide, and footer',
+  },
+} as const;
+
+/** A single full-page image, without the legacy TROA site's nested carousel. */
+export function SitePagePreview({
+  project,
+  priority = false,
+  sizes = '(max-width: 1024px) 100vw, 58vw',
+}: EvidenceProps & { project: keyof typeof pageScreenshots; sizes?: string }) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = useReducedMotion();
+  const dragScroll = useVerticalDragScroll(scrollerRef, { allowHorizontalDrag: false });
+  const screenshot = pageScreenshots[project];
+
+  return (
+    <figure className={styles.sitePagePreview}>
+      <div
+        className={styles.sitePageScroller}
+        data-page-preview-scroll
+        data-panning={dragScroll.isPanning ? 'true' : 'false'}
+        role="region"
+        aria-label={`Scrollable full-page preview of the ${screenshot.label}. Scroll or drag vertically to explore.`}
+        tabIndex={0}
+        ref={scrollerRef}
+        onKeyDown={(event) => handleVerticalScrollKey(event, scrollerRef, prefersReducedMotion)}
+        onPointerDown={dragScroll.onPointerDown}
+        onPointerMove={dragScroll.onPointerMove}
+        onPointerUp={dragScroll.onPointerUp}
+        onPointerCancel={dragScroll.onPointerCancel}
+      >
+        <Image
+          src={screenshot.src}
+          alt={screenshot.alt}
+          width={screenshot.width}
+          height={screenshot.height}
+          loading={priority ? 'eager' : 'lazy'}
+          sizes={sizes}
+          className={styles.sitePageScreenshot}
+          draggable={false}
+        />
+      </div>
+      <span className={styles.scrollCue} aria-hidden="true">Scroll</span>
+    </figure>
+  );
+}
+
 type TroaEvidenceProps = EvidenceProps & {
-  staticView?: boolean;
   onActiveSlideChange?: (slide: TroaSlideId) => void;
 };
 
 export function TroaEvidence({
   priority = false,
-  staticView = false,
   onActiveSlideChange,
 }: TroaEvidenceProps) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -293,9 +372,7 @@ export function TroaEvidence({
   const activeSite = troaSites[activeIndex];
   const previousIndex = (activeIndex - 1 + troaSites.length) % troaSites.length;
   const nextIndex = (activeIndex + 1) % troaSites.length;
-  const visibleSites = staticView
-    ? [{ site: activeSite, position: 'current' as const }]
-    : [
+  const visibleSites = [
       { site: troaSites[previousIndex], position: 'previous' as const },
       { site: activeSite, position: 'current' as const },
       { site: troaSites[nextIndex], position: 'next' as const },
@@ -374,7 +451,7 @@ export function TroaEvidence({
   };
 
   const verticalDragScroll = useVerticalDragScroll(scrollerRef, {
-    allowTouchHorizontal: !staticView,
+    allowTouchHorizontal: true,
     onHorizontalCancel: () => {
       setIsDragging(false);
       returnToCenter();
@@ -428,7 +505,7 @@ export function TroaEvidence({
             className={styles.troaDragSurface}
             style={{ x: dragX }}
           >
-            <div className={styles.troaSlideTrack} data-static={staticView ? 'true' : 'false'}>
+            <div className={styles.troaSlideTrack}>
               {visibleSites.map(({ site, position }) => {
                 const isCurrent = position === 'current';
 
@@ -443,11 +520,7 @@ export function TroaEvidence({
                       data-engagement={isCurrent ? engagement : 'none'}
                       role={isCurrent ? 'region' : undefined}
                       aria-label={isCurrent
-                        ? staticView
-                          ? activeSite.kind === 'image'
-                            ? `Scrollable preview of the TROA ${activeSite.label} homepage. Scroll vertically to explore.`
-                            : 'Overview of TROA private operating systems.'
-                          : activeSite.kind === 'image'
+                        ? activeSite.kind === 'image'
                             ? `Scrollable preview of the TROA ${activeSite.label} homepage. Scroll or drag vertically to explore; drag horizontally or use Left and Right Arrow keys to change sites.`
                             : 'Overview of TROA private operating systems. Drag horizontally or use Left and Right Arrow keys to change sites.'
                         : undefined}
@@ -560,7 +633,7 @@ export function TroaEvidence({
           </div>
         )}
       </div>
-      {!staticView && <nav className={styles.troaPager} aria-label="TROA ecosystem previews">
+      <nav className={styles.troaPager} aria-label="TROA ecosystem previews">
         <button
           className={styles.troaPagerArrow}
           type="button"
@@ -592,7 +665,7 @@ export function TroaEvidence({
         >
           <span aria-hidden="true">→</span>
         </button>
-      </nav>}
+      </nav>
       <figcaption className={styles.visuallyHidden}>
         TROA {activeSite.label}: {activeSite.description}
       </figcaption>
@@ -770,18 +843,15 @@ export function ProjectEvidence({
   priority = false,
   claimchainView = 'demo',
   onTroaSlideChange,
-  staticTroa = false,
 }: EvidenceProps & {
   claimchainView?: 'demo' | 'diagram';
   onTroaSlideChange?: (slide: TroaSlideId) => void;
   project: 'troa' | 'claimchain' | 'ryu-legal';
-  staticTroa?: boolean;
 }) {
   if (project === 'troa') {
     return (
       <TroaEvidence
         priority={priority}
-        staticView={staticTroa}
         onActiveSlideChange={onTroaSlideChange}
       />
     );

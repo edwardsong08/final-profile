@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type RefObject, useEffect, useRef, useState } from 'react';
 
-import { ProjectEvidence } from './ProjectEvidence';
+import { SitePagePreview } from './ProjectEvidence';
 import SmokeField from './SmokeField';
 import styles from './PortfolioZen.module.css';
 
@@ -275,12 +275,13 @@ function HubEmbed() {
     <div ref={containerRef} className={styles.hubEmbed}>
       <iframe
         className={styles.hubFrame}
-        src="https://hub.edsong.xyz/?embed=profile"
+        src={process.env.NODE_ENV === 'development'
+          ? 'http://localhost:3001/embed/profile'
+          : 'https://hub.edsong.xyz/embed/profile'}
         title="ES/HUB living systems map"
         loading="lazy"
         referrerPolicy="strict-origin-when-cross-origin"
       />
-      <span className={styles.hubEmbedLabel}>LIVE SYSTEMS MAP</span>
     </div>
   );
 }
@@ -420,7 +421,7 @@ export default function PortfolioZen() {
     0.32,
     false,
   );
-  const stewardshipPointerStart = useRef<{ x: number; y: number } | null>(null);
+  const stewardshipPointerStart = useRef<{ x: number; y: number; pointerId: number } | null>(null);
   const activeStewardshipIndex = stewardshipSlides.indexOf(activeStewardship);
 
   const handleRealmObjectChange = (objectId: string) => {
@@ -432,15 +433,21 @@ export default function PortfolioZen() {
   };
 
   const handleStewardshipPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    stewardshipPointerStart.current = null;
+    if (!event.isPrimary || event.button !== 0) return;
     if ((event.target as Element).closest('button, a')) return;
-    stewardshipPointerStart.current = { x: event.clientX, y: event.clientY };
+    const scroller = (event.target as Element).closest<HTMLElement>('[data-page-preview-scroll]');
+    if (scroller) {
+      const scrollbarWidth = scroller.offsetWidth - scroller.clientWidth;
+      if (scrollbarWidth > 0 && event.clientX >= scroller.getBoundingClientRect().right - scrollbarWidth - 2) return;
+    }
+    stewardshipPointerStart.current = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
   };
 
   const handleStewardshipPointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
     const start = stewardshipPointerStart.current;
     stewardshipPointerStart.current = null;
-    if (start === null) return;
+    if (start === null || start.pointerId !== event.pointerId) return;
     const deltaX = event.clientX - start.x;
     const deltaY = event.clientY - start.y;
     if (Math.abs(deltaX) < 48 || Math.abs(deltaX) <= Math.abs(deltaY) * 1.2) return;
@@ -579,7 +586,7 @@ export default function PortfolioZen() {
                     style={{ transform: `translateX(-${activeStewardshipIndex * (100 / 3)}%)` }}
                   >
                     <div className={styles.stewardshipMediaSlide} aria-hidden={activeStewardship !== 'troa-nonprofit'} inert={activeStewardship !== 'troa-nonprofit'}>
-                      <ProjectEvidence project="troa" staticTroa />
+                      <SitePagePreview project="troa" />
                     </div>
                     <div className={styles.stewardshipMediaSlide} aria-hidden={activeStewardship !== 'troa-gaming'} inert={activeStewardship !== 'troa-gaming'}>
                       <LiveRealmMapEmbed
@@ -590,7 +597,7 @@ export default function PortfolioZen() {
                       />
                     </div>
                     <div className={styles.stewardshipMediaSlide} aria-hidden={activeStewardship !== 'ryu'} inert={activeStewardship !== 'ryu'}>
-                      <ProjectEvidence project="ryu-legal" />
+                      <SitePagePreview project="ryu-legal" />
                     </div>
                   </div>
                 </div>
@@ -653,10 +660,12 @@ export default function PortfolioZen() {
 
           <div className={styles.systemsGrid}>
             <article className={styles.systemCard}>
-              <figure className={styles.systemPreview}>
-                <Image src="/fourme-showcase.jpg" alt="4ME OS public research page with an illustrative, synthetic context manifest" width={1440} height={900} sizes="(max-width: 820px) 100vw, 46vw" />
-                <figcaption>Public research preview · Synthetic context example</figcaption>
-              </figure>
+              <div className={styles.systemPreview}>
+                <div className={styles.systemPreviewFrame}>
+                  <SitePagePreview project="fourme" sizes="(max-width: 820px) 100vw, 46vw" />
+                </div>
+                <p className={styles.systemPreviewCaption}>Public research page · Scroll to explore</p>
+              </div>
               <p className={styles.projectMeta}>Personal knowledge platform · Research build</p>
               <h3>4ME OS</h3>
               <p>
@@ -674,10 +683,12 @@ export default function PortfolioZen() {
             </article>
 
             <article className={styles.systemCard}>
-              <figure className={styles.systemPreview}>
-                <Image src="/newsroom-showcase.jpg" alt="The Newsroom front page with its broadsheet masthead, original illustration, and editor’s note" width={1440} height={900} sizes="(max-width: 820px) 100vw, 46vw" />
-                <figcaption>The live front page · Original editorial design</figcaption>
-              </figure>
+              <div className={styles.systemPreview}>
+                <div className={styles.systemPreviewFrame}>
+                  <SitePagePreview project="newsroom" sizes="(max-width: 820px) 100vw, 46vw" />
+                </div>
+                <p className={styles.systemPreviewCaption}>The full front page · Scroll to explore</p>
+              </div>
               <p className={styles.projectMeta}>Editorial application · Live publication</p>
               <h3>Newsroom</h3>
               <p>
@@ -702,6 +713,7 @@ export default function PortfolioZen() {
             <p>A three-role prototype for reviewing claims, testing purchases, and controlling document access. A focused study in backend authority and payment workflows.</p>
             <div className={styles.projectLinks}>
               <Link href="/work/claimchain">Read case study <Arrow /></Link>
+              <Link href="/work/claimchain#demo">Watch demo · 3:30 <Arrow /></Link>
               <a href="https://github.com/edwardsong08/claimchain-platform" target="_blank" rel="noreferrer">View repository <Arrow external /></a>
             </div>
           </aside>

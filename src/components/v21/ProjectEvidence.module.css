@@ -95,12 +95,6 @@
   width: 300%;
 }
 
-.troaSlideTrack[data-static='true'] {
-  grid-template-columns: 1fr;
-  transform: none;
-  width: 100%;
-}
-
 .troaSlidePanel {
   height: 100%;
   min-width: 0;
@@ -316,6 +310,56 @@
   position: relative;
 }
 
+/* Homepage previews have one bounded scrollport, independent of the
+   case-study artifacts' captions, carousels, and responsive grid rows. */
+.sitePagePreview {
+  --artifact-rule: #cfd5d1;
+  --artifact-muted: #626a65;
+
+  background: #edf0ec;
+  height: 100%;
+  margin: 0;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.sitePageScroller {
+  cursor: grab;
+  height: 100%;
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  scrollbar-color: #89978f #edf0ec;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.sitePageScroller[data-panning='true'] {
+  cursor: grabbing;
+}
+
+.sitePageScroller:focus-visible {
+  outline: 2px solid #315c72;
+  outline-offset: -2px;
+}
+
+.sitePageScreenshot {
+  -webkit-user-drag: none;
+  display: block;
+  height: auto;
+  max-height: none;
+  user-select: none;
+  width: 100%;
+}
+
+.sitePagePreview:hover .scrollCue,
+.sitePagePreview:focus-within .scrollCue {
+  opacity: 0;
+}
+
 .ryuArtifact {
   grid-template-rows: minmax(0, 1fr);
   position: relative;
@@ -404,9 +448,12 @@
   text-transform: uppercase;
 }
 
-.claimVideoArtifact {
+.artifact.claimVideoArtifact {
+  aspect-ratio: 16 / 9;
   background: #05090b;
   grid-template-rows: minmax(0, 1fr);
+  height: auto;
+  margin-top: 1.5rem;
 }
 
 .claimVideoStage {

@@ -4,6 +4,10 @@ const realmMapFrameSource = process.env.NODE_ENV === 'development'
   ? 'http://localhost:5173'
   : 'https://troa-realms.therealmsofasgard.com';
 
+const hubFrameSource = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:3001 https://hub.edsong.xyz'
+  : 'https://hub.edsong.xyz';
+
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -16,7 +20,7 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob:",
   "font-src 'self'",
   "connect-src 'self'",
-  `frame-src ${realmMapFrameSource} https://hub.edsong.xyz`,
+  `frame-src ${realmMapFrameSource} ${hubFrameSource}`,
   "manifest-src 'self'",
   "media-src 'self'",
   "worker-src 'self' blob:",

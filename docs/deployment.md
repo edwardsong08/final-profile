@@ -41,6 +41,8 @@ The Vercel backup may build from the same push. Its success or failure should be
 
 The Hub remains a separately deployed application at `https://hub.edsong.xyz/`. The portfolio embeds its living systems map. Keep page scrolling contained while the pointer is interacting with the Hub preview; normal document scrolling should resume outside it. A portfolio-only change does not require redeploying the Hub.
 
+The profile uses the Hub's `/embed/profile` route. Its native Map view owns the animated mouse/touch hint, so switching to Index removes the hint automatically. Release the Hub route before the portfolio that references it. For local development, run `node node_modules/next/dist/bin/next dev --port 3001` in `TOOLS AND FUN/HUB/Main-Hub`; the profile dev server embeds that local route. Production remains on the public Hub host.
+
 ## Environment and rollback
 
 Keep `RESEND_API_KEY` in the primary host's environment configuration and provision the backup independently if it must handle contact submissions. Never copy credentials into repository files or deployment notes. Contact throttling is per process, not shared across replicas or the backup host.
