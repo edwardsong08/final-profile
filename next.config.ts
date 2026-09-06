@@ -20,7 +20,7 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob:",
   "font-src 'self'",
   "connect-src 'self'",
-  `frame-src ${realmMapFrameSource} ${hubFrameSource}`,
+  `frame-src 'self' ${realmMapFrameSource} ${hubFrameSource}`,
   "manifest-src 'self'",
   "media-src 'self'",
   "worker-src 'self' blob:",
@@ -50,6 +50,13 @@ const nextConfig: NextConfig = {
         source: '/:path*.:extension(webp|png|jpg|jpeg|svg|mp4)',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=2592000' },
+        ],
+      },
+      {
+        source: '/fluid-watercolor-study.html',
+        headers: [
+          { key: 'Content-Security-Policy', value: contentSecurityPolicy.replace("frame-ancestors 'none'", "frame-ancestors 'self'") },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
         ],
       },
       {

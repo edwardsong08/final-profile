@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type RefObject, useEffect, useRef, useState } from 'react';
 
 import { SitePagePreview } from './ProjectEvidence';
-import SmokeField from './SmokeField';
+import FluidHero from './FluidHero';
 import styles from './PortfolioZen.module.css';
 
 const EMAIL = 'edwardsong08@gmail.com';
@@ -497,7 +497,7 @@ export default function PortfolioZen() {
       </a>
 
       <header id="top" className={styles.hero}>
-        <SmokeField />
+        <FluidHero />
 
         <div className={styles.heroFrame}>
           <div className={styles.heroIdentity}>

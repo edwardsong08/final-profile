@@ -3,7 +3,8 @@ import nextTypeScript from 'eslint-config-next/typescript';
 
 const eslintConfig = [
   {
-    ignores: ['.next/**', 'coverage/**', 'node_modules/**'],
+    // Vendored browser simulation and its reproducible generated adaptation.
+    ignores: ['.next/**', 'coverage/**', 'node_modules/**', 'public/fluid-*-study.js'],
   },
   ...nextCoreWebVitals,
   ...nextTypeScript,

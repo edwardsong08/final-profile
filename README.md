@@ -26,6 +26,8 @@ ClaimChain appears as compact earlier work. The main page prioritizes current ev
 
 ## Stack
 
+The watercolor hero disperses its own pigment and gently reforms. The original centered-text hero is preserved on `archive/original-text-smoke`. See [hero release notes](docs/hero-release.md) for animation behavior, accessibility fallback, and comparison guidance.
+
 - Next.js Pages Router, React, TypeScript, and Tailwind CSS
 - Framer Motion and next-themes
 - OGL-powered interactive visual treatment

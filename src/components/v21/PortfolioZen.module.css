@@ -69,6 +69,38 @@
   opacity: 1;
 }
 
+.fluidHeroFrame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+  transition: opacity 500ms ease;
+}
+
+.ambientHeroSmoke {
+  position: absolute;
+  inset: 0;
+  opacity: .76;
+  pointer-events: none;
+}
+
+.heroArtworkFallback {
+  position: absolute;
+  left: 50%;
+  top: var(--mantra-y);
+  transform: translate(-50%, -50%);
+  width: min(90%, 1150px, 130svh);
+  aspect-ratio: 3 / 2;
+  background: url('/hero-watercolor-territory.webp') center / contain no-repeat;
+  opacity: .76;
+}
+
+.smokeLayer[data-mode='pigment'] .heroArtworkFallback {
+  display: none;
+}
+
 .heroMantra {
   color: var(--accent-dark);
   font-size: clamp(1.25rem, 2.1vw, 2rem);
