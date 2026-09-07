@@ -1545,6 +1545,13 @@ a:hover .linkArrow {
     opacity: 0.72;
   }
 
+  .smokeLayer .heroArtworkFallback {
+    aspect-ratio: 2 / 3;
+    background-image: url('/hero-watercolor-territory-mobile-v2.png');
+    mask-image: radial-gradient(ellipse 70% 67% at 50% 50%, #000 47%, transparent 96%);
+    width: min(88%, 32rem, 70svh);
+  }
+
   .mobileNavigation {
     align-items: center;
     display: grid;

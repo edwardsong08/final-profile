@@ -13,7 +13,9 @@ export default function FluidHero() {
     const choose = () => {
       setReady(false);
       const mobilePreview = new URLSearchParams(location.search).has('mobile-preview');
-      const waterMode = mobilePreview || matchMedia('(pointer: coarse)').matches;
+      const waterMode = mobilePreview
+        || matchMedia('(pointer: coarse)').matches
+        || matchMedia('(max-width: 51.25rem)').matches;
       setMode(reduced.matches ? null : waterMode ? 'water' : 'smoke');
     };
     choose(); reduced.addEventListener('change', choose);
