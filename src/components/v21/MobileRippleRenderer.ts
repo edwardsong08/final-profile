@@ -144,10 +144,17 @@ const displayFragmentShader = `
       * 1.18 * uEffectStrength;
     vec2 textUv = clamp(vUv + refraction, vec2(0.001), vec2(0.999));
     vec4 artwork = texture2D(tText, textUv);
+    float paperLuma = dot(artwork.rgb, vec3(0.299, 0.587, 0.114));
+    float chroma = max(max(artwork.r, artwork.g), artwork.b)
+      - min(min(artwork.r, artwork.g), artwork.b);
+    float pigmentMask = max(
+      1.0 - smoothstep(0.68, 0.94, paperLuma),
+      smoothstep(0.015, 0.09, chroma) * 0.62
+    );
     float waveEnergy = smoothstep(0.00014, 0.0048, length(slope));
     float displacedBody = smoothstep(0.003, 0.052, abs(height));
     float waterDispersal = clamp(waveEnergy * 0.82 + displacedBody * 0.18, 0.0, 0.88);
-    float textAlpha = artwork.a * uTextReveal * 0.76 * (1.0 - waterDispersal);
+    float textAlpha = artwork.a * pigmentMask * uTextReveal * 0.76 * (1.0 - waterDispersal);
 
     float gradient = length(slope);
     float disturbance = smoothstep(0.00018, 0.0065, gradient);
@@ -427,7 +434,7 @@ export function setupMobileRipple({
     startRendering(true);
     onReady?.();
   };
-  artworkImage.src = '/hero-watercolor-territory-mobile.png';
+  artworkImage.src = '/hero-watercolor-territory-mobile-v2.png';
 
   const resize = () => {
     const bounds = canvas.getBoundingClientRect();

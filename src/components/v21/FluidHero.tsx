@@ -57,7 +57,7 @@ export default function FluidHero() {
     });
   }, [mode]);
   const activeMode = ready ? 'pigment' : 'static';
-  return <div ref={layer} className={styles.smokeLayer} data-mode={activeMode}>
+  return <div ref={layer} className={styles.smokeLayer} data-mode={activeMode} data-mobile-mode={mode === 'water' ? 'true' : undefined}>
     <div className={styles.heroArtworkFallback} aria-hidden="true" />
     {mode === 'water' && <canvas ref={mobileCanvas} className={styles.smokeField} aria-hidden="true" data-mobile-ripple />}
     {mode === 'smoke' && <iframe ref={frame} src="/fluid-watercolor-study.html?embed&smoke" title="Decorative watercolor landscape" aria-hidden="true" tabIndex={-1} className={styles.fluidHeroFrame} style={{opacity:ready ? 1 : 0}} />}

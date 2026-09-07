@@ -101,6 +101,14 @@
   display: none;
 }
 
+.smokeLayer[data-mobile-mode='true'] .heroArtworkFallback {
+  aspect-ratio: 2 / 3;
+  background-image: url('/hero-watercolor-territory-mobile-v2.png');
+  mask-image: radial-gradient(ellipse 70% 67% at 50% 50%, #000 47%, transparent 96%);
+  opacity: .86;
+  width: min(88%, 32rem, 70svh);
+}
+
 .heroMantra {
   color: var(--accent-dark);
   font-size: clamp(1.25rem, 2.1vw, 2rem);
