@@ -4,6 +4,8 @@ import styles from './PortfolioZen.module.css';
 export default function FluidHero() {
   const layer = useRef<HTMLDivElement>(null);
   const frame = useRef<HTMLIFrameElement>(null);
+  const artwork = useRef<HTMLDivElement>(null);
+  const mobileRipple = useRef<HTMLSpanElement>(null);
   const [mode, setMode] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [ready, setReady] = useState(false);
@@ -48,9 +50,35 @@ export default function FluidHero() {
       window.removeEventListener('message', receive); window.removeEventListener('pointermove', move); window.removeEventListener('pointerdown', move);
     };
   }, []);
+  useEffect(() => {
+    if (!isMobile) return;
+    const triggerRipple = (event: PointerEvent) => {
+      const artworkBounds = artwork.current?.getBoundingClientRect();
+      const layerBounds = layer.current?.getBoundingClientRect();
+      const ripple = mobileRipple.current;
+      if (
+        !artworkBounds
+        || !layerBounds
+        || !ripple
+        || event.clientX < artworkBounds.left
+        || event.clientX > artworkBounds.right
+        || event.clientY < artworkBounds.top
+        || event.clientY > artworkBounds.bottom
+      ) return;
+
+      ripple.style.setProperty('--ripple-x', `${event.clientX - layerBounds.left}px`);
+      ripple.style.setProperty('--ripple-y', `${event.clientY - layerBounds.top}px`);
+      ripple.dataset.active = 'false';
+      void ripple.offsetWidth;
+      ripple.dataset.active = 'true';
+    };
+    window.addEventListener('pointerdown', triggerRipple, { passive: true });
+    return () => window.removeEventListener('pointerdown', triggerRipple);
+  }, [isMobile]);
   const activeMode = ready ? 'pigment' : 'static';
   return <div ref={layer} className={styles.smokeLayer} data-mode={activeMode} data-mobile-mode={isMobile ? 'true' : undefined}>
-    <div className={styles.heroArtworkFallback} aria-hidden="true" />
+    <div ref={artwork} className={styles.heroArtworkFallback} aria-hidden="true" />
+    {isMobile && <span ref={mobileRipple} className={styles.mobileWaterRipple} aria-hidden="true" data-active="false" />}
     {mode === 'smoke' && <iframe ref={frame} src="/fluid-watercolor-study.html?embed&smoke" title="Decorative watercolor landscape" aria-hidden="true" tabIndex={-1} className={styles.fluidHeroFrame} style={{opacity:ready ? 1 : 0}} />}
   </div>;
 }

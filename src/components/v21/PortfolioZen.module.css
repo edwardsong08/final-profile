@@ -111,6 +111,58 @@
   width: min(88%, 32rem, 70svh);
 }
 
+.mobileWaterRipple {
+  --ripple-x: 50%;
+  --ripple-y: 33%;
+
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.mobileWaterRipple::before,
+.mobileWaterRipple::after {
+  backdrop-filter: blur(1px) saturate(1.05);
+  border: 1px solid rgb(49 92 114 / 24%);
+  border-radius: 50%;
+  box-shadow: 0 0 1.2rem rgb(49 92 114 / 10%);
+  content: '';
+  height: 3rem;
+  left: var(--ripple-x);
+  opacity: 0;
+  position: absolute;
+  top: var(--ripple-y);
+  transform: translate(-50%, -50%) scale(.15);
+  width: 3rem;
+  will-change: opacity, transform;
+}
+
+.mobileWaterRipple[data-active='true']::before {
+  animation: mobile-water-ripple 900ms cubic-bezier(.12, .55, .28, 1);
+}
+
+.mobileWaterRipple[data-active='true']::after {
+  animation: mobile-water-ripple 1050ms 100ms cubic-bezier(.12, .55, .28, 1);
+}
+
+@keyframes mobile-water-ripple {
+  0% {
+    opacity: .22;
+    transform: translate(-50%, -50%) scale(.15);
+  }
+
+  62% {
+    opacity: .1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(7.4);
+  }
+}
+
 .heroMantra {
   color: var(--accent-dark);
   font-size: clamp(1.25rem, 2.1vw, 2rem);
@@ -2087,6 +2139,10 @@ a:hover .linkArrow {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .mobileWaterRipple {
+    display: none;
+  }
+
   .skipLink,
   .heroActions a,
   .contactLinks a,
