@@ -7,16 +7,18 @@ export default function FluidHero() {
   const frame = useRef<HTMLIFrameElement>(null);
   const mobileCanvas = useRef<HTMLCanvasElement>(null);
   const [mode, setMode] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const [ready, setReady] = useState(false);
   useEffect(() => {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     const choose = () => {
       setReady(false);
       const mobilePreview = new URLSearchParams(location.search).has('mobile-preview');
-      const waterMode = mobilePreview
+      const mobile = mobilePreview
         || matchMedia('(pointer: coarse)').matches
         || matchMedia('(max-width: 51.25rem)').matches;
-      setMode(reduced.matches ? null : waterMode ? 'water' : 'smoke');
+      setIsMobile(mobile);
+      setMode(reduced.matches ? null : mobile ? 'water' : 'smoke');
     };
     choose(); reduced.addEventListener('change', choose);
     const receive = (event: MessageEvent) => {
@@ -59,7 +61,7 @@ export default function FluidHero() {
     });
   }, [mode]);
   const activeMode = ready ? 'pigment' : 'static';
-  return <div ref={layer} className={styles.smokeLayer} data-mode={activeMode} data-mobile-mode={mode === 'water' ? 'true' : undefined}>
+  return <div ref={layer} className={styles.smokeLayer} data-mode={activeMode} data-mobile-mode={isMobile ? 'true' : undefined}>
     <div className={styles.heroArtworkFallback} aria-hidden="true" />
     {mode === 'water' && <canvas ref={mobileCanvas} className={styles.smokeField} aria-hidden="true" data-mobile-ripple />}
     {mode === 'smoke' && <iframe ref={frame} src="/fluid-watercolor-study.html?embed&smoke" title="Decorative watercolor landscape" aria-hidden="true" tabIndex={-1} className={styles.fluidHeroFrame} style={{opacity:ready ? 1 : 0}} />}
