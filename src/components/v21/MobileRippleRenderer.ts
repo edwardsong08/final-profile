@@ -141,7 +141,7 @@ const displayFragmentShader = `
     vec3 normal = normalize(vec3(-slope.x * 30.0, -slope.y * 30.0, 1.0));
     vec3 lightDirection = normalize(vec3(-0.42, 0.56, 0.72));
     vec2 refraction = vec2(slope.x / uAspect, slope.y)
-      * 1.18 * uEffectStrength;
+      * 0.82 * uEffectStrength;
     vec2 textUv = clamp(vUv + refraction, vec2(0.001), vec2(0.999));
     vec4 artwork = texture2D(tText, textUv);
     float paperLuma = dot(artwork.rgb, vec3(0.299, 0.587, 0.114));
@@ -151,10 +151,7 @@ const displayFragmentShader = `
       1.0 - smoothstep(0.68, 0.94, paperLuma),
       smoothstep(0.015, 0.09, chroma) * 0.62
     );
-    float waveEnergy = smoothstep(0.00014, 0.0048, length(slope));
-    float displacedBody = smoothstep(0.003, 0.052, abs(height));
-    float waterDispersal = clamp(waveEnergy * 0.82 + displacedBody * 0.18, 0.0, 0.88);
-    float textAlpha = artwork.a * pigmentMask * uTextReveal * 0.76 * (1.0 - waterDispersal);
+    float textAlpha = artwork.a * pigmentMask * uTextReveal * 0.76;
 
     float gradient = length(slope);
     float disturbance = smoothstep(0.00018, 0.0065, gradient);
@@ -396,7 +393,7 @@ export function setupMobileRipple({
     gl.clearColor(0, 0, 0, 0);
   };
 
-    const updateTextTexture = (bounds: DOMRect, pixelRatio: number) => {
+  const updateTextTexture = (bounds: DOMRect, pixelRatio: number) => {
     textCanvas.width = canvas.width;
     textCanvas.height = canvas.height;
 
@@ -410,7 +407,10 @@ export function setupMobileRipple({
       : 0.5;
     textContext.clearRect(0, 0, textCanvas.width, textCanvas.height);
     const artworkWidth = Math.min(textCanvas.width * 0.9, bounds.width * pixelRatio * 0.92);
-    const artworkHeight = artworkWidth * (1024 / 1536);
+    const artworkAspect = artworkImage.naturalWidth > 0
+      ? artworkImage.naturalHeight / artworkImage.naturalWidth
+      : 1.5;
+    const artworkHeight = artworkWidth * artworkAspect;
     if (layer.dataset.ambient !== 'true' && artworkImage.complete && artworkImage.naturalWidth > 0) {
       textContext.drawImage(
         artworkImage,
