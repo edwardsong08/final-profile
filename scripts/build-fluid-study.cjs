@@ -17,7 +17,7 @@ s = s.replace('    SPLAT_RADIUS: 0.25,', '    SPLAT_RADIUS: 0.16,');
 s = s.replace('    SPLAT_FORCE: 6000,', "    SPLAT_FORCE: new URLSearchParams(location.search).has('water') ? 320 : 400,");
 for (const k of ['SHADING','COLORFUL','BLOOM','SUNRAYS']) s = s.replace(`${k}: true`, `${k}: false`);
 s = s.replace('    updateColors(dt);', '    if (document.hidden || !embedVisible) { requestAnimationFrame(update); return; }');
-s = s.replace('    render(null);', '    evolveWisps(dt);\n    restorePainting(dt);\n    renderPainting();');
+s = s.replace('    render(null);', '    updateActivity(dt);\n    evolveWisps(dt);\n    restorePainting(dt);\n    renderPainting();');
 // Keep the solver's velocity dynamics, but shorten pigment travel. Local
 // diffusion and thinning below now do more of the visible work than dragging.
 s = s.replace('    gl.uniform1i(advectionProgram.uniforms.uSource, dye.read.attach(1));',
@@ -36,8 +36,9 @@ s += `
 let lastGesture = -10000;
 let gestureStart = -10000;
 let lastGestureEvent = -10000;
-function noteGesture(now){
+function noteGesture(now,x,y){
  if(now-lastGestureEvent>220)gestureStart=now;
+ if(hybridMode&&Number.isFinite(x)&&Number.isFinite(y))markActivity(x,y,now);
  lastGestureEvent=now;
  lastGesture=gestureStart;
 }
@@ -64,10 +65,65 @@ window.addEventListener('message',event=>{
  const x=data.x*canvas.width,y=data.y*canvas.height;
  if(now-lastEmbeddedPointer>150)updatePointerDownData(pointer,-1,x,y);
  else updatePointerMoveData(pointer,x,y);
- lastEmbeddedPointer=now;noteGesture(now);
+ lastEmbeddedPointer=now;noteGesture(now,data.x,1.-data.y);
 });
 const sourceTexture = gl.createTexture();
 const smokeTexture = gl.createTexture();
+const hybridMode=new URLSearchParams(location.search).has('hybrid');
+const activityWidth=64,activityHeight=40;
+const activityData=new Uint8Array(activityWidth*activityHeight*4);
+const activityTexture=gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D,activityTexture);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,activityWidth,activityHeight,0,gl.RGBA,gl.UNSIGNED_BYTE,activityData);
+let previousActivityPoint=null,activityDirty=false;
+function stampActivity(x,y){
+ const aspect=canvas.width/Math.max(canvas.height,1);
+ const radius=.072;
+ const minX=Math.max(0,Math.floor((x-radius/aspect)*activityWidth));
+ const maxX=Math.min(activityWidth-1,Math.ceil((x+radius/aspect)*activityWidth));
+ const minY=Math.max(0,Math.floor((y-radius)*activityHeight));
+ const maxY=Math.min(activityHeight-1,Math.ceil((y+radius)*activityHeight));
+ for(let py=minY;py<=maxY;py++)for(let px=minX;px<=maxX;px++){
+   const dx=(px+.5)/activityWidth-x,dy=(py+.5)/activityHeight-y;
+   const distance=Math.hypot(dx*aspect,dy);
+   if(distance>radius)continue;
+   const strength=Math.max(0,1-distance/radius);
+   const value=Math.round(255*(.9+.1*strength));
+   const i=(py*activityWidth+px)*4;
+   activityData[i]=Math.max(activityData[i],value);
+   activityData[i+1]=activityData[i];activityData[i+2]=activityData[i];activityData[i+3]=255;
+ }
+ activityDirty=true;
+}
+function markActivity(x,y,now){
+ if(!previousActivityPoint||now-previousActivityPoint.time>220)previousActivityPoint={x,y,time:now};
+ const distance=Math.hypot((x-previousActivityPoint.x)*(canvas.width/Math.max(canvas.height,1)),y-previousActivityPoint.y);
+ const steps=Math.max(1,Math.ceil(distance/.025));
+ for(let step=0;step<=steps;step++){
+   const t=step/steps;
+   stampActivity(previousActivityPoint.x+(x-previousActivityPoint.x)*t,previousActivityPoint.y+(y-previousActivityPoint.y)*t);
+ }
+ previousActivityPoint={x,y,time:now};
+}
+function updateActivity(dt){
+ if(!hybridMode)return;
+ const decay=Math.max(1,Math.round(255*dt/3.2));
+ let active=false;
+ for(let i=0;i<activityData.length;i+=4){
+   if(activityData[i]>0){
+     const value=Math.max(0,activityData[i]-decay);
+     activityData[i]=value;activityData[i+1]=value;activityData[i+2]=value;active=true;
+   }
+ }
+ if(!active&&!activityDirty)return;
+ gl.activeTexture(gl.TEXTURE5);gl.bindTexture(gl.TEXTURE_2D,activityTexture);
+ gl.texSubImage2D(gl.TEXTURE_2D,0,0,0,activityWidth,activityHeight,gl.RGBA,gl.UNSIGNED_BYTE,activityData);
+ activityDirty=false;
+}
 // Detached wisps carry a fraction of the pigment removed from the painting.
 // This is a second transported dye field, not separately colored smoke.
 let wisps;
@@ -85,9 +141,9 @@ const pigmentNoise = \`
 \`;
 const restoreProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_SHADER, \`
  precision highp float; varying vec2 vUv;
- uniform sampler2D current; uniform sampler2D original; uniform sampler2D flow;
+ uniform sampler2D current; uniform sampler2D original; uniform sampler2D flow; uniform sampler2D activity;
  uniform vec2 pixel; uniform float stepTime; uniform float clock; uniform float water;
- uniform float amount; uniform float aspect; uniform float mobile; uniform float recoveryAge;
+ uniform float amount; uniform float aspect; uniform float mobile; uniform float recoveryAge; uniform float hybrid;
  \${pigmentNoise}
  vec3 originalPigment(vec2 position) {
    float w = .9; float h = w * aspect / 1.5;
@@ -102,13 +158,16 @@ const restoreProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_S
    float structure=smoothstep(.035,.24,max(target.r,max(target.g,target.b)));
    vec2 q=vec2(vUv.x*aspect,vUv.y);
    float recoveryPattern=noise(q*24.+vec2(3.,7.));
-   float localAge=max(0.,recoveryAge-recoveryPattern*.22);
+   float spatialElapsed=(1.-texture2D(activity,vUv).r)*3.2;
+   float localAge=mix(max(0.,recoveryAge-recoveryPattern*.22),
+     max(0.,spatialElapsed-.9-recoveryPattern*.22),hybrid);
    float gathering=smoothstep(0.,.7,localAge);
    float detail=smoothstep(.25,1.25,localAge);
    vec2 motion=texture2D(flow,vUv).xy;
    // Recovery is local: areas the pointer has already passed may settle while
    // the active stroke continues, but moving pigment stays out of the way.
    float quiet=1.-smoothstep(.12,1.8,length(motion));
+   quiet=mix(quiet,max(quiet,.24),hybrid*smoothstep(0.,.7,localAge));
    gathering*=quiet;
    float resilience=1.-pow(1.-amount,gathering*mix(.9,1.3,structure));
    // Rebuild only disturbed pigment; intact areas retain their crispness.
@@ -141,9 +200,10 @@ const restoreProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_S
 const wispProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_SHADER, \`
  precision highp float; varying vec2 vUv;
  uniform sampler2D previous; uniform sampler2D pigment; uniform sampler2D flow; uniform sampler2D smoke;
+ uniform sampler2D activity;
  uniform sampler2D home; uniform float recoveryAge;
  uniform vec2 flowPixel; uniform float stepTime; uniform float clock;
- uniform float aspect; uniform float water; uniform float mobile;
+ uniform float aspect; uniform float water; uniform float mobile; uniform float hybrid;
  \${pigmentNoise}
  void main(){
    vec2 motion=texture2D(flow,vUv).xy;
@@ -153,7 +213,8 @@ const wispProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_SHAD
    // Small curling eddies carry released pigment, never an independent cursor trail.
    vec2 drift=vec2(sin(q.y*85.+clock*.65)*.009/aspect,
      .012+cos(q.x*85.-clock*.55)*.006)*mix(1.,.25,water);
-   float gather=smoothstep(0.,.8,recoveryAge);
+   float spatialAge=max(0.,(1.-texture2D(activity,vUv).r)*3.2-.9);
+   float gather=mix(smoothstep(0.,.8,recoveryAge),smoothstep(0.,1.15,spatialAge),hybrid);
    float homeH=min(.9*aspect/1.5,.78),homeW=homeH*1.5/aspect;
    vec2 homeUv=(vUv-vec2(.5,mix(.5,.67,mobile)))/vec2(homeW,homeH)+.5;
    vec2 homeStep=vec2(.018/aspect,.018)/vec2(homeW,homeH);
@@ -167,9 +228,11 @@ const wispProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_SHAD
    // A bounded attraction toward nearby painted shapes, not exact particle-origin tracking.
    vec2 inward=gradient/(.08+length(gradient))*vec2(.045/aspect,.045);
    vec2 outward=motion*flowPixel*3.2+drift*2.2;
+   inward*=mix(1.,1.18,hybrid*gather);
    vec2 transport=mix(outward,inward+drift*.35,gather);
    vec2 uv=clamp(vUv-stepTime*transport,vec2(.001),vec2(.999));
-   vec3 carried=texture2D(previous,uv).rgb*exp(-stepTime*mix(1.1,2.0,gather));
+   float wispDecay=mix(mix(1.1,2.,gather),mix(.65,1.3,gather),hybrid);
+   vec3 carried=texture2D(previous,uv).rgb*exp(-stepTime*wispDecay);
    float loss=1.-exp(-stepTime*stirred*mix(1.2,9.,smoothstep(.25,.7,n))*mix(1.,.65,water));
    float h=min(.9*aspect/1.5,.78),w=h*1.5/aspect;
    vec2 materialUv=(vUv-vec2(.5,mix(.5,.67,mobile)))/vec2(w,h)+.5;
@@ -200,6 +263,9 @@ function evolveWisps(dt){
  gl.uniform1i(wispProgram.uniforms.smoke,3);
  gl.activeTexture(gl.TEXTURE4);gl.bindTexture(gl.TEXTURE_2D,sourceTexture);
  gl.uniform1i(wispProgram.uniforms.home,4);
+ gl.activeTexture(gl.TEXTURE5);gl.bindTexture(gl.TEXTURE_2D,activityTexture);
+ gl.uniform1i(wispProgram.uniforms.activity,5);
+ gl.uniform1f(wispProgram.uniforms.hybrid,hybridMode?1:0);
  gl.uniform1f(wispProgram.uniforms.recoveryAge,Math.max(0,(performance.now()-lastGesture-550)/1000));
  gl.uniform1f(wispProgram.uniforms.mobile,canvas.clientWidth<650?1:0);
  gl.uniform2f(wispProgram.uniforms.flowPixel,velocity.texelSizeX,velocity.texelSizeY);
@@ -220,6 +286,9 @@ function restorePainting(dt, initial=false) {
  gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,sourceTexture);
  gl.uniform1i(restoreProgram.uniforms.original,1);
  gl.uniform1i(restoreProgram.uniforms.flow,velocity.read.attach(2));
+ gl.activeTexture(gl.TEXTURE5);gl.bindTexture(gl.TEXTURE_2D,activityTexture);
+ gl.uniform1i(restoreProgram.uniforms.activity,5);
+ gl.uniform1f(restoreProgram.uniforms.hybrid,hybridMode?1:0);
  gl.uniform2f(restoreProgram.uniforms.pixel,dye.texelSizeX,dye.texelSizeY);
  gl.uniform1f(restoreProgram.uniforms.stepTime,dt);
  gl.uniform1f(restoreProgram.uniforms.clock,performance.now()/1000);
@@ -227,7 +296,7 @@ function restorePainting(dt, initial=false) {
  gl.uniform1f(restoreProgram.uniforms.aspect,canvas.width/canvas.height);
  gl.uniform1f(restoreProgram.uniforms.mobile,canvas.clientWidth<650?1:0);
  const idle=Math.max(0,(performance.now()-lastGesture-550)/1000);
- const recovery=Math.min(3.2,idle*4.);
+ const recovery=hybridMode?1.35:Math.min(3.2,idle*4.);
  gl.uniform1f(restoreProgram.uniforms.recoveryAge,initial?10:idle);
  gl.uniform1f(restoreProgram.uniforms.amount,initial?1:1-Math.exp(-dt*recovery));
  blit(dye.write);dye.swap();

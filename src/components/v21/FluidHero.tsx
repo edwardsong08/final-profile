@@ -11,11 +11,14 @@ export default function FluidHero() {
   const [isMobile, setIsMobile] = useState(false);
   const [ready, setReady] = useState(false);
   const [contextVersion, setContextVersion] = useState(0);
+  const [hybridPreview, setHybridPreview] = useState(true);
   useEffect(() => {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     const choose = () => {
       setReady(false);
-      const mobilePreview = new URLSearchParams(location.search).has('mobile-preview');
+      const params = new URLSearchParams(location.search);
+      const mobilePreview = params.has('mobile-preview');
+      setHybridPreview(!params.has('legacy-smoke'));
       const mobile = mobilePreview
         || matchMedia('(pointer: coarse)').matches
         || matchMedia('(max-width: 51.25rem)').matches;
@@ -66,6 +69,6 @@ export default function FluidHero() {
   return <div ref={layer} className={styles.smokeLayer} data-mode={activeMode} data-mobile-mode={isMobile ? 'true' : undefined}>
     <div className={styles.heroArtworkFallback} aria-hidden="true" />
     {mode === 'water' && <canvas ref={mobileCanvas} className={styles.smokeField} data-mobile-ripple aria-hidden="true" />}
-    {mode === 'smoke' && <iframe ref={frame} src="/fluid-watercolor-study.html?embed&smoke" title="Decorative watercolor landscape" aria-hidden="true" tabIndex={-1} className={styles.fluidHeroFrame} style={{opacity:ready ? 1 : 0}} />}
+    {mode === 'smoke' && <iframe ref={frame} src={`/fluid-watercolor-study.html?embed&smoke${hybridPreview ? '&hybrid' : ''}`} title="Decorative watercolor landscape" aria-hidden="true" tabIndex={-1} className={styles.fluidHeroFrame} style={{opacity:ready ? 1 : 0}} />}
   </div>;
 }
