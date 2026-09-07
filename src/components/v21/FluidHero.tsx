@@ -1,16 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './PortfolioZen.module.css';
+import { setupMobileRipple } from './MobileRippleRenderer';
 
 export default function FluidHero() {
   const layer = useRef<HTMLDivElement>(null);
   const frame = useRef<HTMLIFrameElement>(null);
+  const mobileCanvas = useRef<HTMLCanvasElement>(null);
   const [mode, setMode] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   useEffect(() => {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     const choose = () => {
       setReady(false);
-      setMode(reduced.matches ? null : matchMedia('(pointer: coarse)').matches ? 'water' : 'smoke');
+      const mobilePreview = new URLSearchParams(location.search).has('mobile-preview');
+      const waterMode = mobilePreview || matchMedia('(pointer: coarse)').matches;
+      setMode(reduced.matches ? null : waterMode ? 'water' : 'smoke');
     };
     choose(); reduced.addEventListener('change', choose);
     const receive = (event: MessageEvent) => {
@@ -42,8 +46,20 @@ export default function FluidHero() {
       window.removeEventListener('message', receive); window.removeEventListener('pointermove', move); window.removeEventListener('pointerdown', move);
     };
   }, []);
-  return <div ref={layer} className={styles.smokeLayer} data-mode={ready ? 'pigment' : 'static'}>
+  useEffect(() => {
+    if (mode !== 'water' || !layer.current || !mobileCanvas.current) return;
+    setReady(false);
+    return setupMobileRipple({
+      canvas: mobileCanvas.current,
+      layer: layer.current,
+      onContextRestored: () => setReady(false),
+      onReady: () => setReady(true),
+    });
+  }, [mode]);
+  const activeMode = ready ? 'pigment' : 'static';
+  return <div ref={layer} className={styles.smokeLayer} data-mode={activeMode}>
     <div className={styles.heroArtworkFallback} aria-hidden="true" />
-    {mode && <iframe ref={frame} src={`/fluid-watercolor-study.html?embed&${mode}`} title="Decorative watercolor landscape" aria-hidden="true" tabIndex={-1} className={styles.fluidHeroFrame} style={{opacity:ready ? 1 : 0}} />}
+    {mode === 'water' && <canvas ref={mobileCanvas} className={styles.smokeField} aria-hidden="true" data-mobile-ripple />}
+    {mode === 'smoke' && <iframe ref={frame} src="/fluid-watercolor-study.html?embed&smoke" title="Decorative watercolor landscape" aria-hidden="true" tabIndex={-1} className={styles.fluidHeroFrame} style={{opacity:ready ? 1 : 0}} />}
   </div>;
 }

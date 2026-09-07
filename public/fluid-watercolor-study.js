@@ -1721,7 +1721,9 @@ const restoreProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_S
                +texture2D(current,vUv+vec2(0.,spread.y)).rgb
                +texture2D(current,vUv-vec2(0.,spread.y)).rgb)*.25;
    pigment=mix(pigment,nearby,1.-exp(-stepTime*stirred*9.));
-   float thinning=stirred*mix(2.,18.,smoothstep(.25,.7,billow))*(1.-gathering);
+   // Keep moving pigment legible long enough to form currents instead of
+   // washing the whole territory out in one pass.
+   float thinning=stirred*mix(1.2,9.,smoothstep(.25,.7,billow))*(1.-gathering);
    pigment*=exp(-stepTime*thinning*mix(1.,.65,water));
    gl_FragColor=vec4(mix(pigment,target,resilience),1.);
  }
@@ -1758,7 +1760,7 @@ const wispProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_SHAD
    vec2 transport=mix(outward,inward+drift*.35,gather);
    vec2 uv=clamp(vUv-stepTime*transport,vec2(.001),vec2(.999));
    vec3 carried=texture2D(previous,uv).rgb*exp(-stepTime*mix(1.1,2.0,gather));
-   float loss=1.-exp(-stepTime*stirred*mix(2.,18.,smoothstep(.25,.7,n))*mix(1.,.65,water));
+   float loss=1.-exp(-stepTime*stirred*mix(1.2,9.,smoothstep(.25,.7,n))*mix(1.,.65,water));
    float h=min(.9*aspect/1.5,.78),w=h*1.5/aspect;
    vec2 materialUv=(vUv-vec2(.5,mix(.5,.67,mobile)))/vec2(w,h)+.5;
    vec3 vapor=vec3(0.);

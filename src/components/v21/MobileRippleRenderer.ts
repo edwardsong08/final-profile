@@ -141,10 +141,13 @@ const displayFragmentShader = `
     vec3 normal = normalize(vec3(-slope.x * 30.0, -slope.y * 30.0, 1.0));
     vec3 lightDirection = normalize(vec3(-0.42, 0.56, 0.72));
     vec2 refraction = vec2(slope.x / uAspect, slope.y)
-      * 0.82 * uEffectStrength;
+      * 1.18 * uEffectStrength;
     vec2 textUv = clamp(vUv + refraction, vec2(0.001), vec2(0.999));
-    float textMask = texture2D(tText, textUv).a;
-    float textAlpha = textMask * uTextReveal * 0.76;
+    vec4 artwork = texture2D(tText, textUv);
+    float waveEnergy = smoothstep(0.00014, 0.0048, length(slope));
+    float displacedBody = smoothstep(0.003, 0.052, abs(height));
+    float waterDispersal = clamp(waveEnergy * 0.82 + displacedBody * 0.18, 0.0, 0.88);
+    float textAlpha = artwork.a * uTextReveal * 0.76 * (1.0 - waterDispersal);
 
     float gradient = length(slope);
     float disturbance = smoothstep(0.00018, 0.0065, gradient);
@@ -164,7 +167,7 @@ const displayFragmentShader = `
       mineralShadow,
       clamp(directionalShadow * 1.7, 0.0, 1.0)
     );
-    vec3 textColor = vec3(0.137, 0.278, 0.353);
+    vec3 textColor = artwork.rgb;
     float combinedAlpha = surfaceAlpha + textAlpha * (1.0 - surfaceAlpha);
     vec3 combinedColor = (
       surfaceColor * surfaceAlpha + textColor * textAlpha * (1.0 - surfaceAlpha)
@@ -190,6 +193,7 @@ type SetupMobileRippleOptions = {
   canvas: HTMLCanvasElement;
   layer: HTMLDivElement;
   onContextRestored: () => void;
+  onReady?: () => void;
 };
 
 const isInteractiveTarget = (target: EventTarget | null) =>
@@ -212,6 +216,7 @@ export function setupMobileRipple({
   canvas,
   layer,
   onContextRestored,
+  onReady,
 }: SetupMobileRippleOptions) {
   let renderer: Renderer;
   try {
@@ -384,7 +389,7 @@ export function setupMobileRipple({
     gl.clearColor(0, 0, 0, 0);
   };
 
-  const updateTextTexture = (bounds: DOMRect, pixelRatio: number) => {
+    const updateTextTexture = (bounds: DOMRect, pixelRatio: number) => {
     textCanvas.width = canvas.width;
     textCanvas.height = canvas.height;
 
@@ -396,22 +401,33 @@ export function setupMobileRipple({
     const mantraPosition = Number.isFinite(parsedPosition)
       ? Math.min(0.82, Math.max(0.18, parsedPosition / 100))
       : 0.5;
-    const fontSize = Math.min(32, Math.max(20, bounds.width * 0.021)) * pixelRatio;
-
     textContext.clearRect(0, 0, textCanvas.width, textCanvas.height);
-    textContext.fillStyle = '#ffffff';
-    textContext.font = `470 ${fontSize}px Aptos, "Segoe UI Variable", "Segoe UI", Helvetica, Arial, sans-serif`;
-    textContext.textAlign = 'center';
-    textContext.textBaseline = 'middle';
-    if ('letterSpacing' in textContext) textContext.letterSpacing = '0.015em';
-    textContext.fillText(
-      'Listen. Learn. Build.',
-      textCanvas.width / 2,
-      textCanvas.height * mantraPosition,
-    );
+    const artworkWidth = Math.min(textCanvas.width * 0.9, bounds.width * pixelRatio * 0.92);
+    const artworkHeight = artworkWidth * (1024 / 1536);
+    if (layer.dataset.ambient !== 'true' && artworkImage.complete && artworkImage.naturalWidth > 0) {
+      textContext.drawImage(
+        artworkImage,
+        (textCanvas.width - artworkWidth) / 2,
+        textCanvas.height * mantraPosition - artworkHeight / 2,
+        artworkWidth,
+        artworkHeight,
+      );
+    }
     textTexture.image = textCanvas;
     textTexture.needsUpdate = true;
   };
+
+  const artworkImage = new Image();
+  artworkImage.decoding = 'async';
+  artworkImage.onload = () => {
+    updateTextTexture(
+      canvas.getBoundingClientRect(),
+      Math.min(window.devicePixelRatio || 1, 2),
+    );
+    startRendering(true);
+    onReady?.();
+  };
+  artworkImage.src = '/hero-watercolor-territory-mobile.png';
 
   const resize = () => {
     const bounds = canvas.getBoundingClientRect();
