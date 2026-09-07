@@ -17,7 +17,7 @@ s = s.replace('    SPLAT_RADIUS: 0.25,', '    SPLAT_RADIUS: 0.16,');
 s = s.replace('    SPLAT_FORCE: 6000,', "    SPLAT_FORCE: new URLSearchParams(location.search).has('water') ? 320 : 400,");
 for (const k of ['SHADING','COLORFUL','BLOOM','SUNRAYS']) s = s.replace(`${k}: true`, `${k}: false`);
 s = s.replace('    updateColors(dt);', '    if (document.hidden || !embedVisible) { requestAnimationFrame(update); return; }');
-s = s.replace('    render(null);', '    updateActivity(dt);\n    evolveWisps(dt);\n    restorePainting(dt);\n    renderPainting();');
+s = s.replace('    render(null);', '    updateActivity(dt);\n    if(materialEngine) materialEngine.step();\n    if(guidedRecovery && materialEngine) recoveryDensity=materialEngine.render(true);\n    if(!materialEngine || guidedRecovery) {\n      evolveWisps(dt);\n      if(materialRecovery && materialEngine) returningDeposit=materialEngine.prepareDeposit(dye.read,wisps.read,recoveryDensity,dt);\n      restorePainting(dt);\n      if(materialRecovery && materialEngine) materialEngine.withdrawDeposit(wisps);\n    }\n    renderPainting();');
 // Keep the solver's velocity dynamics, but shorten pigment travel. Local
 // diffusion and thinning below now do more of the visible work than dragging.
 s = s.replace('    gl.uniform1i(advectionProgram.uniforms.uSource, dye.read.attach(1));',
@@ -178,9 +178,10 @@ const pigmentNoise = \`
 \`;
 const restoreProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_SHADER, \`
  precision highp float; varying vec2 vUv;
- uniform sampler2D current; uniform sampler2D original; uniform sampler2D flow; uniform sampler2D activity;
+ uniform sampler2D current; uniform sampler2D original; uniform sampler2D flow; uniform sampler2D activity; uniform sampler2D returningPigment;
+ uniform float guided; uniform float materialReturn; uniform sampler2D depositedPigment;
  uniform vec2 pixel; uniform float stepTime; uniform float clock; uniform float water;
- uniform float amount; uniform float aspect; uniform float mobile; uniform float recoveryAge; uniform float hybrid; uniform float lighterMotion;
+ uniform float amount; uniform float aspect; uniform float mobile; uniform float recoveryAge; uniform float hybrid; uniform float lighterMotion; uniform float cleanPaper;
  \${pigmentNoise}
  vec3 originalPigment(vec2 position) {
    float w = .9; float h = w * aspect / 1.5;
@@ -188,7 +189,10 @@ const restoreProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_S
    vec2 uv = (position - vec2(.5, mix(.5,.67,mobile))) / vec2(w,h) + .5;
    if(any(lessThan(uv,vec2(0.))) || any(greaterThan(uv,vec2(1.)))) return vec3(0.);
    vec4 paint = texture2D(original,uv);
-   return (1.-paint.rgb)*paint.a*.85;
+   vec3 ink=1.-paint.rgb;
+   vec2 edge=smoothstep(vec2(0.),vec2(.09),min(uv,1.-uv));
+   ink=mix(ink,max(vec3(0.),ink-.018)/.982*edge.x*edge.y,cleanPaper);
+   return ink*paint.a*.85;
  }
  void main(){
    vec3 target=originalPigment(vUv);
@@ -231,6 +235,37 @@ const restoreProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_S
    // washing the whole territory out in one pass.
    float thinning=stirred*mix(1.2,9.,smoothstep(.25,.7,billow))*(1.-gathering);
    pigment*=exp(-stepTime*thinning*mix(1.,.65,water));
+   if(guided>.5 && gathering>0. && disturbed>.001){
+   // Keep baseline breakup. Returning material only contributes to missing
+   // painted structure during recovery; never overlay intact artwork/paper.
+   // Reconstruct a continuous arrival field; never feed individual splat
+   // contours back into the watercolor. Only this guide is softened.
+   vec2 arrivalRadius=vec2(.004/aspect,.004);
+   vec3 arriving=texture2D(returningPigment,vUv).rgb*.25
+     +(texture2D(returningPigment,vUv+vec2(arrivalRadius.x,0.)).rgb
+      +texture2D(returningPigment,vUv-vec2(arrivalRadius.x,0.)).rgb
+      +texture2D(returningPigment,vUv+vec2(0.,arrivalRadius.y)).rgb
+      +texture2D(returningPigment,vUv-vec2(0.,arrivalRadius.y)).rgb)*.125
+     +(texture2D(returningPigment,vUv+arrivalRadius).rgb
+      +texture2D(returningPigment,vUv-arrivalRadius).rgb
+      +texture2D(returningPigment,vUv+vec2(arrivalRadius.x,-arrivalRadius.y)).rgb
+      +texture2D(returningPigment,vUv+vec2(-arrivalRadius.x,arrivalRadius.y)).rgb)*.0625;
+   float support=smoothstep(.008,.11,max(arriving.r,max(arriving.g,arriving.b)));
+   float guidance=guided*gathering*disturbed;
+   resilience*=mix(1.,.82+support*.58,guidance);
+   if(materialReturn>.5){
+     vec3 delivered=texture2D(depositedPigment,vUv).rgb;
+     pigment+=delivered;
+     // Reduce source reconstruction only where real wisp color contributes.
+     // Late detail resolution stays on the original schedule.
+     float share=clamp(max(delivered.r,max(delivered.g,delivered.b))
+       /max(.0001,max(target.r,max(target.g,target.b))*resilience),0.,1.);
+     resilience*=1.-.60*share*(1.-smoothstep(.85,1.45,localAge));
+   }else{
+     pigment+=min(max(target-pigment,vec3(0.)),arriving*.3)
+       *(1.-exp(-stepTime*3.))*guidance;
+   }
+   }
    gl_FragColor=vec4(mix(pigment,target,resilience),1.);
  }
 \`));
@@ -239,6 +274,7 @@ const wispProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_SHAD
  uniform sampler2D previous; uniform sampler2D pigment; uniform sampler2D flow; uniform sampler2D smoke;
  uniform sampler2D activity;
  uniform sampler2D home; uniform float recoveryAge;
+ uniform sampler2D returningPigment; uniform float guided; uniform float materialReturn;
  uniform vec2 flowPixel; uniform float stepTime; uniform float clock;
  uniform float aspect; uniform float water; uniform float mobile; uniform float hybrid; uniform float refinedGather;
  \${pigmentNoise}
@@ -268,9 +304,23 @@ const wispProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_SHAD
    inward*=mix(1.,1.18,hybrid*gather);
    inward*=1.+.12*refinedGather*gather;
    vec2 transport=mix(outward,inward+drift*.35,gather);
+   if(guided>.5 && gather>0.){
+   // Use arriving material as a soft directional guide for the EXISTING
+   // continuous wisp field. No particle splats are composited on the page.
+   vec2 reach=vec2(.006/aspect,.006);
+   vec3 arrivalDx=texture2D(returningPigment,vUv+vec2(reach.x,0.)).rgb
+     -texture2D(returningPigment,vUv-vec2(reach.x,0.)).rgb;
+   vec3 arrivalDy=texture2D(returningPigment,vUv+vec2(0.,reach.y)).rgb
+     -texture2D(returningPigment,vUv-vec2(0.,reach.y)).rgb;
+   vec2 arrivalSlope=vec2(dot(arrivalDx,luminance),dot(arrivalDy,luminance));
+   transport+=arrivalSlope/(.04+length(arrivalSlope))*vec2(.018/aspect,.018)*guided*gather;
+   }
    vec2 uv=clamp(vUv-stepTime*transport,vec2(.001),vec2(.999));
    float wispDecay=mix(mix(1.1,2.,gather),mix(.65,1.3,gather),hybrid);
    wispDecay-=.15*refinedGather*gather;
+   // Keep a little more of the released color available for early transfer,
+   // then return to baseline decay before the final detail stage.
+   wispDecay-=.2*materialReturn*gather*(1.-smoothstep(1.1,1.9,spatialAge));
    vec3 carried=texture2D(previous,uv).rgb*exp(-stepTime*wispDecay);
    float loss=1.-exp(-stepTime*stirred*mix(1.2,9.,smoothstep(.25,.7,n))*mix(1.,.65,water));
    float h=min(.9*aspect/1.5,.78),w=h*1.5/aspect;
@@ -306,6 +356,10 @@ function evolveWisps(dt){
  gl.uniform1i(wispProgram.uniforms.activity,5);
  gl.uniform1f(wispProgram.uniforms.hybrid,hybridMode?1:0);
  gl.uniform1f(wispProgram.uniforms.refinedGather,refinedGather);
+ gl.activeTexture(gl.TEXTURE6);gl.bindTexture(gl.TEXTURE_2D,recoveryDensity||sourceTexture);
+ gl.uniform1i(wispProgram.uniforms.returningPigment,6);
+ gl.uniform1f(wispProgram.uniforms.guided,guidedRecovery&&recoveryDensity?1:0);
+ gl.uniform1f(wispProgram.uniforms.materialReturn,materialRecovery&&materialEngine?1:0);
  gl.uniform1f(wispProgram.uniforms.recoveryAge,Math.max(0,(performance.now()-lastGesture-550)/1000));
  gl.uniform1f(wispProgram.uniforms.mobile,canvas.clientWidth<650?1:0);
  gl.uniform2f(wispProgram.uniforms.flowPixel,velocity.texelSizeX,velocity.texelSizeY);
@@ -330,6 +384,13 @@ function restorePainting(dt, initial=false) {
  gl.uniform1i(restoreProgram.uniforms.activity,5);
  gl.uniform1f(restoreProgram.uniforms.hybrid,hybridMode?1:0);
  gl.uniform1f(restoreProgram.uniforms.lighterMotion,lighterMotion?1:0);
+ gl.uniform1f(restoreProgram.uniforms.cleanPaper,connectedArtwork?1:0);
+ gl.activeTexture(gl.TEXTURE6);gl.bindTexture(gl.TEXTURE_2D,recoveryDensity||sourceTexture);
+ gl.uniform1i(restoreProgram.uniforms.returningPigment,6);
+ gl.uniform1f(restoreProgram.uniforms.guided,guidedRecovery&&recoveryDensity?1:0);
+ gl.activeTexture(gl.TEXTURE7);gl.bindTexture(gl.TEXTURE_2D,returningDeposit||sourceTexture);
+ gl.uniform1i(restoreProgram.uniforms.depositedPigment,7);
+ gl.uniform1f(restoreProgram.uniforms.materialReturn,materialRecovery&&returningDeposit?1:0);
  gl.uniform2f(restoreProgram.uniforms.pixel,dye.texelSizeX,dye.texelSizeY);
  gl.uniform1f(restoreProgram.uniforms.stepTime,dt);
  gl.uniform1f(restoreProgram.uniforms.clock,performance.now()/1000);
@@ -340,9 +401,12 @@ function restorePainting(dt, initial=false) {
  const recovery=hybridMode?1.35:Math.min(3.2,idle*4.);
  gl.uniform1f(restoreProgram.uniforms.recoveryAge,initial?10:idle);
  gl.uniform1f(restoreProgram.uniforms.amount,initial?1:1-Math.exp(-dt*recovery));
- blit(dye.write);dye.swap();
+ blit(dye.write);
+ if(materialRecovery&&materialEngine&&!initial)materialEngine.captureLoss(dye.read.texture,dye.write.texture);
+ dye.swap();
 }
 function renderPainting(){
+ if(materialEngine&&!guidedRecovery){materialEngine.render();return;}
  gl.disable(gl.BLEND);paintingProgram.bind();
  gl.uniform1i(paintingProgram.uniforms.pigment,dye.read.attach(0));
  gl.uniform1i(paintingProgram.uniforms.wisps,wisps.read.attach(1));blit(null);
@@ -376,11 +440,17 @@ const startPainting=()=>{
  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,smokePainting);
  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);
- restorePainting(0,true);update();
+ restorePainting(0,true);
+ if(new URLSearchParams(location.search).has('particles')||guidedRecovery) {
+   try { materialEngine=createMaterialEngine(materialRecovery); }
+   catch(error) { console.warn('Particle preview unavailable; using light smoke.',error); }
+ }
+ update();
  if(parent!==window)parent.postMessage({type:'fluid-ready'},location.origin);
 };
 painting.onload=startPainting;smokePainting.onload=startPainting;
 const systemArtwork=false;
+const connectedArtwork=false;
 painting.src='/hero-watercolor-territory.webp';
 smokePainting.src='/hero-territory-smoke-v2.webp';
 // Repeatable review gesture for comparing smoke and water at the same strength.
@@ -395,4 +465,5 @@ document.getElementById('gesture')?.addEventListener('click',()=>{
  requestAnimationFrame(sweep);
 });
 `;
+s += '\nlet materialEngine=null,recoveryDensity=null,returningDeposit=null;\nconst materialRecovery=new URLSearchParams(location.search).has("material-recovery");\nconst guidedRecovery=materialRecovery||new URLSearchParams(location.search).has("guided");\n' + fs.readFileSync('scripts/fluid-material-engine.glsl.js','utf8');
 fs.writeFileSync('public/fluid-watercolor-study.js', s);
