@@ -34,7 +34,7 @@ let config = {
     DYE_RESOLUTION: 1024,
     CAPTURE_RESOLUTION: 512,
     DENSITY_DISSIPATION: 0,
-    VELOCITY_DISSIPATION: 4.2,
+    VELOCITY_DISSIPATION: new URLSearchParams(location.search).get('refinement') === 'light' ? 5.25 : 4.2,
     PRESSURE: 0.8,
     PRESSURE_ITERATIONS: 20,
     CURL: new URLSearchParams(location.search).has('water') ? 5 : 14,
@@ -1636,11 +1636,37 @@ function noteGesture(now,x,y){
 let embedVisible=true;
 let lastEmbeddedPointer=0;
 let paintCoverage=null;
+let paintCoverageSums=null;
+function buildPaintCoverageSums(){
+ const {width,height,data}=paintCoverage,stride=width+1;
+ paintCoverageSums=new Uint32Array(stride*(height+1));
+ for(let y=0;y<height;y++){
+   let row=0;
+   for(let x=0;x<width;x++){
+     const i=(y*width+x)*4;
+     if(data[i+3]/255*(1-Math.min(data[i],data[i+1],data[i+2])/255)>.012)row++;
+     paintCoverageSums[(y+1)*stride+x+1]=paintCoverageSums[y*stride+x+1]+row;
+   }
+ }
+}
 function hitsPaint(x,y){
  if(!paintCoverage)return false;
  const aspect=canvas.width/canvas.height;
  const h=Math.min(.9*aspect/1.5,.78),w=h*1.5/aspect;
  const u=(x-.5)/w+.5,v=(y-(canvas.clientWidth<650?.33:.5))/h+.5;
+ // A brush touches a neighborhood, not a single source pixel. Thin ink and
+ // feathered edges need consecutive accepted samples to receive velocity.
+ if((refinedTiming||systemArtwork)&&paintCoverageSums){
+   const radius=Math.min(24,canvas.clientHeight*.025);
+   const rx=radius/(canvas.clientWidth*w),ry=radius/(canvas.clientHeight*h);
+   const x0=Math.max(0,Math.floor((u-rx)*paintCoverage.width));
+   const y0=Math.max(0,Math.floor((v-ry)*paintCoverage.height));
+   const x1=Math.min(paintCoverage.width,Math.ceil((u+rx)*paintCoverage.width));
+   const y1=Math.min(paintCoverage.height,Math.ceil((v+ry)*paintCoverage.height));
+   if(x0>=x1||y0>=y1)return false;
+   const stride=paintCoverage.width+1,sums=paintCoverageSums;
+   return sums[y1*stride+x1]-sums[y0*stride+x1]-sums[y1*stride+x0]+sums[y0*stride+x0]>0;
+ }
  if(u<0||u>=1||v<0||v>=1)return false;
  const i=(Math.floor(v*paintCoverage.height)*paintCoverage.width+Math.floor(u*paintCoverage.width))*4;
  const p=paintCoverage.data;
@@ -1661,8 +1687,15 @@ window.addEventListener('message',event=>{
 const sourceTexture = gl.createTexture();
 const smokeTexture = gl.createTexture();
 const hybridMode=new URLSearchParams(location.search).has('hybrid');
+const refinement=new URLSearchParams(location.search).get('refinement');
+const refinedTiming=hybridMode&&['timing','gather','balanced','light'].includes(refinement);
+const refinedGather=refinedTiming?(refinement==='gather'?1:['balanced','light'].includes(refinement)?.5:0):0;
+const lighterMotion=refinedTiming&&refinement==='light';
 const activityWidth=64,activityHeight=40;
 const activityData=new Uint8Array(activityWidth*activityHeight*4);
+// Absolute expiry avoids accumulating rounded decrements. Sixty byte levels
+// per second preserves the approved release's 60 Hz pacing (255 / 60 = 4.25s).
+const activityExpires=new Float64Array(activityWidth*activityHeight);
 const activityTexture=gl.createTexture();
 gl.bindTexture(gl.TEXTURE_2D,activityTexture);
 gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
@@ -1671,7 +1704,7 @@ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
 gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
 gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,activityWidth,activityHeight,0,gl.RGBA,gl.UNSIGNED_BYTE,activityData);
 let previousActivityPoint=null,activityDirty=false;
-function stampActivity(x,y){
+function stampActivity(x,y,now){
  const aspect=canvas.width/Math.max(canvas.height,1);
  const radius=.072;
  const minX=Math.max(0,Math.floor((x-radius/aspect)*activityWidth));
@@ -1685,6 +1718,7 @@ function stampActivity(x,y){
    const strength=Math.max(0,1-distance/radius);
    const value=Math.round(255*(.9+.1*strength));
    const i=(py*activityWidth+px)*4;
+   if(refinedTiming)activityExpires[i/4]=Math.max(activityExpires[i/4],now+value/60*1000);
    activityData[i]=Math.max(activityData[i],value);
    activityData[i+1]=activityData[i];activityData[i+2]=activityData[i];activityData[i+3]=255;
  }
@@ -1696,17 +1730,20 @@ function markActivity(x,y,now){
  const steps=Math.max(1,Math.ceil(distance/.025));
  for(let step=0;step<=steps;step++){
    const t=step/steps;
-   stampActivity(previousActivityPoint.x+(x-previousActivityPoint.x)*t,previousActivityPoint.y+(y-previousActivityPoint.y)*t);
+   stampActivity(previousActivityPoint.x+(x-previousActivityPoint.x)*t,previousActivityPoint.y+(y-previousActivityPoint.y)*t,now);
  }
  previousActivityPoint={x,y,time:now};
 }
 function updateActivity(dt){
  if(!hybridMode)return;
+ const now=performance.now();
  const decay=Math.max(1,Math.round(255*dt/3.2));
  let active=false;
  for(let i=0;i<activityData.length;i+=4){
    if(activityData[i]>0){
-     const value=Math.max(0,activityData[i]-decay);
+     const value=refinedTiming
+       ? Math.min(255,Math.max(0,Math.round((activityExpires[i/4]-now)*.06)))
+       : Math.max(0,activityData[i]-decay);
      activityData[i]=value;activityData[i+1]=value;activityData[i+2]=value;active=true;
    }
  }
@@ -1734,7 +1771,7 @@ const restoreProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_S
  precision highp float; varying vec2 vUv;
  uniform sampler2D current; uniform sampler2D original; uniform sampler2D flow; uniform sampler2D activity;
  uniform vec2 pixel; uniform float stepTime; uniform float clock; uniform float water;
- uniform float amount; uniform float aspect; uniform float mobile; uniform float recoveryAge; uniform float hybrid;
+ uniform float amount; uniform float aspect; uniform float mobile; uniform float recoveryAge; uniform float hybrid; uniform float lighterMotion;
  ${pigmentNoise}
  vec3 originalPigment(vec2 position) {
    float w = .9; float h = w * aspect / 1.5;
@@ -1780,7 +1817,7 @@ const restoreProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_S
                +texture2D(current,vUv-vec2(spread.x,0.)).rgb
                +texture2D(current,vUv+vec2(0.,spread.y)).rgb
                +texture2D(current,vUv-vec2(0.,spread.y)).rgb)*.25;
-   pigment=mix(pigment,nearby,1.-exp(-stepTime*stirred*9.));
+   pigment=mix(pigment,nearby,1.-exp(-stepTime*stirred*mix(9.,6.75,lighterMotion)));
    // Keep moving pigment legible long enough to form currents instead of
    // washing the whole territory out in one pass.
    float thinning=stirred*mix(1.2,9.,smoothstep(.25,.7,billow))*(1.-gathering);
@@ -1794,7 +1831,7 @@ const wispProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_SHAD
  uniform sampler2D activity;
  uniform sampler2D home; uniform float recoveryAge;
  uniform vec2 flowPixel; uniform float stepTime; uniform float clock;
- uniform float aspect; uniform float water; uniform float mobile; uniform float hybrid;
+ uniform float aspect; uniform float water; uniform float mobile; uniform float hybrid; uniform float refinedGather;
  ${pigmentNoise}
  void main(){
    vec2 motion=texture2D(flow,vUv).xy;
@@ -1820,9 +1857,11 @@ const wispProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_SHAD
    vec2 inward=gradient/(.08+length(gradient))*vec2(.045/aspect,.045);
    vec2 outward=motion*flowPixel*3.2+drift*2.2;
    inward*=mix(1.,1.18,hybrid*gather);
+   inward*=1.+.12*refinedGather*gather;
    vec2 transport=mix(outward,inward+drift*.35,gather);
    vec2 uv=clamp(vUv-stepTime*transport,vec2(.001),vec2(.999));
    float wispDecay=mix(mix(1.1,2.,gather),mix(.65,1.3,gather),hybrid);
+   wispDecay-=.15*refinedGather*gather;
    vec3 carried=texture2D(previous,uv).rgb*exp(-stepTime*wispDecay);
    float loss=1.-exp(-stepTime*stirred*mix(1.2,9.,smoothstep(.25,.7,n))*mix(1.,.65,water));
    float h=min(.9*aspect/1.5,.78),w=h*1.5/aspect;
@@ -1857,6 +1896,7 @@ function evolveWisps(dt){
  gl.activeTexture(gl.TEXTURE5);gl.bindTexture(gl.TEXTURE_2D,activityTexture);
  gl.uniform1i(wispProgram.uniforms.activity,5);
  gl.uniform1f(wispProgram.uniforms.hybrid,hybridMode?1:0);
+ gl.uniform1f(wispProgram.uniforms.refinedGather,refinedGather);
  gl.uniform1f(wispProgram.uniforms.recoveryAge,Math.max(0,(performance.now()-lastGesture-550)/1000));
  gl.uniform1f(wispProgram.uniforms.mobile,canvas.clientWidth<650?1:0);
  gl.uniform2f(wispProgram.uniforms.flowPixel,velocity.texelSizeX,velocity.texelSizeY);
@@ -1880,6 +1920,7 @@ function restorePainting(dt, initial=false) {
  gl.activeTexture(gl.TEXTURE5);gl.bindTexture(gl.TEXTURE_2D,activityTexture);
  gl.uniform1i(restoreProgram.uniforms.activity,5);
  gl.uniform1f(restoreProgram.uniforms.hybrid,hybridMode?1:0);
+ gl.uniform1f(restoreProgram.uniforms.lighterMotion,lighterMotion?1:0);
  gl.uniform2f(restoreProgram.uniforms.pixel,dye.texelSizeX,dye.texelSizeY);
  gl.uniform1f(restoreProgram.uniforms.stepTime,dt);
  gl.uniform1f(restoreProgram.uniforms.clock,performance.now()/1000);
@@ -1907,6 +1948,7 @@ const startPainting=()=>{
  const coverageContext=coverageCanvas.getContext('2d',{willReadFrequently:true});
  coverageContext.drawImage(painting,0,0);
  paintCoverage=coverageContext.getImageData(0,0,coverageCanvas.width,coverageCanvas.height);
+ buildPaintCoverageSums();
  const fmt=ext.formatRGBA;
  wisps=createDoubleFBO(dye.width,dye.height,fmt.internalFormat,fmt.format,ext.halfFloatTexType,ext.supportLinearFiltering?gl.LINEAR:gl.NEAREST);
  gl.bindTexture(gl.TEXTURE_2D,sourceTexture);
@@ -1929,6 +1971,7 @@ const startPainting=()=>{
  if(parent!==window)parent.postMessage({type:'fluid-ready'},location.origin);
 };
 painting.onload=startPainting;smokePainting.onload=startPainting;
+const systemArtwork=false;
 painting.src='/hero-watercolor-territory.webp';
 smokePainting.src='/hero-territory-smoke-v2.webp';
 // Repeatable review gesture for comparing smoke and water at the same strength.

@@ -8,8 +8,10 @@ The original centered **Listen. Learn. Build.** hero and independent mouse smoke
 
 - `FluidHero.tsx` embeds the same-origin WebGL renderer. The independent cursor smoke is disabled.
 - Only interaction over painted content resets recovery. Blank paper emits no pigment and does not postpone recovery.
-- Desktop now defaults to the approved spatial recovery treatment (`&hybrid` in the iframe). The `?legacy-smoke` page flag retains the earlier global timing for comparison.
-- Broad breakup and detached, locally colored wisps remain. A spatial activity field follows the painted-content pointer path, allowing older regions to rebuild while newer regions disperse. Recovery staggers locally and rebuilds broad shapes before detail; the current byte-field decay is frame-rate dependent.
+- Desktop defaults to the approved lighter spatial recovery treatment (`&hybrid&refinement=light` in the iframe). The `?legacy-smoke` page flag retains the earlier global timing for comparison.
+- Broad breakup and detached, locally colored wisps remain. A spatial activity field follows the painted-content pointer path, allowing older regions to rebuild while newer regions disperse. Absolute activity expiry preserves the approved 60 Hz recovery pace independently of display rate. Recovery staggers locally and rebuilds broad shapes before detail.
+- Light uses 5.25 velocity damping (previously 4.2), 6.75 diffusion (previously 9), and half of the extra gathering adjustment. Cursor force and recovery timing are unchanged. Brush-footprint coverage includes feathered painted edges; distant blank space stays quiet.
+- Mobile artwork, ripple renderer, and mobile styles are unchanged by this release. New artwork and origin-carrying particle experiments remain local, not part of production.
 - During recovery, thinning and new wisp release taper out so reconstruction is not fighting continuing erosion.
 - Wisps are attracted toward nearby painted shapes, not tracked back to exact particle origins. This remains an artistic approximation.
 - Coarse pointers use the water treatment. Parent pointer listeners are passive; native page scrolling remains available. Reduced motion retains the static artwork. Physical-device touch validation is still needed.
