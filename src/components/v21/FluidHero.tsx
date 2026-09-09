@@ -26,7 +26,7 @@ export default function FluidHero() {
         || matchMedia('(pointer: coarse)').matches
         || matchMedia('(max-width: 51.25rem)').matches;
       setIsMobile(mobile);
-      setMode(reduced.matches ? null : mobile ? 'water' : 'smoke');
+      setMode(reduced.matches ? null : mobile ? 'water' : 'hover-water');
     };
     choose(); reduced.addEventListener('change', choose);
     const receive = (event: MessageEvent) => {
@@ -59,19 +59,22 @@ export default function FluidHero() {
     };
   }, []);
   useEffect(() => {
-    if (mode !== 'water' || !layer.current || !mobileCanvas.current) return;
+    if ((mode !== 'water' && mode !== 'hover-water') || !layer.current || !mobileCanvas.current) return;
     setReady(false);
     return setupMobileRipple({
       canvas: mobileCanvas.current,
       layer: layer.current,
       onContextRestored: () => setContextVersion((version) => version + 1),
       onReady: () => setReady(true),
+      artworkSrc: '/hero-workroom-dog-v3.webp',
+      preserveArtworkTones: true,
+      hover: mode === 'hover-water',
     });
   }, [mode, contextVersion]);
   const activeMode = ready ? 'pigment' : 'static';
   return <div ref={layer} className={styles.smokeLayer} data-mode={activeMode} data-mobile-mode={isMobile ? 'true' : undefined}>
     <div className={styles.heroArtworkFallback} aria-hidden="true" />
-    {mode === 'water' && <canvas ref={mobileCanvas} className={styles.smokeField} data-mobile-ripple aria-hidden="true" />}
+    {(mode === 'water' || mode === 'hover-water') && <canvas ref={mobileCanvas} className={styles.smokeField} data-mobile-ripple={mode === 'water' ? '' : undefined} data-hover-water={mode === 'hover-water' ? '' : undefined} aria-hidden="true" />}
     {mode === 'smoke' && <iframe ref={frame} src={`/fluid-watercolor-study.html?embed&smoke${hybridPreview ? '&hybrid&material-recovery' : ''}${refinement ? `&refinement=${refinement}` : ''}`} title="Watercolor workroom with a resting dog" aria-hidden="true" tabIndex={-1} className={styles.fluidHeroFrame} style={{opacity:ready ? 1 : 0}} />}
   </div>;
 }

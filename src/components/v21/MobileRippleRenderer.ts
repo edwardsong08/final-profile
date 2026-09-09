@@ -126,6 +126,8 @@ const displayFragmentShader = `
   uniform float uEncoded;
   uniform float uEffectStrength;
   uniform float uTextReveal;
+  uniform float uPreserveArtworkTones;
+  uniform float uClipToArtwork;
 
   float decodeHeight(vec4 state) {
     return mix(state.r, (state.r - 128.0 / 255.0) * 0.5, uEncoded);
@@ -151,7 +153,10 @@ const displayFragmentShader = `
       1.0 - smoothstep(0.68, 0.94, paperLuma),
       smoothstep(0.015, 0.09, chroma) * 0.62
     );
-    float textAlpha = artwork.a * pigmentMask * uTextReveal * 0.76;
+    vec3 ink = 1.0 - artwork.rgb;
+    float inkCoverage = max(max(ink.r, ink.g), ink.b);
+    float textAlpha = artwork.a * mix(pigmentMask, inkCoverage, uPreserveArtworkTones)
+      * uTextReveal * mix(0.76, 0.86, uPreserveArtworkTones);
 
     float gradient = length(slope);
     float disturbance = smoothstep(0.00018, 0.0065, gradient);
@@ -163,7 +168,11 @@ const displayFragmentShader = `
       waveFront * 0.058 + specular * disturbance * 0.022,
       0.0,
       0.15
-    ) * uEffectStrength;
+    ) * uEffectStrength * mix(
+      1.0,
+      artwork.a * smoothstep(0.01, 0.12, inkCoverage),
+      uClipToArtwork
+    );
     vec3 clearWater = vec3(0.34, 0.47, 0.52);
     vec3 mineralShadow = vec3(0.13, 0.25, 0.31);
     vec3 surfaceColor = mix(
@@ -171,7 +180,8 @@ const displayFragmentShader = `
       mineralShadow,
       clamp(directionalShadow * 1.7, 0.0, 1.0)
     );
-    vec3 textColor = artwork.rgb;
+    vec3 inkColor = 1.0 - ink / max(inkCoverage, 0.0001);
+    vec3 textColor = mix(artwork.rgb, inkColor, uPreserveArtworkTones);
     float combinedAlpha = surfaceAlpha + textAlpha * (1.0 - surfaceAlpha);
     vec3 combinedColor = (
       surfaceColor * surfaceAlpha + textColor * textAlpha * (1.0 - surfaceAlpha)
@@ -198,6 +208,9 @@ type SetupMobileRippleOptions = {
   layer: HTMLDivElement;
   onContextRestored: () => void;
   onReady?: () => void;
+  artworkSrc?: string;
+  preserveArtworkTones?: boolean;
+  hover?: boolean;
 };
 
 const isInteractiveTarget = (target: EventTarget | null) =>
@@ -221,6 +234,9 @@ export function setupMobileRipple({
   layer,
   onContextRestored,
   onReady,
+  artworkSrc = '/hero-watercolor-territory-mobile-v2.png',
+  preserveArtworkTones = false,
+  hover = false,
 }: SetupMobileRippleOptions) {
   let renderer: Renderer;
   try {
@@ -344,6 +360,8 @@ export function setupMobileRipple({
       uEncoded: { value: encodedState ? 1 : 0 },
       uEffectStrength: { value: 0 },
       uTextReveal: { value: 0 },
+      uPreserveArtworkTones: { value: preserveArtworkTones ? 1 : 0 },
+      uClipToArtwork: { value: 1 },
     },
     cullFace: false,
     depthTest: false,
@@ -406,10 +424,14 @@ export function setupMobileRipple({
       ? Math.min(0.82, Math.max(0.18, parsedPosition / 100))
       : 0.5;
     textContext.clearRect(0, 0, textCanvas.width, textCanvas.height);
-    const artworkWidth = Math.min(textCanvas.width * 0.9, bounds.width * pixelRatio * 0.92);
     const artworkAspect = artworkImage.naturalWidth > 0
       ? artworkImage.naturalHeight / artworkImage.naturalWidth
       : 1.5;
+    const artworkWidth = Math.min(
+      textCanvas.width * 0.9,
+      bounds.width * pixelRatio * 0.92,
+      hover ? textCanvas.height * 0.78 / artworkAspect : Infinity,
+    );
     const artworkHeight = artworkWidth * artworkAspect;
     if (layer.dataset.ambient !== 'true' && artworkImage.complete && artworkImage.naturalWidth > 0) {
       textContext.drawImage(
@@ -434,7 +456,7 @@ export function setupMobileRipple({
     startRendering(true);
     onReady?.();
   };
-  artworkImage.src = '/hero-workroom-dog-v3.webp';
+  artworkImage.src = artworkSrc;
 
   const resize = () => {
     const bounds = canvas.getBoundingClientRect();
@@ -597,7 +619,7 @@ export function setupMobileRipple({
 
   const handlePointerDown = (event: PointerEvent) => {
     if (
-      event.pointerType === 'touch'
+      hover || event.pointerType === 'touch'
       || event.button !== 0
       || isInteractiveTarget(event.target)
     ) return;
@@ -611,6 +633,18 @@ export function setupMobileRipple({
 
   const handlePointerMove = (event: PointerEvent) => {
     if (event.pointerType === 'touch') return;
+    if (hover) {
+      const bounds = canvas.getBoundingClientRect();
+      if (isInteractiveTarget(event.target) || event.clientX < bounds.left || event.clientX > bounds.right
+        || event.clientY < bounds.top || event.clientY > bounds.bottom) {
+        activePointers.delete(event.pointerId);
+        return;
+      }
+      if (!activePointers.has(event.pointerId)) {
+        activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY, sampledAt: event.timeStamp });
+        return;
+      }
+    }
     const previous = activePointers.get(event.pointerId);
     if (!previous) return;
 
@@ -628,7 +662,7 @@ export function setupMobileRipple({
     addImpulse(
       event.clientX,
       event.clientY,
-      Math.min(0.82, 0.38 + distance / 72),
+      hover ? Math.min(0.55, 0.22 + distance / 140) : Math.min(0.82, 0.38 + distance / 72),
     );
   };
 
@@ -732,6 +766,7 @@ export function setupMobileRipple({
   startRendering();
 
   return () => {
+    artworkImage.onload = null;
     stopRendering();
     resizeObserver.disconnect();
     visibilityObserver.disconnect();
