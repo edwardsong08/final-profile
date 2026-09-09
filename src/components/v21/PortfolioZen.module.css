@@ -93,7 +93,7 @@
   transform: translate(-50%, -50%);
   width: min(90%, 1150px, 130svh);
   aspect-ratio: 3 / 2;
-  background: url('/hero-workroom-dog-v3-transparent.webp') center / contain no-repeat;
+  background: url('/hero-workroom-dog-v4-labeled.webp') center / contain no-repeat;
   opacity: .76;
 }
 
@@ -103,49 +103,12 @@
 
 .smokeLayer[data-mobile-mode='true'] .heroArtworkFallback {
   aspect-ratio: 3 / 2;
-  background-image: url('/hero-workroom-dog-v3-transparent.webp');
+  background-image: url('/hero-workroom-dog-v4-labeled-mobile.webp');
   mask-image: radial-gradient(ellipse 70% 67% at 50% 50%, #000 47%, transparent 96%);
   /* stylelint-disable-next-line property-no-vendor-prefix */
   -webkit-mask-image: radial-gradient(ellipse 70% 67% at 50% 50%, #000 47%, transparent 96%);
   opacity: .86;
   width: min(88%, 32rem, 70svh);
-}
-
-.hueyAnnotation {
-  align-items: flex-end;
-  color: var(--accent-dark);
-  display: flex;
-  flex-direction: column;
-  font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
-  font-size: clamp(0.78rem, 1.15vw, 1rem);
-  font-weight: 500;
-  left: calc(50% + min(21vw, 17rem) + 2.25rem);
-  letter-spacing: 0.015em;
-  line-height: 1;
-  opacity: 0;
-  position: absolute;
-  top: calc(39% + 2.5rem);
-  transform: rotate(-4deg);
-  transition: opacity 650ms ease 350ms;
-  z-index: 2;
-}
-
-.smokeLayer[data-mode='pigment'] .hueyAnnotation,
-.smokeLayer[data-mode='static'] .hueyAnnotation {
-  opacity: 0.7;
-}
-
-.hueyAnnotation svg {
-  fill: none;
-  height: 3.5rem;
-  margin-right: 0.35rem;
-  margin-top: 0.15rem;
-  overflow: visible;
-  stroke: currentcolor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.6;
-  width: 5rem;
 }
 
 .heroMantra {
@@ -1586,22 +1549,11 @@ a:hover .linkArrow {
 
   .smokeLayer .heroArtworkFallback {
     aspect-ratio: 3 / 2;
-    background-image: url('/hero-workroom-dog-v3-transparent.webp');
+    background-image: url('/hero-workroom-dog-v4-labeled-mobile.webp');
     mask-image: radial-gradient(ellipse 70% 67% at 50% 50%, #000 47%, transparent 96%);
     /* stylelint-disable-next-line property-no-vendor-prefix */
     -webkit-mask-image: radial-gradient(ellipse 70% 67% at 50% 50%, #000 47%, transparent 96%);
     width: min(88%, 32rem, 70svh);
-  }
-
-  .hueyAnnotation {
-    font-size: 0.72rem;
-    left: calc(67% + 0.75rem);
-    top: calc(40% + 1.25rem);
-  }
-
-  .hueyAnnotation svg {
-    height: 2.6rem;
-    width: 3.7rem;
   }
 
   .mobileNavigation {

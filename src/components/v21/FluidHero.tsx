@@ -66,22 +66,17 @@ export default function FluidHero() {
       layer: layer.current,
       onContextRestored: () => setContextVersion((version) => version + 1),
       onReady: () => setReady(true),
-      artworkSrc: '/hero-workroom-dog-v3-transparent.webp',
+      artworkSrc: isMobile
+        ? '/hero-workroom-dog-v4-labeled-mobile.webp'
+        : '/hero-workroom-dog-v4-labeled.webp',
       preserveArtworkTones: false,
       hover: mode === 'hover-water',
     });
-  }, [mode, contextVersion]);
+  }, [mode, contextVersion, isMobile]);
   const activeMode = ready ? 'pigment' : 'static';
   return <div ref={layer} className={styles.smokeLayer} data-mode={activeMode} data-mobile-mode={isMobile ? 'true' : undefined}>
     <div className={styles.heroArtworkFallback} aria-hidden="true" />
     {(mode === 'water' || mode === 'hover-water') && <canvas ref={mobileCanvas} className={styles.smokeField} data-mobile-ripple={mode === 'water' ? '' : undefined} data-hover-water={mode === 'hover-water' ? '' : undefined} aria-hidden="true" />}
-    <div className={styles.hueyAnnotation} aria-hidden="true">
-      <span>Huey.</span>
-      <svg viewBox="0 0 82 58" role="presentation">
-        <path d="M75 7C47 9 37 24 20 45" />
-        <path d="M31 40L19 46L22 33" />
-      </svg>
-    </div>
     {mode === 'smoke' && <iframe ref={frame} src={`/fluid-watercolor-study.html?embed&smoke${hybridPreview ? '&hybrid&material-recovery' : ''}${refinement ? `&refinement=${refinement}` : ''}`} title="Watercolor workroom with a resting dog" aria-hidden="true" tabIndex={-1} className={styles.fluidHeroFrame} style={{opacity:ready ? 1 : 0}} />}
   </div>;
 }
