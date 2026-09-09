@@ -12,7 +12,7 @@ export default function FluidHero() {
   const [ready, setReady] = useState(false);
   const [contextVersion, setContextVersion] = useState(0);
   const [hybridPreview, setHybridPreview] = useState(true);
-  const [refinement, setRefinement] = useState('light');
+  const [refinement, setRefinement] = useState('arrival');
   useEffect(() => {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     const choose = () => {
@@ -21,7 +21,7 @@ export default function FluidHero() {
       const mobilePreview = params.has('mobile-preview');
       setHybridPreview(!params.has('legacy-smoke'));
       const requestedRefinement = params.get('smoke-refinement');
-      setRefinement(['timing', 'gather', 'balanced', 'light'].includes(requestedRefinement ?? '') ? requestedRefinement! : params.has('legacy-smoke') ? '' : 'light');
+      setRefinement(['timing', 'gather', 'balanced', 'light', 'arrival'].includes(requestedRefinement ?? '') ? requestedRefinement! : params.has('legacy-smoke') ? '' : 'arrival');
       const mobile = mobilePreview
         || matchMedia('(pointer: coarse)').matches
         || matchMedia('(max-width: 51.25rem)').matches;

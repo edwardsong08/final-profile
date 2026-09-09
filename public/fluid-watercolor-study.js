@@ -1,3 +1,4 @@
+const arrivalSmoke = new URLSearchParams(location.search).get("refinement") === "arrival";
 /*
 MIT License
 
@@ -34,7 +35,7 @@ let config = {
     DYE_RESOLUTION: 1024,
     CAPTURE_RESOLUTION: 512,
     DENSITY_DISSIPATION: 0,
-    VELOCITY_DISSIPATION: new URLSearchParams(location.search).get('refinement') === 'light' ? 5.25 : 4.2,
+    VELOCITY_DISSIPATION: new URLSearchParams(location.search).get('refinement') === 'light' || arrivalSmoke ? 5.25 : 4.2,
     PRESSURE: 0.8,
     PRESSURE_ITERATIONS: 20,
     CURL: new URLSearchParams(location.search).has('water') ? 5 : 14,
@@ -1694,9 +1695,9 @@ const sourceTexture = gl.createTexture();
 const smokeTexture = gl.createTexture();
 const hybridMode=new URLSearchParams(location.search).has('hybrid');
 const refinement=new URLSearchParams(location.search).get('refinement');
-const refinedTiming=hybridMode&&['timing','gather','balanced','light'].includes(refinement);
-const refinedGather=refinedTiming?(refinement==='gather'?1:['balanced','light'].includes(refinement)?.5:0):0;
-const lighterMotion=refinedTiming&&refinement==='light';
+const refinedTiming=hybridMode&&['timing','gather','balanced','light','arrival'].includes(refinement);
+const refinedGather=refinedTiming?(refinement==='gather'?1:['balanced','light','arrival'].includes(refinement)?.5:0):0;
+const lighterMotion=refinedTiming&&(refinement==='light'||arrivalSmoke);
 const activityWidth=64,activityHeight=40;
 const activityData=new Uint8Array(activityWidth*activityHeight*4);
 // Absolute expiry avoids accumulating rounded decrements. Sixty byte levels
@@ -1832,6 +1833,7 @@ const restoreProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_S
    // washing the whole territory out in one pass.
    float thinning=stirred*mix(1.2,9.,smoothstep(.25,.7,billow))*(1.-gathering);
    pigment*=exp(-stepTime*thinning*mix(1.,.65,water));
+   float materialHandoff=smoothstep(.85,1.45,localAge);
    if(guided>.5 && gathering>0. && disturbed>.001){
    // Keep baseline breakup. Returning material only contributes to missing
    // painted structure during recovery; never overlay intact artwork/paper.
@@ -1853,17 +1855,22 @@ const restoreProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_S
    if(materialReturn>.5){
      vec3 delivered=texture2D(depositedPigment,vUv).rgb;
      pigment+=delivered;
+     if(${arrivalSmoke ? '1.' : '0.'}>.5){
+       // Coverage includes surviving, transported and source-restored pigment.
+       float coverage=1.-clamp(length(max(target-pigment,vec3(0.)))/max(.001,length(target)),0.,1.);
+       materialHandoff=max(smoothstep(.55,.93,coverage),smoothstep(1.45,2.15,localAge));
+     }
      // Reduce source reconstruction only where real wisp color contributes.
      // Late detail resolution stays on the original schedule.
      float share=clamp(max(delivered.r,max(delivered.g,delivered.b))
        /max(.0001,max(target.r,max(target.g,target.b))*resilience),0.,1.);
-     resilience*=1.-.60*share*(1.-smoothstep(.85,1.45,localAge));
+     resilience*=1.-${arrivalSmoke ? ".75" : ".60"}*share*(1.-materialHandoff);
    }else{
      pigment+=min(max(target-pigment,vec3(0.)),arriving*.3)
        *(1.-exp(-stepTime*3.))*guidance;
    }
    }
-   gl_FragColor=vec4(mix(pigment,target,resilience),1.);
+   gl_FragColor=vec4(mix(pigment,target,resilience*mix(${arrivalSmoke ? ".65" : "1."},1.,materialHandoff)),1.);
  }
 `));
 const wispProgram = new Program(baseVertexShader, compileShader(gl.FRAGMENT_SHADER, `
@@ -2262,7 +2269,7 @@ function createMaterialEngine(coupled=false) {
         +texture2D(arriving,vUv+vec2(0.,reach.y)).rgb
         +texture2D(arriving,vUv-vec2(0.,reach.y)).rgb)/8.;
       float guided=smoothstep(.004,.075,max(support.r,max(support.g,support.b)));
-      float fraction=1.-exp(-dt*mix(1.65,6.05,guided)*gate);
+      float fraction=1.-exp(-dt*mix(1.65,${arrivalSmoke ? "7.0" : "6.05"},guided)*gate);
       float disturbed=smoothstep(.008,.09,length(existing-target));
       vec3 delivered=min(missing,texture2D(plume,vUv).rgb*fraction)*step(.001,disturbed);
       gl_FragColor=vec4(delivered,1.);

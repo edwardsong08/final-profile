@@ -466,4 +466,21 @@ document.getElementById('gesture')?.addEventListener('click',()=>{
 });
 `;
 s += '\nlet materialEngine=null,recoveryDensity=null,returningDeposit=null;\nconst materialRecovery=new URLSearchParams(location.search).has("material-recovery");\nconst guidedRecovery=materialRecovery||new URLSearchParams(location.search).has("guided");\n' + fs.readFileSync('scripts/fluid-material-engine.glsl.js','utf8');
+// Approved recovery handoff; preserve the light preset's initial dissipation.
+s = 'const arrivalSmoke = new URLSearchParams(location.search).get("refinement") === "arrival";\n' + s;
+s = s.replace("['timing','gather','balanced','light']", "['timing','gather','balanced','light','arrival']");
+s = s.replace("['balanced','light']", "['balanced','light','arrival']");
+s = s.replace("refinedTiming&&refinement==='light'", "refinedTiming&&(refinement==='light'||arrivalSmoke)");
+s = s.replace("get('refinement') === 'light' ? 5.25 : 4.2", "get('refinement') === 'light' || arrivalSmoke ? 5.25 : 4.2");
+s = s.replace('   if(guided>.5 && gathering>0.', '   float materialHandoff=smoothstep(.85,1.45,localAge);\n   if(guided>.5 && gathering>0.');
+s = s.replace('     pigment+=delivered;', `     pigment+=delivered;
+     if(\${arrivalSmoke ? '1.' : '0.'}>.5){
+       // Coverage includes surviving, transported and source-restored pigment.
+       float coverage=1.-clamp(length(max(target-pigment,vec3(0.)))/max(.001,length(target)),0.,1.);
+       materialHandoff=max(smoothstep(.55,.93,coverage),smoothstep(1.45,2.15,localAge));
+     }`);
+s = s.replace('resilience*=1.-.60*share', 'resilience*=1.-${arrivalSmoke ? ".75" : ".60"}*share');
+s = s.replace('share*(1.-smoothstep(.85,1.45,localAge))', 'share*(1.-materialHandoff)');
+s = s.replace('mix(pigment,target,resilience)', 'mix(pigment,target,resilience*mix(${arrivalSmoke ? ".65" : "1."},1.,materialHandoff))');
+s = s.replace('mix(1.65,6.05,guided)', 'mix(1.65,${arrivalSmoke ? "7.0" : "6.05"},guided)');
 fs.writeFileSync('public/fluid-watercolor-study.js', s);
