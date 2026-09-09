@@ -434,7 +434,7 @@ export function setupMobileRipple({
     startRendering(true);
     onReady?.();
   };
-  artworkImage.src = '/hero-watercolor-territory-mobile-v2.png';
+  artworkImage.src = '/hero-workroom-dog-v3.webp';
 
   const resize = () => {
     const bounds = canvas.getBoundingClientRect();

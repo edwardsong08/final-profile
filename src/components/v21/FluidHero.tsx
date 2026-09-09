@@ -72,6 +72,6 @@ export default function FluidHero() {
   return <div ref={layer} className={styles.smokeLayer} data-mode={activeMode} data-mobile-mode={isMobile ? 'true' : undefined}>
     <div className={styles.heroArtworkFallback} aria-hidden="true" />
     {mode === 'water' && <canvas ref={mobileCanvas} className={styles.smokeField} data-mobile-ripple aria-hidden="true" />}
-    {mode === 'smoke' && <iframe ref={frame} src={`/fluid-watercolor-study.html?embed&smoke${hybridPreview ? '&hybrid&material-recovery' : ''}${refinement ? `&refinement=${refinement}` : ''}`} title="Decorative watercolor landscape" aria-hidden="true" tabIndex={-1} className={styles.fluidHeroFrame} style={{opacity:ready ? 1 : 0}} />}
+    {mode === 'smoke' && <iframe ref={frame} src={`/fluid-watercolor-study.html?embed&smoke${hybridPreview ? '&hybrid&material-recovery' : ''}${refinement ? `&refinement=${refinement}` : ''}`} title="Watercolor workroom with a resting dog" aria-hidden="true" tabIndex={-1} className={styles.fluidHeroFrame} style={{opacity:ready ? 1 : 0}} />}
   </div>;
 }
