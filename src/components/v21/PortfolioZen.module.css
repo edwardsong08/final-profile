@@ -119,12 +119,12 @@
   font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
   font-size: clamp(0.78rem, 1.15vw, 1rem);
   font-weight: 500;
-  left: calc(50% + min(21vw, 17rem));
+  left: calc(50% + min(21vw, 17rem) + 2.25rem);
   letter-spacing: 0.015em;
   line-height: 1;
   opacity: 0;
   position: absolute;
-  top: 39%;
+  top: calc(39% + 2.5rem);
   transform: rotate(-4deg);
   transition: opacity 650ms ease 350ms;
   z-index: 2;
@@ -1595,8 +1595,8 @@ a:hover .linkArrow {
 
   .hueyAnnotation {
     font-size: 0.72rem;
-    left: 67%;
-    top: 40%;
+    left: calc(67% + 0.75rem);
+    top: calc(40% + 1.25rem);
   }
 
   .hueyAnnotation svg {
