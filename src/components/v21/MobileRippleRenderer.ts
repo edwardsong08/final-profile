@@ -155,7 +155,8 @@ const displayFragmentShader = `
     );
     vec3 ink = 1.0 - artwork.rgb;
     float inkCoverage = max(max(ink.r, ink.g), ink.b);
-    float textAlpha = artwork.a * mix(pigmentMask, inkCoverage, uPreserveArtworkTones)
+    float artworkCoverage = smoothstep(0.035, 0.14, inkCoverage);
+    float textAlpha = artwork.a * mix(pigmentMask, artworkCoverage, uPreserveArtworkTones)
       * uTextReveal * mix(0.76, 0.86, uPreserveArtworkTones);
 
     float gradient = length(slope);
@@ -170,7 +171,7 @@ const displayFragmentShader = `
       0.15
     ) * uEffectStrength * mix(
       1.0,
-      artwork.a * smoothstep(0.01, 0.12, inkCoverage),
+      artwork.a * artworkCoverage,
       uClipToArtwork
     );
     vec3 clearWater = vec3(0.34, 0.47, 0.52);

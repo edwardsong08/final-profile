@@ -2055,8 +2055,8 @@ const startPainting=()=>{
 painting.onload=startPainting;smokePainting.onload=startPainting;
 const systemArtwork=false;
 const connectedArtwork=false;
-painting.src='/hero-workroom-dog-v3.webp';
-smokePainting.src='/hero-workroom-dog-v3.webp';
+painting.src='/hero-workroom-dog-v3-transparent.webp';
+smokePainting.src='/hero-workroom-dog-v3-transparent.webp';
 // Repeatable review gesture for comparing smoke and water at the same strength.
 document.getElementById('gesture')?.addEventListener('click',()=>{
  const start=performance.now();

@@ -66,8 +66,8 @@ export default function FluidHero() {
       layer: layer.current,
       onContextRestored: () => setContextVersion((version) => version + 1),
       onReady: () => setReady(true),
-      artworkSrc: '/hero-workroom-dog-v3.webp',
-      preserveArtworkTones: true,
+      artworkSrc: '/hero-workroom-dog-v3-transparent.webp',
+      preserveArtworkTones: false,
       hover: mode === 'hover-water',
     });
   }, [mode, contextVersion]);

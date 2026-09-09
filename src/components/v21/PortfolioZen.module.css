@@ -93,7 +93,7 @@
   transform: translate(-50%, -50%);
   width: min(90%, 1150px, 130svh);
   aspect-ratio: 3 / 2;
-  background: url('/hero-workroom-dog-v3.webp') center / contain no-repeat;
+  background: url('/hero-workroom-dog-v3-transparent.webp') center / contain no-repeat;
   opacity: .76;
 }
 
@@ -103,7 +103,7 @@
 
 .smokeLayer[data-mobile-mode='true'] .heroArtworkFallback {
   aspect-ratio: 3 / 2;
-  background-image: url('/hero-workroom-dog-v3.webp');
+  background-image: url('/hero-workroom-dog-v3-transparent.webp');
   mask-image: radial-gradient(ellipse 70% 67% at 50% 50%, #000 47%, transparent 96%);
   /* stylelint-disable-next-line property-no-vendor-prefix */
   -webkit-mask-image: radial-gradient(ellipse 70% 67% at 50% 50%, #000 47%, transparent 96%);
@@ -1549,7 +1549,7 @@ a:hover .linkArrow {
 
   .smokeLayer .heroArtworkFallback {
     aspect-ratio: 3 / 2;
-    background-image: url('/hero-workroom-dog-v3.webp');
+    background-image: url('/hero-workroom-dog-v3-transparent.webp');
     mask-image: radial-gradient(ellipse 70% 67% at 50% 50%, #000 47%, transparent 96%);
     /* stylelint-disable-next-line property-no-vendor-prefix */
     -webkit-mask-image: radial-gradient(ellipse 70% 67% at 50% 50%, #000 47%, transparent 96%);
