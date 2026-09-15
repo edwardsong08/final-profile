@@ -2,13 +2,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type RefObject, useEffect, useRef, useState } from 'react';
 
-import { SitePagePreview } from './ProjectEvidence';
+import { ClaimChainEvidence, SitePagePreview } from './ProjectEvidence';
 import FluidHero from './FluidHero';
 import styles from './PortfolioZen.module.css';
 
 const EMAIL = 'edwardsong08@gmail.com';
-type StewardshipSlide = 'troa-nonprofit' | 'troa-gaming' | 'ryu';
-const stewardshipSlides: StewardshipSlide[] = ['troa-nonprofit', 'troa-gaming', 'ryu'];
+type StewardshipSlide = 'troa-nonprofit' | 'troa-gaming';
+const stewardshipSlides: StewardshipSlide[] = ['troa-nonprofit', 'troa-gaming'];
 const REALM_MAP_ORIGIN = process.env.NODE_ENV === 'development'
   ? 'http://localhost:5173'
   : 'https://troa-realms.therealmsofasgard.com';
@@ -28,19 +28,19 @@ const experience = [
   },
   {
     dates: '2022–now',
-    role: 'Software Engineer',
-    organization: 'Ryu Legal + client work',
+    role: 'Technical Lead, Contract',
+    organization: 'Ryu Legal',
   },
   {
     dates: '2021–2023',
-    role: 'Product Engineer',
-    organization: 'Legal startup',
+    role: 'Product Lead',
+    organization: 'Legal Technology Startup',
   },
 ];
 
 const primarySections = [
   { id: 'work', label: 'Work' },
-  { id: 'systems', label: 'Independent' },
+  { id: 'systems', label: 'Earlier work' },
   { id: 'hub', label: 'Hub' },
   { id: 'experience', label: 'Experience' },
   { id: 'about', label: 'About' },
@@ -69,16 +69,6 @@ const stewardshipStories = [
       { label: 'Try it', value: 'Choose a destination below the map to move between objects. Open the full map for navigation and community features.' },
     ],
     caseStudy: '/work/troa', liveUrl: 'https://troa-realms.therealmsofasgard.com/map', liveLabel: 'Open full map',
-  },
-  {
-    id: 'ryu', label: 'Ryu Legal',
-    meta: 'Client technology ownership · Since 2022',
-    summary: 'Long-term responsibility for a law firm’s website and supporting technology—from understanding the practice to building, deploying, and maintaining the systems it uses.',
-    facts: [
-      { label: 'Responsibility', value: 'Requirements, interface design, application engineering, deployment, ongoing maintenance, and wider IT needs.' },
-      { label: 'Shown here', value: 'The public NJ/NY site: clear service information and a contact flow with server-side validation and delivery safeguards.' },
-    ],
-    caseStudy: '/work/ryu-legal', liveUrl: 'https://www.ryu-legal.com', liveLabel: 'Visit live site',
   },
 ] as const;
 
@@ -184,17 +174,16 @@ function useActiveSection(
 }
 
 function LiveRealmMapEmbed({
-  active,
+  hasLoaded,
   objectId,
   onObjectChange,
   frameRef,
 }: {
-  active: boolean;
+  hasLoaded: boolean;
   objectId: string;
   onObjectChange: (objectId: string) => void;
   frameRef: RefObject<HTMLIFrameElement | null>;
 }) {
-  const [hasLoaded, setHasLoaded] = useState(active);
   const viewportRef = useRef<HTMLDivElement>(null);
   const [mapScale, setMapScale] = useState(0.5);
   const mapUrl = `${REALM_MAP_ORIGIN}/map?embed=profile&mode=object-detail&orb=${REALM_MAP_ORB_ID}&object=${realmMapObjects[0].id}`;
@@ -206,9 +195,6 @@ function LiveRealmMapEmbed({
     observer.observe(viewport);
     return () => observer.disconnect();
   }, []);
-
-  // Keep the renderer mounted after the first visit so camera moves do not reload assets.
-  if (active && !hasLoaded) setHasLoaded(true);
 
   return (
     <section className={styles.realmMapEmbed} aria-label="Interactive TROA Space Engineers realm map">
@@ -414,6 +400,7 @@ function PrimaryNavigation({
 
 export default function PortfolioZen() {
   const [activeStewardship, setActiveStewardship] = useState<StewardshipSlide>('troa-nonprofit');
+  const [hasLoadedRealmMap, setHasLoadedRealmMap] = useState(false);
   const [selectedRealmObject, setSelectedRealmObject] = useState<string>(realmMapObjects[0].id);
   const realmMapFrameRef = useRef<HTMLIFrameElement>(null);
   const [activePrimarySection, setActivePrimarySection] = useActiveSection(
@@ -457,6 +444,7 @@ export default function PortfolioZen() {
     selectStewardship(stewardshipSlides[nextIndex]);
   };
   const selectStewardship = (slide: StewardshipSlide) => {
+    if (slide === 'troa-gaming') setHasLoadedRealmMap(true);
     setActiveStewardship(slide);
     window.history.replaceState(null, '', `#project-${slide}`);
   };
@@ -479,6 +467,7 @@ export default function PortfolioZen() {
     const syncSlide = () => {
       const slide = stewardshipSlides.find(id => window.location.hash === `#project-${id}`);
       if (!slide) return;
+      if (slide === 'troa-gaming') setHasLoadedRealmMap(true);
       setActiveStewardship(slide);
       document.getElementById('project-troa')?.scrollIntoView({ block: 'start' });
     };
@@ -506,8 +495,8 @@ export default function PortfolioZen() {
 
           <div className={styles.heroRole}>
             <h1>
-              Product Engineer{' '}
-              <span>Technical Lead</span>
+              CTO{' '}
+              <span>Technical Lead · Product Engineer</span>
             </h1>
             <p className={styles.quietLabel}>Northern New Jersey</p>
           </div>
@@ -515,8 +504,8 @@ export default function PortfolioZen() {
             <div className={styles.heroIntro}>
             <p className={styles.heroKicker}>Current work · Volunteer CTO at TROA</p>
             <p className={styles.heroSummary}>
-              I turn complex needs into useful software—and stay responsible for the systems
-              behind it. Hands-on engineering, from the first conversation to ongoing operation.
+              I build and operate secure software platforms for organizations with complex
+              operational needs—from product direction through infrastructure and production support.
             </p>
           </div>
 
@@ -549,7 +538,7 @@ export default function PortfolioZen() {
         >
           <div className={styles.sectionHeading}>
             <h2 id="work-title" className={styles.traceTitle}>
-              Technology ownership
+              Technology leadership in practice
             </h2>
             <p>
               I lead technology end to end—from product direction and application development to
@@ -561,7 +550,7 @@ export default function PortfolioZen() {
             <article
               id="project-troa"
               className={`${styles.project} ${styles.troaProject} ${styles.stewardshipArticle}`}
-              aria-label="Nonprofit and client technology projects"
+              aria-label="TROA technology divisions"
             >
               <div className={styles.stewardshipSwitcher} role="tablist" aria-label="Choose a project" onKeyDown={handleStewardshipKeyDown}>
                 {stewardshipStories.map(story => (
@@ -583,21 +572,18 @@ export default function PortfolioZen() {
                 <div className={styles.stewardshipPrimaryMedia} aria-live="polite">
                   <div
                     className={styles.stewardshipMediaTrack}
-                    style={{ transform: `translateX(-${activeStewardshipIndex * (100 / 3)}%)` }}
+                    style={{ transform: `translateX(-${activeStewardshipIndex * 50}%)` }}
                   >
                     <div className={styles.stewardshipMediaSlide} aria-hidden={activeStewardship !== 'troa-nonprofit'} inert={activeStewardship !== 'troa-nonprofit'}>
                       <SitePagePreview project="troa" />
                     </div>
                     <div className={styles.stewardshipMediaSlide} aria-hidden={activeStewardship !== 'troa-gaming'} inert={activeStewardship !== 'troa-gaming'}>
                       <LiveRealmMapEmbed
-                        active={activeStewardship === 'troa-gaming'}
+                        hasLoaded={hasLoadedRealmMap}
                         objectId={selectedRealmObject}
                         onObjectChange={handleRealmObjectChange}
                         frameRef={realmMapFrameRef}
                       />
-                    </div>
-                    <div className={styles.stewardshipMediaSlide} aria-hidden={activeStewardship !== 'ryu'} inert={activeStewardship !== 'ryu'}>
-                      <SitePagePreview project="ryu-legal" />
                     </div>
                   </div>
                 </div>
@@ -634,11 +620,29 @@ export default function PortfolioZen() {
                       {story.facts.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}
                     </dl>
                     <div className={styles.projectLinks}>
-                      <Link href={story.caseStudy}>Read case study <Arrow /></Link>
+                      <Link href={story.caseStudy}>Explore TROA systems <Arrow /></Link>
                       <a href={story.liveUrl} target="_blank" rel="noreferrer">{story.liveLabel} <Arrow external /></a>
                     </div>
                   </div>
                 ))}
+              </div>
+            </article>
+            <article className={`${styles.project} ${styles.clientWorkCard}`} aria-labelledby="ryu-title">
+              <div className={`${styles.projectMedia} ${styles.clientWorkMedia}`}>
+                <SitePagePreview project="ryu-legal" sizes="(max-width: 1024px) 100vw, 58vw" />
+              </div>
+              <div className={`${styles.projectCopy} ${styles.clientWorkCopy}`}>
+                <p className={styles.sectionLabel}>Current client work · Since 2022</p>
+                <h3 id="ryu-title">Ryu Legal</h3>
+                <p>Long-term technology ownership spanning growth, custom software, hosting, networking, security, performance, DevOps, and secure operations.</p>
+                <dl className={styles.projectFacts}>
+                  <div><dt>Growth</dt><dd>Search and site improvements contributed to a 30%+ increase in website-originated client contact.</dd></div>
+                  <div><dt>Operations</dt><dd>Most third-party services moved to a controlled, backed-up in-house stack.</dd></div>
+                </dl>
+                <div className={styles.projectLinks}>
+                  <Link href="/work/ryu-legal">See the full engagement <Arrow /></Link>
+                  <a href="https://www.ryu-legal.com" target="_blank" rel="noreferrer">Visit live site <Arrow external /></a>
+                </div>
               </div>
             </article>
           </div>
@@ -651,70 +655,22 @@ export default function PortfolioZen() {
           data-trace-active={activePrimarySection === 'systems' ? 'true' : 'false'}
         >
           <div className={styles.sectionHeading}>
-            <h2 id="systems-title" className={styles.traceTitle}>Independent work</h2>
-            <p>
-              Two ongoing projects: one explores how AI uses context; the other makes room
-              for writing, editorial design, and thinking in public.
-            </p>
-          </div>
-
-          <div className={styles.systemsGrid}>
-            <article className={styles.systemCard}>
-              <div className={styles.systemPreview}>
-                <div className={styles.systemPreviewFrame}>
-                  <SitePagePreview project="fourme" sizes="(max-width: 820px) 100vw, 46vw" />
-                </div>
-                <p className={styles.systemPreviewCaption}>Public research page · Scroll to explore</p>
-              </div>
-              <p className={styles.projectMeta}>Personal knowledge platform · Research build</p>
-              <h3>4ME OS</h3>
-              <p>
-                A self-hosted system for giving AI tools the right approved project context—without
-                making any one assistant the source of truth.
-              </p>
-              <dl className={styles.systemFacts}>
-                <div><dt>Working core</dt><dd>Permission-scoped context previews and review-only change proposals, tested with synthetic data.</dd></div>
-                <div><dt>Still being tested</dt><dd>Whether reviewed context handoffs improve on simpler tools. Broad personal ingestion remains restricted.</dd></div>
-              </dl>
-              <div className={styles.projectLinks}>
-                <a href="https://4me.edsong.xyz" target="_blank" rel="noreferrer">Visit 4ME OS <Arrow external /></a>
-                <a href="https://github.com/edwardsong08/4me-os" target="_blank" rel="noreferrer">View repository <Arrow external /></a>
-              </div>
-            </article>
-
-            <article className={styles.systemCard}>
-              <div className={styles.systemPreview}>
-                <div className={styles.systemPreviewFrame}>
-                  <SitePagePreview project="newsroom" sizes="(max-width: 820px) 100vw, 46vw" />
-                </div>
-                <p className={styles.systemPreviewCaption}>The full front page · Scroll to explore</p>
-              </div>
-              <p className={styles.projectMeta}>Editorial application · Live publication</p>
-              <h3>Newsroom</h3>
-              <p>
-                A personal publication about technology, changing careers, and everyday life.
-                A newspaper on the surface; a deliberate editorial workflow underneath.
-              </p>
-              <dl className={styles.systemFacts}>
-                <div><dt>My work</dt><dd>Editorial design, application engineering, and a source-controlled publishing workflow.</dd></div>
-                <div><dt>In practice</dt><dd>Articles organized into desks, with explicit placement rules, review, and author approval before publication.</dd></div>
-              </dl>
-              <div className={styles.projectLinks}>
-                <a href="https://news.edsong.xyz" target="_blank" rel="noreferrer">Visit Newsroom <Arrow external /></a>
-                <a href="https://github.com/edwardsong08/newsroom" target="_blank" rel="noreferrer">View repository <Arrow external /></a>
-              </div>
-            </article>
+            <h2 id="systems-title" className={styles.traceTitle}>Earlier work</h2>
+            <p>An honest look at an early-stage legal technology product: what was tested, what worked, and where the startup stopped.</p>
           </div>
           <aside id="project-claimchain" className={styles.earlierWork} aria-labelledby="earlier-work-title">
-            <div>
-              <p className={styles.sectionLabel}>Earlier work · Independent prototype</p>
-              <h3 id="earlier-work-title">ClaimChain</h3>
+            <div className={styles.earlierWorkMedia}>
+              <ClaimChainEvidence view="demo" />
             </div>
-            <p>A three-role prototype for reviewing claims, testing purchases, and controlling document access. A focused study in backend authority and payment workflows.</p>
-            <div className={styles.projectLinks}>
-              <Link href="/work/claimchain">Read case study <Arrow /></Link>
-              <Link href="/work/claimchain#demo">Watch demo · 3:30 <Arrow /></Link>
-              <a href="https://github.com/edwardsong08/claimchain-platform" target="_blank" rel="noreferrer">View repository <Arrow external /></a>
+            <div className={styles.earlierWorkCopy}>
+              <p className={styles.sectionLabel}>Earlier work · Early-stage startup prototype</p>
+              <h3 id="earlier-work-title">ClaimChain</h3>
+              <p>A three-role prototype built to test review authority, advisory scoring, payments, and controlled document access before company scale.</p>
+              <div className={styles.projectLinks}>
+                <Link href="/work/claimchain">View prototype decisions <Arrow /></Link>
+                <Link href="/work/claimchain#demo">Watch demo · 3:30 <Arrow /></Link>
+                <a href="https://github.com/edwardsong08/claimchain-platform" target="_blank" rel="noreferrer">View repository <Arrow external /></a>
+              </div>
             </div>
           </aside>
         </section>
@@ -729,12 +685,15 @@ export default function PortfolioZen() {
             <p className={`${styles.sectionLabel} ${styles.traceTitle}`}>The map behind the work</p>
             <h2 id="hub-title">The work, connected.</h2>
             <p>
-              An interactive map of my projects and the infrastructure behind them.
-              Follow a connection to see how the public sites, private tools, and services fit together.
+              An interactive systems map, not a link directory. Open a node to see how public products,
+              self-hosted services, infrastructure, and operating responsibilities connect.
             </p>
-            <a className={styles.textLink} href="https://hub.edsong.xyz" target="_blank" rel="noreferrer">
-              Explore the Hub <Arrow external />
-            </a>
+            <div className={styles.projectLinks}>
+              <Link href="/work/hub">How the Hub works <Arrow /></Link>
+              <a href="https://hub.edsong.xyz" target="_blank" rel="noreferrer">
+                Explore the Hub <Arrow external />
+              </a>
+            </div>
           </div>
           <HubEmbed />
         </section>
@@ -820,7 +779,7 @@ export default function PortfolioZen() {
             <h2 id="contact-title">
               Let’s build something useful.
             </h2>
-            <p className={styles.contactNote}>Open to senior product engineering, forward-deployed engineering, and technical lead roles.</p>
+          <p className={styles.contactNote}>Open to CTO, technical leadership, senior product engineering, and platform engineering roles.</p>
           </div>
           <div className={styles.contactLinks}>
             <a className={styles.primaryLink} href={`mailto:${EMAIL}`}>

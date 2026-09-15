@@ -4,12 +4,12 @@ import CaseStudyZen from '../../components/v21/CaseStudyZen';
 
 export default function TroaCaseStudy() {
   const description =
-    'How Edward Song is building TROA’s technology function through board-level direction, hands-on product engineering, and leadership of a growing multidisciplinary team.';
+    'How Edward Song grew from software engineer to CTO while building and operating TROA’s products, infrastructure, teams, and technology practices.';
 
   return (
     <>
       <NextSeo
-        title="TROA Technology Leadership Case Study"
+        title="TROA CTO and Technology Leadership Case Study"
         description={description}
         canonical="https://www.edsong.xyz/work/troa"
         openGraph={{

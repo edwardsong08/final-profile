@@ -111,6 +111,33 @@
   width: min(88%, 32rem, 70svh);
 }
 
+.smokeLayer[data-artwork='system'] .heroArtworkFallback {
+  background-image: url('/hero-line-system-desktop-v1.png');
+  background-color: var(--canvas);
+  background-blend-mode: multiply;
+}
+
+.smokeLayer[data-artwork='system'][data-mobile-mode='true'] .heroArtworkFallback {
+  background-image: url('/hero-line-system-mobile-v1.png');
+}
+
+.smokeLayer[data-artwork='connected'] .heroArtworkFallback {
+  background-image: url('/hero-connected-places-desktop-v1.png');
+  background-color: var(--canvas);
+  background-blend-mode: multiply;
+  mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 45%, transparent 98%);
+}
+
+.smokeLayer[data-artwork='connected'][data-mobile-mode='true'] .heroArtworkFallback {
+  background-image: url('/hero-connected-places-mobile-v1.png');
+}
+
+.smokeLayer[data-artwork='layers'] .heroArtworkFallback {
+  background-image: url('/hero-software-layers-v1.png');
+  background-color: var(--canvas);
+  background-blend-mode: multiply;
+}
+
 .heroMantra {
   color: var(--accent-dark);
   font-size: clamp(1.25rem, 2.1vw, 2rem);
@@ -583,13 +610,13 @@ a:hover .linkArrow {
 
 .stewardshipMediaTrack {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-template-rows: minmax(0, 1fr);
   height: 100%;
   inset: 0 auto 0 0;
   position: absolute;
   transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  width: 300%;
+  width: 200%;
   will-change: transform;
 }
 
@@ -1007,8 +1034,8 @@ a:hover .linkArrow {
 .realmControls { padding-top: 1.1rem; }
 
 .realmControls[data-visible='false'] {
-  visibility: hidden;
   pointer-events: none;
+  visibility: hidden;
 }
 
 .realmControlsLabel {
@@ -1020,24 +1047,24 @@ a:hover .linkArrow {
 
 .realmDestinations {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.5rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   margin-top: 0.6rem;
 }
 
 .realmDestinations button {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.55rem 0.1rem 0.8rem;
+  background: transparent;
   border: 0;
   border-bottom: 1px solid var(--rule);
-  background: transparent;
   color: var(--quiet);
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
   font: inherit;
   font-size: 0.68rem;
+  gap: 0.35rem;
+  padding: 0.55rem 0.1rem 0.8rem;
   transition: color 180ms, border-color 180ms, background 180ms;
 }
 
@@ -1047,9 +1074,9 @@ a:hover .linkArrow {
 }
 
 .realmDestinations button[aria-pressed='true'] {
-  color: var(--accent-dark);
-  border-bottom: 2px solid var(--accent-dark);
   background: rgb(43 79 91 / 5%);
+  border-bottom: 2px solid var(--accent-dark);
+  color: var(--accent-dark);
 }
 
 .realmDestinations button:focus-visible {
@@ -1058,12 +1085,13 @@ a:hover .linkArrow {
 }
 
 .realmDestinationIcon {
-  width: 2.15rem;
-  height: 2.15rem;
   fill: none;
+  height: 2.15rem;
   stroke: currentcolor;
   stroke-width: 1.15;
+  width: 2.15rem;
 }
+
 .realmDestinationIcon[data-world='0'] { color: #527a70; }
 .realmDestinationIcon[data-world='1'] { color: #a57155; }
 .realmDestinationIcon[data-world='2'] { color: #a08960; }
@@ -2224,20 +2252,20 @@ a:hover .linkArrow {
 }
 
 .stewardshipArticle > .stewardshipSwitcher {
-  grid-column: 9 / -1;
+  grid-column: 8 / -1;
   grid-row: 1;
   margin: 0;
   gap: clamp(0.7rem, 1.5vw, 1.4rem);
 }
 
 .stewardshipArticle > .projectMedia {
-  grid-column: 1 / span 7;
+  grid-column: 1 / span 6;
   grid-row: 1 / span 2;
 }
 
 .stewardshipPanels {
   display: grid;
-  grid-column: 9 / -1;
+  grid-column: 8 / -1;
   grid-row: 2;
   min-width: 0;
 }
@@ -2306,12 +2334,66 @@ a:hover .linkArrow {
 .earlierWork {
   border-top: 1px solid var(--rule);
   display: grid;
-  grid-template-columns: 1fr 1.4fr auto;
-  align-items: start;
-  gap: 2rem;
+  grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.9fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
   margin-top: clamp(4rem, 7vw, 7rem);
   padding-top: 2rem;
   scroll-margin-top: 6rem;
+}
+
+.earlierWorkMedia {
+  min-width: 0;
+}
+
+.earlierWorkCopy {
+  max-width: 34rem;
+}
+
+.clientWorkCard {
+  border-top: 1px solid var(--rule);
+  margin-top: 0;
+  order: 2;
+  padding-top: 2rem;
+}
+
+.clientWorkCard > .projectMedia {
+  grid-column: 1 / span 6;
+}
+
+.clientWorkCard > .projectCopy {
+  grid-column: 8 / -1;
+}
+
+.clientWorkMedia {
+  aspect-ratio: 16 / 10;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.clientWorkCopy {
+  align-self: center;
+}
+
+.clientWorkCopy h3 {
+  font-size: clamp(2rem, 4vw, 3.35rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  margin: 0.75rem 0 1.25rem;
+}
+
+.clientWorkCopy > p:not(.sectionLabel) {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.75;
+  margin: 0;
+  max-width: 34rem;
+}
+
+.clientWorkCopy .projectLinks {
+  flex-direction: column;
+  gap: 0;
+  margin-top: 1.75rem;
 }
 
 .earlierWork h3 {
@@ -2321,7 +2403,7 @@ a:hover .linkArrow {
   margin: 0.75rem 0 0;
 }
 
-.earlierWork > p,
+.earlierWorkCopy > p:not(.sectionLabel),
 .contactNote {
   color: var(--muted);
   font-size: 1rem;
@@ -2333,7 +2415,7 @@ a:hover .linkArrow {
 .earlierWork .projectLinks {
   flex-direction: column;
   gap: 0;
-  margin: 0;
+  margin-top: 1.5rem;
 }
 
 .contactNote {
@@ -2370,12 +2452,9 @@ a:hover .linkArrow {
   }
 
   .earlierWork {
-    grid-template-columns: 1fr 1.5fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .earlierWork .projectLinks {
-    grid-column: 2;
-  }
 }
 
 @media (width <= 51.25rem) {
@@ -2396,10 +2475,6 @@ a:hover .linkArrow {
   .earlierWork {
     grid-template-columns: 1fr;
     gap: 1.25rem;
-  }
-
-  .earlierWork .projectLinks {
-    grid-column: 1;
   }
 
   .systemPreview {

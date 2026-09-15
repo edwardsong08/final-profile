@@ -328,7 +328,7 @@
 .sitePageScroller {
   cursor: grab;
   height: 100%;
-  overflow: hidden auto;
+  overflow: hidden scroll;
   overscroll-behavior: contain;
   scrollbar-color: #89978f #edf0ec;
   scrollbar-gutter: stable;

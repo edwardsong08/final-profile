@@ -4,12 +4,12 @@ import CaseStudyZen from '../../components/v21/CaseStudyZen';
 
 export default function ClaimChainCaseStudy() {
   const description =
-    'A three-role product prototype that keeps claims eligibility, payment, ownership, and export authority explicit while using machine learning only as an advisory layer.';
+    'An honest early-stage product case study covering workflow authority, controlled document access, test payments, advisory scoring, and the limits of the startup.';
 
   return (
     <>
       <NextSeo
-        title="ClaimChain Product Engineering Case Study"
+        title="ClaimChain Legal Technology Product Case Study"
         description={description}
         canonical="https://www.edsong.xyz/work/claimchain"
         openGraph={{

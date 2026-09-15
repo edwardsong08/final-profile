@@ -3,272 +3,218 @@ import Link from 'next/link';
 import { ClaimChainEvidence, ProjectEvidence } from './ProjectEvidence';
 import styles from './CaseStudyZen.module.css';
 
-export type ProjectId = 'troa' | 'claimchain' | 'ryu-legal';
-
-type ProjectLink = {
-  external?: boolean;
-  href: string;
-  label: string;
+type ProjectId = 'troa' | 'claimchain' | 'ryu-legal' | 'hub';
+type StorySection = { title: string; paragraphs?: readonly string[]; points?: readonly { label: string; value: string }[] };
+type Project = {
+  eyebrow: string; status: string; title: string; intro: string;
+  facts: readonly { label: string; value: string }[];
+  links: readonly { label: string; href: string; external?: boolean }[];
+  sections: readonly StorySection[];
+  currentState: { title: string; body: string; scope: string };
+  next: { label: string; href: string };
 };
 
-type ProjectSection = {
-  heading: string;
-  paragraphs?: string[];
-  points?: Array<{
-    body: string;
-    title: string;
-  }>;
-};
-
-const projects: Record<ProjectId, {
-  eyebrow: string;
-  facts: Array<{ label: string; value: string }>;
-  intro: string;
-  links: ProjectLink[];
-  next: { href: string; label: string };
-  note: string;
-  sections: ProjectSection[];
-  state: string;
-  stateHeading: string;
-  status: string;
-  title: string;
-}> = {
+const projects: Record<ProjectId, Project> = {
   troa: {
-    eyebrow: 'TROA · Volunteer CTO · Active since 2026',
-    status: 'Active',
+    eyebrow: 'TROA · Software Engineer to CTO · Active',
+    status: 'Volunteer technology leadership',
     title: 'Building TROA’s technology function.',
-    intro:
-      'TROA’s technology mandate extends beyond shipping software: set direction with the board, turn departmental needs into a coherent portfolio, and build the team that can sustain it. The initial software foundation was built hands-on; the work now combines continued product engineering with leadership across software, design, Network Engineering, and IT Operations.',
+    intro: 'I grew from hands-on software delivery into organization-wide technology leadership, while continuing to design, build, and operate the systems behind a 50-plus-person volunteer organization and an 800-plus-member community.',
     facts: [
-      {
-        label: 'Organization served',
-        value: 'More than 50 volunteers and an 800-plus-member community, with technology supporting public programs and the people who operate them.',
-      },
-      {
-        label: 'Portfolio',
-        value: 'Public platform and identity, recruitment, learning, member support, administration and reporting, mapping, assistant, infrastructure, and game services.',
-      },
-      {
-        label: 'Technology group',
-        value: 'Two developers, two UI/UX designers, three to four network engineers, and two IT Operations specialists.',
-      },
+      { label: 'Scale', value: 'Technology supporting 50+ volunteers and an 800+ member community.' },
+      { label: 'Operating footprint', value: 'Public, recruiting, learning, ticketing, administrative, gaming, automation, and infrastructure systems.' },
+      { label: 'Leadership scope', value: 'Product design, software development, data, network engineering, and IT operations.' },
+    ],
+    links: [
+      { label: 'Visit TROA', href: 'https://therealmsofasgard.com', external: true },
+      { label: 'Explore the live map', href: 'https://troa-realms.therealmsofasgard.com/map', external: true },
     ],
     sections: [
       {
-        heading: 'A portfolio, not a collection of sites',
+        title: 'From builder to technology leader',
         paragraphs: [
-          'Public services, volunteer recruitment, learning, member support, administration, reporting, and game services serve different audiences and carry different risks. The work is to give them a coherent foundation without forcing them into one application or one trust boundary.',
-        ],
-        points: [
-          {
-            title: 'Shared foundation',
-            body: 'Identity, access patterns, content, and audit history connect the ecosystem where consistency reduces friction.',
-          },
-          {
-            title: 'Purpose-built products',
-            body: 'Each product keeps the workflow and interface its users need, from applicants and learners to members seeking support.',
-          },
-          {
-            title: 'Private operations',
-            body: 'Role-scoped tools give HR, finance, legal, IT, program, and support administrators direct control of recurring work.',
-          },
+          'I joined the work as a software engineer, became senior software engineer and interim CTO, and now serve as CTO. That progression matters because the leadership is grounded in direct delivery: until the team began expanding, I built nearly all of the organization’s software myself.',
+          'Today I set direction at the board level, translate operating needs into technical priorities, and coordinate specialists across five disciplines without stepping away from architecture and implementation.',
         ],
       },
       {
-        heading: 'An operating model for shared ownership',
+        title: 'One portfolio, different trust boundaries',
+        paragraphs: ['TROA is not one website. Its technology portfolio spans a public platform, careers and applications, staff administration, ticketing, learning, community automation, game services, and private operational tools. Each surface serves a different audience and requires a different balance of access, clarity, and control.'],
+        points: [
+          { label: 'Public experience', value: 'Community information, programs, careers, and pathways into the organization.' },
+          { label: 'Internal operations', value: 'Administrative workflows, shared-drive systems, training, tickets, backups, and governed access.' },
+          { label: 'Community systems', value: 'Discord automation, volunteer-response rooms, game infrastructure, and a navigable Space Engineers world map.' },
+        ],
+      },
+      {
+        title: 'Infrastructure as an operating advantage',
         paragraphs: [
-          'Technical leadership spans organizational direction and implementation. Board and departmental priorities are translated into scope, controls, and delivery decisions; hands-on product work continues while specialist teams own their disciplines.',
+          'The portfolio runs on an increasingly self-hosted foundation using Proxmox, Linux, Docker, Coolify, and Cloudflare. Multiple servers support production services, backups, and game workloads, while selected open-source platforms replace fragmented third-party tools.',
+          'The objective is not self-hosting for its own sake. It is to keep operating costs controlled, data boundaries understandable, recovery paths available, and performance appropriate for each service.',
         ],
+      },
+      {
+        title: 'Making the work repeatable',
+        paragraphs: ['A sustainable technology function needs more than working software. I created operating procedures, clarified ownership, established safer delivery practices, and built AI-assisted administrative systems for work such as document and shared-drive operations.'],
         points: [
-          {
-            title: 'Direction and tradeoffs',
-            body: 'Set priorities with the board and resolve compliance, policy, timeline, capacity, and cross-department compromises before they become implementation problems.',
-          },
-          {
-            title: 'Hands-on delivery',
-            body: 'Remain hands-on from product and interface design through application architecture, data, security, deployment, and ongoing operation.',
-          },
-          {
-            title: 'Specialist ownership',
-            body: 'Network Engineering and IT Operations own specialist execution while remaining part of one accountable technology function.',
-          },
-        ],
-      },
-      {
-        heading: 'Decisions that make the portfolio durable',
-        points: [
-          {
-            title: 'One identity, several trust boundaries',
-            body: 'Products share Supabase identity where appropriate, while privileged operations stay server-side and administrative areas remain separately authorized.',
-          },
-          {
-            title: 'Operators should not need a developer for routine work',
-            body: 'Admin workflows turn repeated requests into governed self-service for content, people, tickets, reporting, hiring, and learning.',
-          },
-          {
-            title: 'Live state must survive change',
-            body: 'Versioned course content, controlled publishing, private resources, and transactional revision workflows preserve the learner experience as training evolves.',
-          },
+          { label: 'Products', value: 'A connected portfolio rather than isolated sites and tools.' },
+          { label: 'People', value: 'Defined teams and ownership across product, engineering, data, network, and IT operations.' },
+          { label: 'Practice', value: 'SOPs, backups, security controls, deployment workflows, and maintainable handoffs.' },
         ],
       },
     ],
-    stateHeading: 'The current phase',
-    state:
-      'The portfolio is active and expanding. The current phase is increasing engineering capacity and formalizing ownership, review, and delivery across the team, while the CTO role remains hands-on in product and engineering decisions.',
-    note:
-      'The public platform is shown here. Administrative, reporting, volunteer, and support tools contain private operational information and are described without exposing their interfaces or data.',
-    links: [
-      { label: 'Visit main site', href: 'https://therealmsofasgard.com', external: true },
-    ],
-    next: { label: 'ClaimChain', href: '/work/claimchain' },
-  },
-  claimchain: {
-    eyebrow: 'ClaimChain · Independent product engineering · 2025–2026',
-    status: 'Working prototype',
-    title: 'A claims workflow with explicit authority.',
-    intro:
-      'ClaimChain tests a product premise: providers, administrators, and buyers should be able to move a claim from intake to purchase without treating interface state, payment redirects, or model output as proof. The working test-data prototype implements the complete path while keeping consequential decisions explicit, versioned, and enforceable.',
-    facts: [
-      {
-        label: 'Product flow',
-        value: 'Provider intake, administrator review and governed packaging, buyer purchase, and entitled export.',
-      },
-      {
-        label: 'Governing principle',
-        value: 'The backend remains authoritative for eligibility, lifecycle, payment state, ownership, and export access.',
-      },
-      {
-        label: 'Evidence',
-        value: 'A working three-role prototype with test payments, audit history, versioned rules, advisory ML, and an AWS staging workflow.',
-      },
-    ],
-    sections: [
-      {
-        heading: 'The product question',
-        paragraphs: [
-          'The core difficulty is preserving eligibility, ownership, payment, and export rights when requests are retried, webhooks arrive later, and an advisory service may return an incomplete or incorrect suggestion.',
-          'The product therefore treats authority as part of the user experience: every consequential state should have an explainable source and a bounded path to change.',
-        ],
-      },
-      {
-        heading: 'Where authority lives',
-        points: [
-          {
-            title: 'Rules and human review',
-            body: 'Versioned scoring and packaging rules establish eligibility and explain each result; administrators retain the approval and override responsibilities that require judgment.',
-          },
-          {
-            title: 'Payment and entitlement',
-            body: 'A browser redirect cannot mark inventory sold. Stripe webhook reconciliation establishes payment before the backend grants the buyer access to an export.',
-          },
-          {
-            title: 'Machine learning',
-            body: 'ML can propose package compositions only after deterministic eligibility checks. It cannot approve claims, bypass constraints, finalize a package, or grant access.',
-          },
-        ],
-      },
-      {
-        heading: 'What the prototype proves',
-        paragraphs: [
-          'The implemented path connects account approval, structured claim intake, document handling, administrative review, explainable scoring, governed packaging, an anonymized buyer view, test purchase, audit activity, and entitled PDF export.',
-        ],
-        points: [
-          {
-            title: 'Explainable under change',
-            body: 'Ruleset versions and recorded decisions make it possible to identify which policy produced a score or package after the rules evolve.',
-          },
-          {
-            title: 'Safe degradation',
-            body: 'The advisory layer can be unavailable without weakening the authoritative workflow or its deterministic fallback.',
-          },
-        ],
-      },
-    ],
-    stateHeading: 'The boundary of the work',
-    state:
-      'ClaimChain is a working portfolio prototype, not an operating claims marketplace. It demonstrates the product flow and authority model; production operation would be a separate phase requiring domain validation, legal and compliance review, privacy controls, security hardening, and an operating organization.',
-    note:
-      'All portfolio material uses test data. The demo and repository are evidence of implementation, not evidence of commercial operation or production suitability.',
-    links: [
-      { label: 'View repository', href: 'https://github.com/edwardsong08/claimchain-platform', external: true },
-      { label: 'Watch demo · 3:30', href: '#demo' },
-    ],
-    next: { label: 'Ryu Legal', href: '/work/ryu-legal' },
+    currentState: {
+      title: 'The work is moving from founder-style delivery to a durable technology organization.',
+      body: 'The current phase is about increasing team capacity, formalizing ownership, and improving reliability without slowing delivery. I remain accountable for direction and architecture while transferring more implementation responsibility to the growing team.',
+      scope: 'This page shows public products and describes private operations at a systems level. Administrative interfaces, internal data, security details, and volunteer records are intentionally excluded.',
+    },
+    next: { label: 'Next: Ryu Legal', href: '/work/ryu-legal' },
   },
   'ryu-legal': {
-    eyebrow: 'Ryu Legal · Contract engineering · 2022–now',
-    status: 'Live and maintained',
-    title: 'Long-term stewardship of a law firm’s public front door.',
-    intro:
-      'Since 2022, the engagement has grown from requirements and interface design into ongoing stewardship of a live production experience. The product has a clear responsibility: help prospective clients understand the firm, its NJ/NY scope, and the next step without overstating what a website visit or inquiry means.',
+    eyebrow: 'Ryu Legal · Technical Lead · Contract since 2022',
+    status: 'Live and continuously maintained',
+    title: 'Owning technology for a growing legal practice.',
+    intro: 'What began as a public website became a long-term technology engagement spanning growth, custom software, hosting, networking, security, performance, DevOps, open-source tooling, and the reliable operation of the firm’s digital systems.',
     facts: [
+      { label: 'Measured result', value: '30%+ increase in website-originated client contact following search and site improvements.' },
+      { label: 'Responsibility', value: 'Product, software, infrastructure, security, performance, deployment, and ongoing operations.' },
+      { label: 'Operating model', value: 'Most third-party operational services moved to a controlled, backed-up in-house stack.' },
+    ],
+    links: [{ label: 'Visit Ryu Legal', href: 'https://www.ryu-legal.com', external: true }],
+    sections: [
       {
-        label: 'Relationship',
-        value: 'An ongoing engagement from initial product definition and design through production maintenance and continued refinement.',
+        title: 'From website project to technical ownership',
+        paragraphs: [
+          'The initial brief centered on the firm’s public presence. The responsibility expanded as the practice needed someone to connect product decisions with the systems underneath them: hosting, networking, security, deployment, performance, maintenance, and custom operational software.',
+          'That continuity prevents the common handoff gap between a site that looks finished and a technology estate that remains dependable after launch.',
+        ],
       },
       {
-        label: 'Responsibility',
-        value: 'Requirements, information architecture, interface design, engineering, search visibility, deployment, and maintenance.',
+        title: 'Growth built on clarity and trust',
+        paragraphs: [
+          'Legal services require people to understand what the firm does, where it practices, and how to ask for help without being pushed through an overdesigned funnel. I reworked information architecture, interface content, technical performance, and search visibility around those decisions.',
+          'The resulting search and site improvements contributed to a reported increase of more than 30 percent in client contact originating through the website.',
+        ],
+        points: [
+          { label: 'Findability', value: 'Technical and content-led SEO aligned to actual services and locations.' },
+          { label: 'Confidence', value: 'A restrained interface, clear practice information, and direct contact paths.' },
+          { label: 'Continuity', value: 'Performance, deployment, monitoring, and maintenance treated as ongoing product work.' },
+        ],
       },
       {
-        label: 'Product standard',
-        value: 'Clear service information, visible legal boundaries, a direct contact path, and restrained handling of production failures.',
+        title: 'Bringing the operating stack in house',
+        paragraphs: [
+          'I consolidated much of the firm’s technology onto an in-house environment built with Proxmox, Linux, Docker, Coolify, and Cloudflare. The stack is designed around controlled access, backups, fast recovery, predictable performance, and fewer unnecessary recurring vendors.',
+          'Connectivity, electricity, domains, and email remain external necessities; most other operational services are owned and managed directly.',
+        ],
       },
+      {
+        title: 'Stewardship after launch',
+        paragraphs: ['The work continues across custom software, open-source tools, infrastructure changes, security, and day-to-day technical decisions. I evaluate each addition against the same standard: does it make the practice more capable without making its systems harder to understand, secure, or maintain?'],
+      },
+    ],
+    currentState: {
+      title: 'This is an active contract and an operating environment, not a finished redesign.',
+      body: 'The public site is one visible layer of a broader technology relationship. Current work centers on reliability, security, performance, internal capability, and incremental software improvements as the firm’s needs evolve.',
+      scope: 'Client matters, internal workflows, private software, infrastructure topology, credentials, and security-sensitive implementation details are not shown. Outcomes and responsibilities are described without exposing protected systems.',
+    },
+    next: { label: 'Next: The Hub', href: '/work/hub' },
+  },
+  claimchain: {
+    eyebrow: 'ClaimChain · Product Lead · 2021–2023',
+    status: 'Early-stage legal technology prototype',
+    title: 'Testing authority in a claims marketplace.',
+    intro: 'ClaimChain explored whether providers, administrators, and buyers could move a claim through review, valuation support, purchase, and controlled document release without blurring who had authority at each step.',
+    facts: [
+      { label: 'Product model', value: 'Three roles with deliberately different actions, visibility, and document rights.' },
+      { label: 'Technical principle', value: 'Backend-enforced authority with advisory scoring kept separate from business decisions.' },
+      { label: 'Current form', value: 'A self-hosted portfolio demonstration and public source repository, not an operating marketplace.' },
+    ],
+    links: [
+      { label: 'Watch the workflow demo', href: '#demo' },
+      { label: 'Open the demo', href: 'https://claimchain.edsong.xyz', external: true },
+      { label: 'View repository', href: 'https://github.com/edwardsong08/claimchain-platform', external: true },
     ],
     sections: [
       {
-        heading: 'The product problem',
+        title: 'Start with authority, not screens',
         paragraphs: [
-          'A law-firm website has to make a professional service understandable while preserving appropriate expectations. Prospective clients need enough context to decide whether to make contact; the interface should not imply that browsing, submitting a form, or reading general information creates an attorney-client relationship.',
+          'The core product problem was not a dashboard layout. It was deciding which role could change claim state, inspect documents, set marketplace terms, complete a test purchase, and receive an entitled export.',
+          'The prototype made those rules explicit in backend workflows so the interface could explain authority rather than manufacture it.',
+        ],
+        points: [
+          { label: 'Provider', value: 'Submits a claim and supporting documents, then follows its review state.' },
+          { label: 'Administrator', value: 'Reviews evidence, uses advisory scoring, and prepares an approved listing.' },
+          { label: 'Buyer', value: 'Tests a purchase flow and receives only the documents attached to that entitlement.' },
         ],
       },
       {
-        heading: 'Trust is part of the interface',
-        points: [
-          {
-            title: 'Organize around client questions',
-            body: 'Service information and NJ/NY scope are structured around what a prospective client needs to understand before deciding to contact the firm.',
-          },
-          {
-            title: 'Keep legal boundaries visible',
-            body: 'Attorney-advertising, privacy, and attorney-client disclosures remain part of the public experience rather than being treated as an afterthought.',
-          },
-          {
-            title: 'Make contact direct but bounded',
-            body: 'The form creates a clear handoff to the firm while server-side validation, protected provider credentials, and restrained error responses limit unnecessary exposure.',
-          },
+        title: 'Keep automation advisory',
+        paragraphs: [
+          'A scoring workflow can organize evidence and support review, but it should not quietly become the source of truth. ClaimChain kept model output advisory and left consequential state changes with authorized users.',
+          'That boundary made the product easier to reason about and reduced the temptation to present probabilistic output as a legal or financial decision.',
         ],
       },
       {
-        heading: 'Stewardship after launch',
-        paragraphs: [
-          'The engagement did not end at deployment. Ongoing work keeps the experience coherent as content, design expectations, search requirements, dependencies, and production safeguards change.',
-        ],
-        points: [
-          {
-            title: 'Product continuity',
-            body: 'Requirements, design, implementation, and maintenance remain connected so product decisions stay aligned as the live site evolves.',
-          },
-          {
-            title: 'Discoverability and performance',
-            body: 'Search metadata, responsive presentation, dependency maintenance, and production verification are treated as part of the product rather than launch tasks.',
-          },
-          {
-            title: 'Proportionate safeguards',
-            body: 'The contact endpoint normalizes and validates input, limits abuse and request size, keeps delivery credentials server-side, and fails without disclosing provider details.',
-          },
-        ],
+        title: 'Prototype the full handoff',
+        paragraphs: ['The most useful test was the complete sequence: submission, administrative review, listing, test payment, entitlement creation, and controlled export. Building the handoff exposed product questions that isolated screens would have hidden.'],
       },
     ],
-    stateHeading: 'Current state',
-    state:
-      'The site is live and maintained. Its current version combines a responsive service presentation, visible legal disclosures, search metadata, and server-validated contact delivery in a production experience that continues to evolve with the firm.',
-    note:
-      'The case study is limited to the public experience and implemented safeguards; no client data or contact submissions are shown.',
-    links: [
-      { label: 'Visit live site', href: 'https://www.ryu-legal.com', external: true },
+    currentState: {
+      title: 'The startup did not progress to commercial scale.',
+      body: 'The work remains useful as an honest product and engineering case study: a functioning prototype that tests roles, workflow authority, payments, and document access without presenting itself as a live claims marketplace.',
+      scope: 'The public demo uses test workflows and demonstration data. It does not offer financial products, legal advice, production transactions, or live claim purchasing.',
+    },
+    next: { label: 'Next: TROA', href: '/work/troa' },
+  },
+  hub: {
+    eyebrow: 'ES/HUB · Systems map · Active',
+    status: 'Living portfolio architecture',
+    title: 'Making complex work understandable.',
+    intro: 'The Hub is an interactive model of my projects, infrastructure, services, and responsibilities. It replaces a flat directory with a navigable system that shows what belongs together, what connects across boundaries, and what is safe to expose publicly.',
+    facts: [
+      { label: 'Two views', value: 'A spatial Map for relationships and an Index for direct, accessible retrieval.' },
+      { label: 'Information model', value: 'Hierarchy, associations, lifecycle, visibility, and operational status remain distinct.' },
+      { label: 'Public boundary', value: 'Useful system context without credentials, private data, or sensitive infrastructure detail.' },
     ],
-    next: { label: 'TROA', href: '/work/troa' },
+    links: [{ label: 'Explore the Hub', href: 'https://hub.edsong.xyz', external: true }],
+    sections: [
+      {
+        title: 'A portfolio list could not show the system',
+        paragraphs: [
+          'A conventional portfolio grid treats every project as an isolated object. That stopped being useful once the same infrastructure, services, organizations, and operating responsibilities began supporting multiple products.',
+          'The Hub provides a stable overview first, then lets a visitor move into a territory and inspect only the level of detail needed for the current question.',
+        ],
+      },
+      {
+        title: 'Model the meaning before drawing the map',
+        paragraphs: ['The visual network is generated from an information model rather than arranged as decoration. Each property answers a different question, which prevents organizational convenience from becoming misleading architecture.'],
+        points: [
+          { label: 'Hierarchy', value: 'Where an item belongs and which territory owns it.' },
+          { label: 'Associations', value: 'Meaningful relationships that cross the hierarchy without duplicating ownership.' },
+          { label: 'Lifecycle', value: 'Whether work is active, evolving, paused, archived, or historical.' },
+          { label: 'Visibility', value: 'What may be public, public-safe, private, or intentionally omitted.' },
+          { label: 'Status', value: 'Operational state kept separate from project maturity or importance.' },
+        ],
+      },
+      {
+        title: 'Offer exploration without requiring it',
+        paragraphs: [
+          'The Map supports spatial exploration and reveals relationships progressively. The Index presents the same underlying system as a direct, scannable structure. Neither view is a secondary fallback; they are two interfaces for different ways of finding information.',
+          'Node cards add context only after selection, keeping the overview legible while still allowing leaf-level details, links, and public-safe operational notes.',
+        ],
+      },
+      {
+        title: 'Treat omission as part of the design',
+        paragraphs: ['The Hub describes systems without becoming a blueprint for private operations. Sensitive services can be represented by purpose and relationship while credentials, internal addresses, private records, and security-relevant implementation details remain outside the public graph.'],
+      },
+    ],
+    currentState: {
+      title: 'The Hub is active and continues to evolve with the work it represents.',
+      body: 'Its current role is both practical and demonstrative: a public entry point into the portfolio and a case study in taxonomy, progressive disclosure, systems visualization, and maintainable information architecture.',
+      scope: 'The public Hub intentionally favors comprehensibility over exhaustive infrastructure detail. Catalog status is descriptive and should not be interpreted as live monitoring unless a node explicitly says otherwise.',
+    },
+    next: { label: 'Next: ClaimChain', href: '/work/claimchain' },
   },
 };
 
@@ -276,128 +222,66 @@ function Arrow({ external = false }: { external?: boolean }) {
   return <span aria-hidden="true">{external ? '↗' : '→'}</span>;
 }
 
-export default function CaseStudyZen({ project }: { project: ProjectId }) {
-  const content = projects[project];
+function HubCaseEvidence() {
+  return (
+    <figure className={styles.hubArtifact}>
+      <div className={styles.hubArtifactHeader}>
+        <span>ES/HUB systems map</span>
+        <strong>Map · Index</strong>
+      </div>
+      <iframe
+        src={process.env.NODE_ENV === 'development'
+          ? 'http://localhost:3001/embed/profile'
+          : 'https://hub.edsong.xyz/embed/profile'}
+        title="Interactive ES/HUB systems map"
+        loading="eager"
+        referrerPolicy="strict-origin-when-cross-origin"
+      />
+    </figure>
+  );
+}
 
+export default function CaseStudyZen({ project: projectId }: { project: ProjectId }) {
+  const project = projects[projectId];
   return (
     <div className={styles.page}>
-      <a className={styles.skipLink} href="#case-content">Skip to case study</a>
-
+      <a className={styles.skipLink} href="#case-study">Skip to case study</a>
       <header className={styles.header}>
-        <Link className={styles.wordmark} href="/">
-          <strong>Edward Song</strong>
-          <span>Product Engineer · Technical Lead</span>
-        </Link>
-        <nav aria-label="Case study navigation">
-          <Link href="/#work">All work</Link>
-          <a href="/Resume-Edward_Song.pdf" target="_blank" rel="noreferrer">Résumé</a>
-          <a href="mailto:edwardsong08@gmail.com">Email</a>
-        </nav>
+        <Link className={styles.wordmark} href="/"><strong>Edward Song</strong><span>CTO · Technical Lead · Product Engineer</span></Link>
+        <nav aria-label="Case study navigation"><Link href="/#work">Selected work</Link><a href="/Resume-Edward_Song.pdf" target="_blank" rel="noreferrer">Résumé</a><a href="mailto:edwardsong08@gmail.com">Email</a></nav>
       </header>
-
-      <main id="case-content">
+      <main id="case-study">
         <section className={styles.hero} aria-labelledby="case-title">
           <div className={styles.heroCopy}>
-            <Link className={styles.backLink} href="/#work">← Selected work</Link>
-            <p className={styles.eyebrow}>{content.eyebrow}</p>
-            <p className={styles.status}>{content.status}</p>
-            <h1 id="case-title">
-              {content.title}
-            </h1>
-            <p className={styles.intro}>{content.intro}</p>
-            <div className={styles.links}>
-              {content.links.map((link) => (
-                <a
-                  href={link.href}
-                  key={link.href}
-                  target={link.external ? '_blank' : undefined}
-                  rel={link.external ? 'noreferrer' : undefined}
-                >
-                  {link.label} <Arrow external={link.external} />
-                </a>
-              ))}
-            </div>
+            <Link className={styles.backLink} href="/#work">← Back to selected work</Link>
+            <p className={styles.eyebrow}>{project.eyebrow}</p><p className={styles.status}>{project.status}</p>
+            <h1 id="case-title">{project.title}</h1><p className={styles.intro}>{project.intro}</p>
+            <div className={styles.links}>{project.links.map(link => <a key={link.href} href={link.href} target={link.external ? '_blank' : undefined} rel={link.external ? 'noreferrer' : undefined}>{link.label} <Arrow external={link.external} /></a>)}</div>
           </div>
-          <div className={styles.heroArtifact}>
-            <ProjectEvidence
-              project={project}
-              priority
-              claimchainView={project === 'claimchain' ? 'diagram' : undefined}
-            />
+          <div className={styles.heroArtifact} id={projectId === 'claimchain' ? 'demo' : undefined}>
+            {projectId === 'hub'
+              ? <HubCaseEvidence />
+              : <ProjectEvidence project={projectId} priority claimchainView={projectId === 'claimchain' ? 'demo' : undefined} />}
           </div>
         </section>
-
-        <section className={styles.evidence} aria-label="Case study evidence">
-          <dl className={styles.facts}>
-            {content.facts.map((fact) => (
-              <div key={fact.label}>
-                <dt>{fact.label}</dt>
-                <dd>{fact.value}</dd>
-              </div>
-            ))}
-          </dl>
-
+        <section className={styles.evidence} aria-label="Case study evidence and narrative">
+          <p className={styles.evidenceLabel}>At a glance</p>
+          <dl className={styles.facts}>{project.facts.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl>
           <div className={styles.story}>
-            {project === 'claimchain' ? (
-              <section id="demo" className={styles.storySection} aria-labelledby="demo-title">
-                <h2 id="demo-title">See the prototype in action.</h2>
-                <div className={styles.storyBody}>
-                  <p>A 3½-minute walkthrough of the provider, administrator, and buyer workflows, using test data.</p>
-                  <ClaimChainEvidence />
-                  <div className={styles.links}>
-                    <a href="/ClaimChain_Demo.mp4" target="_blank" rel="noreferrer">Open video separately <Arrow external /></a>
-                  </div>
-                </div>
-              </section>
-            ) : null}
-            {content.sections.map((section) => (
-              <section className={styles.storySection} key={section.heading}>
-                <h2>{section.heading}</h2>
-                <div className={styles.storyBody}>
-                  {section.paragraphs?.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
-                  {section.points ? (
-                    <dl className={styles.storyPoints}>
-                      {section.points.map((point) => (
-                        <div key={point.title}>
-                          <dt>{point.title}</dt>
-                          <dd>{point.body}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                  ) : null}
-                </div>
-              </section>
-            ))}
+            {project.sections.map((section, index) => <section className={styles.storySection} key={section.title}>
+              <div className={styles.storyHeading}><p>{String(index + 1).padStart(2, '0')}</p><h2>{section.title}</h2></div>
+              <div className={styles.storyBody}>
+                {section.paragraphs?.map(paragraph => <p key={paragraph}>{paragraph}</p>)}
+                {section.points && <dl className={styles.storyPoints}>{section.points.map(point => <div key={point.label}><dt>{point.label}</dt><dd>{point.value}</dd></div>)}</dl>}
+                {projectId === 'claimchain' && index === 0 && <div className={styles.storyEvidence}><ClaimChainEvidence view="diagram" /></div>}
+              </div>
+            </section>)}
           </div>
-
-          <section className={styles.currentState}>
-            <div>
-              <h2>{content.stateHeading}</h2>
-              <p>{content.state}</p>
-            </div>
-            <aside aria-label="Scope note">
-              <strong>Scope note</strong>
-              <p>{content.note}</p>
-            </aside>
-          </section>
+          <section className={styles.currentState}><div><p className={styles.evidenceLabel}>Current state</p><h2>{project.currentState.title}</h2><p>{project.currentState.body}</p></div><aside><strong>Scope note</strong><p>{project.currentState.scope}</p></aside></section>
         </section>
-
-        <nav className={styles.moreWork} aria-label="More case studies">
-          <Link href="/#work">← All selected work</Link>
-          <Link href={content.next.href}>Next: {content.next.label} <Arrow /></Link>
-        </nav>
       </main>
-
-      <footer className={styles.footer}>
-        <p>© {new Date().getFullYear()} Edward Song</p>
-        <div>
-          <a href="mailto:edwardsong08@gmail.com">Email</a>
-          <a href="https://www.linkedin.com/in/edward-y-song" target="_blank" rel="noreferrer">LinkedIn</a>
-          <a href="https://github.com/edwardsong08" target="_blank" rel="noreferrer">GitHub</a>
-        </div>
-      </footer>
+      <nav className={styles.moreWork} aria-label="More work"><Link href="/#work">All selected work <Arrow /></Link><Link href={project.next.href}>{project.next.label} <Arrow /></Link></nav>
+      <footer className={styles.footer}><p>Edward Song · Pennsylvania</p><div><a href="mailto:edwardsong08@gmail.com">Email</a><a href="https://github.com/edwardsong08" target="_blank" rel="noreferrer">GitHub</a><a href="https://www.linkedin.com/in/edward-y-song" target="_blank" rel="noreferrer">LinkedIn</a></div></footer>
     </div>
   );
 }

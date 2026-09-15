@@ -4,12 +4,12 @@ import CaseStudyZen from '../../components/v21/CaseStudyZen';
 
 export default function RyuLegalCaseStudy() {
   const description =
-    'Long-term product stewardship for Ryu Legal’s live NJ/NY website, spanning information architecture, interface design, engineering, search visibility, deployment, and maintenance.';
+    'Long-term technology ownership for Ryu Legal spanning measurable website growth, custom software, infrastructure, security, performance, and operations.';
 
   return (
     <>
       <NextSeo
-        title="Ryu Legal Product Stewardship Case Study"
+        title="Ryu Legal Technical Leadership Case Study"
         description={description}
         canonical="https://www.edsong.xyz/work/ryu-legal"
         openGraph={{

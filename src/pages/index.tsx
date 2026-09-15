@@ -5,13 +5,13 @@ export default function Home() {
   return (
     <>
       <NextSeo
-        title="Product Engineer & Technical Lead"
-        description="Edward Song is a Product Engineer, Technical Lead, and Volunteer CTO working across product direction, hands-on engineering, and multidisciplinary technology leadership."
+        title="CTO | Technical Lead | Product Engineer"
+        description="Edward Song is a hands-on CTO, technical lead, and product engineer building secure software platforms and operating systems for organizations with complex needs."
         canonical="https://www.edsong.xyz/"
         openGraph={{
-          title: 'Edward Song — Product Engineer & Technical Lead',
+          title: 'Edward Song — CTO, Technical Lead, Product Engineer',
           description:
-            'Technology ownership at TROA and Ryu Legal, independent work on 4ME OS and Newsroom, and the systems connecting it all.',
+            'Technology ownership across TROA and Ryu Legal, with the systems and infrastructure connecting the work.',
           url: 'https://www.edsong.xyz/',
           type: 'website',
           images: [
@@ -19,7 +19,7 @@ export default function Home() {
               url: 'https://www.edsong.xyz/og/edward-song-zen.png',
               width: 1199,
               height: 630,
-              alt: 'Edward Song — Product Engineer and Technical Lead',
+              alt: 'Edward Song — CTO, Technical Lead, and Product Engineer',
             },
           ],
         }}
@@ -28,8 +28,8 @@ export default function Home() {
       <WebPageJsonLd
         id="https://www.edsong.xyz/#webpage"
         url="https://www.edsong.xyz/"
-        name="Edward Song — Product Engineer and Technical Lead"
-        description="Edward Song works across product direction, hands-on engineering, and multidisciplinary technology leadership."
+        name="Edward Song — CTO, Technical Lead, and Product Engineer"
+        description="Edward Song builds secure software platforms and leads technology across product, engineering, infrastructure, and operations."
         mainEntity={{ '@id': 'https://www.edsong.xyz/#person' }}
       />
       <SocialProfileJsonLd
@@ -38,8 +38,8 @@ export default function Home() {
         name="Edward Song"
         url="https://www.edsong.xyz/"
         image="https://www.edsong.xyz/og/edward-song-zen.png"
-        jobTitle="Product Engineer and Technical Lead"
-        description="Product Engineer, Technical Lead, and Volunteer CTO working across product direction, hands-on engineering, and multidisciplinary technology leadership."
+        jobTitle="CTO, Technical Lead, and Product Engineer"
+        description="Hands-on CTO, technical lead, and product engineer working across product direction, software, infrastructure, security, and operations."
         knowsLanguage={['English', 'Korean']}
         sameAs={[
           'https://www.linkedin.com/in/edward-y-song',
