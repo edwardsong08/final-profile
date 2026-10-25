@@ -15,6 +15,7 @@ function activityClock(refinement = 'timing') {
   const context = createContext({
     URLSearchParams,
     location: { search: `?hybrid&refinement=${refinement}` },
+    arrivalSmoke: refinement === 'arrival',
     canvas: { width: 1000, height: 800 },
     performance: { now: () => now },
     gl: new Proxy({}, { get: () => noop }),
