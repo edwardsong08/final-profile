@@ -1,4 +1,4 @@
-const siteUrl = 'https://www.edsong.xyz';
+const siteUrl = 'https://profile.edsong.xyz';
 
 const defaultSeo = {
   defaultTitle: 'Edward Song — Product Engineer & Technical Lead',

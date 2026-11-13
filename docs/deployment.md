@@ -2,17 +2,17 @@
 
 ## Hosting roles
 
-Verified 2026-09-06:
+Current hosting roles for the November 13, 2026 domain migration:
 
 | Role | Target |
 | --- | --- |
 | Primary production | Coolify: Edward Song → production → `final-profile-coolify` |
-| Public hosts | `https://edsong.xyz/` and canonical `https://www.edsong.xyz/`, through Cloudflare |
+| Public host | Canonical `https://profile.edsong.xyz/`, through Cloudflare to the existing Coolify app |
 | Source | `edwardsong08/final-profile`, branch `master`, commit setting `HEAD` |
 | Build/runtime | Railpack, Next.js Node server, exposed port 3000; `npm run build` / `npm run start` |
 | Backup | Connected Vercel `final-profile` project |
 
-The public hosts and Coolify origin returned matching Next.js build IDs when checked. Recheck routing when hosting changes; do not infer the active origin from a README or a successful backup build. A backup deployment is not evidence of automatic failover. Leave DNS, tunnels, and Vercel bindings unchanged during an ordinary code release.
+Before this migration, edsong.xyz and www.edsong.xyz used Cloudflare Tunnel routes to this app. Those two routes move to the client inquiry app; the profile gets its own HTTPS Coolify binding and proxied profile DNS record. Recheck public build IDs and canonical URLs after changing routing. A backup deployment is not evidence of automatic failover. Leave unrelated DNS, tunnel, and Vercel bindings unchanged.
 
 ## Release sequence
 
@@ -32,7 +32,7 @@ The Vercel backup may build from the same push. Its success or failure should be
 - Source: `troainc/troa-realms-map-v2`, branch `main`; local checkout `TROA/troa-realms-map-main`.
 - Host: its existing TROA Coolify application at `https://troa-realms.therealmsofasgard.com`.
 - The profile loads `/map` with `embed=profile` and the selected realm/object parameters. It uses the real scene and miniature non-interactive HUD, with explicitly labeled static preview chat rather than a live chat feed.
-- External object buttons send `troa-profile-map-select` messages. The map accepts only its parent window and approved profile origins (`https://edsong.xyz`, `https://www.edsong.xyz`; localhost only in development), and validates the object ID.
+- External object buttons send `troa-profile-map-select` messages. The map accepts only its parent window and approved profile origins (`https://profile.edsong.xyz`, `https://profile.edsong.xyz`; localhost only in development), and validates the object ID.
 - Keep the iframe mounted after its first activation so object selection can transition within the loaded scene. Embed mode preloads object assets and uses medium quality without changing normal map preferences.
 - Local profile development expects the map frontend on `http://localhost:5173`. The profile's production CSP and iframe URL use the public map host instead.
 - When changing this integration, deploy and verify the map before the profile. On both public profile origins, select another object and confirm the camera/detail card updates without an iframe reload.

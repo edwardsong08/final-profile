@@ -2,9 +2,9 @@
 
 ![Edward Song portfolio preview](./public/og/edward-song-zen.png)
 
-Source for [Edward Song's portfolio](https://www.edsong.xyz/), presenting selected product engineering, systems work, technical leadership, and production delivery.
+Source for [Edward Song's portfolio](https://profile.edsong.xyz/), presenting selected product engineering, systems work, technical leadership, and production delivery.
 
-Production runs on self-hosted Coolify behind Cloudflare. The portfolio's canonical URL is [edsong.xyz](https://www.edsong.xyz/).
+Production runs on self-hosted Coolify behind Cloudflare. The portfolio's canonical URL is [edsong.xyz](https://profile.edsong.xyz/).
 
 ## What this portfolio demonstrates
 
@@ -17,11 +17,11 @@ Production runs on self-hosted Coolify behind Cloudflare. The portfolio's canoni
 
 | Work | Scope | Evidence |
 | --- | --- | --- |
-| TROA Nonprofit | Organization-wide technology, operations, and community systems | [Portfolio slide](https://www.edsong.xyz/#project-troa-nonprofit) |
-| TROA Gaming | Space Engineers realm infrastructure and an interactive 3D map | [Interactive slide](https://www.edsong.xyz/#project-troa-gaming) |
-| Ryu Legal | End-to-end technology ownership, growth, client-site delivery, and ongoing operations | [Portfolio slide](https://www.edsong.xyz/#project-ryu) |
+| TROA Nonprofit | Organization-wide technology, operations, and community systems | [Portfolio slide](https://profile.edsong.xyz/#project-troa-nonprofit) |
+| TROA Gaming | Space Engineers realm infrastructure and an interactive 3D map | [Interactive slide](https://profile.edsong.xyz/#project-troa-gaming) |
+| Ryu Legal | End-to-end technology ownership, growth, client-site delivery, and ongoing operations | [Portfolio slide](https://profile.edsong.xyz/#project-ryu) |
 | ES/HUB | A living map of projects, services, infrastructure, and relationships | [Explore the Hub](https://hub.edsong.xyz/) |
-| ClaimChain | Earlier startup work: an independent claims-marketplace prototype | [Case study](https://www.edsong.xyz/work/claimchain) |
+| ClaimChain | Earlier startup work: an independent claims-marketplace prototype | [Case study](https://profile.edsong.xyz/work/claimchain) |
 
 ## Stack
 

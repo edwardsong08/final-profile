@@ -11,21 +11,21 @@ export default function HubCaseStudy() {
       <NextSeo
         title="ES/HUB Systems Mapping Case Study"
         description={description}
-        canonical="https://edsong.xyz/work/hub"
+        canonical="https://profile.edsong.xyz/work/hub"
         openGraph={{
-          url: 'https://edsong.xyz/work/hub',
+          url: 'https://profile.edsong.xyz/work/hub',
           title: 'ES/HUB Systems Mapping Case Study | Edward Song',
           description,
         }}
       />
       <BreadcrumbJsonLd
         itemListElements={[
-          { position: 1, name: 'Home', item: 'https://edsong.xyz/' },
-          { position: 2, name: 'ES/HUB case study', item: 'https://edsong.xyz/work/hub' },
+          { position: 1, name: 'Home', item: 'https://profile.edsong.xyz/' },
+          { position: 2, name: 'ES/HUB case study', item: 'https://profile.edsong.xyz/work/hub' },
         ]}
       />
       <WebPageJsonLd
-        id="https://edsong.xyz/work/hub#webpage"
+        id="https://profile.edsong.xyz/work/hub#webpage"
         description={description}
       />
       <CaseStudyZen project="hub" />

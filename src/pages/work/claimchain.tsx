@@ -11,24 +11,24 @@ export default function ClaimChainCaseStudy() {
       <NextSeo
         title="ClaimChain Legal Technology Product Case Study"
         description={description}
-        canonical="https://www.edsong.xyz/work/claimchain"
+        canonical="https://profile.edsong.xyz/work/claimchain"
         openGraph={{
           title: 'ClaimChain Product Engineering Case Study — Edward Song',
           description,
           type: 'article',
-          url: 'https://www.edsong.xyz/work/claimchain',
+          url: 'https://profile.edsong.xyz/work/claimchain',
         }}
       />
       <WebPageJsonLd
-        id="https://www.edsong.xyz/work/claimchain#webpage"
-        url="https://www.edsong.xyz/work/claimchain"
+        id="https://profile.edsong.xyz/work/claimchain#webpage"
+        url="https://profile.edsong.xyz/work/claimchain"
         name="ClaimChain Product Engineering Case Study — Edward Song"
         description={description}
       />
       <BreadcrumbJsonLd itemListElements={[
-        { position: 1, name: 'Edward Song', item: 'https://www.edsong.xyz/' },
-        { position: 2, name: 'Selected work', item: 'https://www.edsong.xyz/#work' },
-        { position: 3, name: 'ClaimChain case study', item: 'https://www.edsong.xyz/work/claimchain' },
+        { position: 1, name: 'Edward Song', item: 'https://profile.edsong.xyz/' },
+        { position: 2, name: 'Selected work', item: 'https://profile.edsong.xyz/#work' },
+        { position: 3, name: 'ClaimChain case study', item: 'https://profile.edsong.xyz/work/claimchain' },
       ]} />
       <CaseStudyZen project="claimchain" />
     </>
