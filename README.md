@@ -4,7 +4,7 @@
 
 Source for [Edward Song's portfolio](https://profile.edsong.xyz/), presenting selected product engineering, systems work, technical leadership, and production delivery.
 
-Production runs on self-hosted Coolify behind Cloudflare. The portfolio's canonical URL is [edsong.xyz](https://profile.edsong.xyz/).
+Production runs on self-hosted Coolify behind Cloudflare. The portfolio's canonical URL is [profile.edsong.xyz](https://profile.edsong.xyz/). The separate client inquiry site is [edsong.xyz](https://edsong.xyz/).
 
 ## What this portfolio demonstrates
 
